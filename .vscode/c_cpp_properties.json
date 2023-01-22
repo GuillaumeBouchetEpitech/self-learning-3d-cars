@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/projects/application/src/**",
+                "${workspaceFolder}/projects/libraries/machine-learning/src/**",
+                "${DIR_LIB_GERONIMO}/src/**",
+                "/usr/include/SDL2/"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            // "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -94,7 +94,7 @@ PthreadSimulation::_resetPhysic() {
   _physicWorlds.clear();
   _physicWorlds.resize(_totalCores);
   for (unsigned int ii = 0; ii < _totalCores; ++ii) {
-    _physicWorlds.at(ii) = std::make_unique<gero::physic::PhysicWorld>();
+    _physicWorlds.at(ii) = std::make_unique<gero::physics::PhysicWorld>();
 
     { // generate circuit
 
@@ -108,8 +108,8 @@ PthreadSimulation::_resetPhysic() {
         static_cast<void>(colors);  // <= unused
         static_cast<void>(normals); // <= unused
 
-        gero::physic::PhysicShapeDef shapeDef;
-        shapeDef.type = gero::physic::PhysicShapeDef::Type::staticMesh;
+        gero::physics::PhysicShapeDef shapeDef;
+        shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
         shapeDef.data.staticMesh.verticesData =
           const_cast<glm::vec3*>(vertices.data());
         shapeDef.data.staticMesh.verticesLength = vertices.size();
@@ -117,7 +117,7 @@ PthreadSimulation::_resetPhysic() {
           const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
         shapeDef.data.staticMesh.indicesLength = indices.size();
 
-        gero::physic::PhysicBodyDef bodyDef;
+        gero::physics::PhysicBodyDef bodyDef;
         bodyDef.shape = shapeDef;
         bodyDef.mass = 0.0f;
         bodyDef.group = gero::asValue(Groups::ground);
@@ -141,8 +141,8 @@ PthreadSimulation::_resetPhysic() {
         static_cast<void>(colors);  // <= unused
         static_cast<void>(normals); // <= unused
 
-        gero::physic::PhysicShapeDef shapeDef;
-        shapeDef.type = gero::physic::PhysicShapeDef::Type::staticMesh;
+        gero::physics::PhysicShapeDef shapeDef;
+        shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
         shapeDef.data.staticMesh.verticesData =
           const_cast<glm::vec3*>(vertices.data());
         shapeDef.data.staticMesh.verticesLength = vertices.size();
@@ -150,7 +150,7 @@ PthreadSimulation::_resetPhysic() {
           const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
         shapeDef.data.staticMesh.indicesLength = indices.size();
 
-        gero::physic::PhysicBodyDef bodyDef;
+        gero::physics::PhysicBodyDef bodyDef;
         bodyDef.shape = shapeDef;
         bodyDef.mass = 0.0f;
         bodyDef.group = gero::asValue(Groups::wall);
@@ -166,11 +166,11 @@ PthreadSimulation::_resetPhysic() {
 
     { // floor
 
-      gero::physic::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physic::PhysicShapeDef::Type::box;
+      gero::physics::PhysicShapeDef shapeDef;
+      shapeDef.type = gero::physics::PhysicShapeDef::Type::box;
       shapeDef.data.box.size = {1000, 1000, 0.5f};
 
-      gero::physic::PhysicBodyDef bodyDef;
+      gero::physics::PhysicBodyDef bodyDef;
       bodyDef.shape = shapeDef;
       bodyDef.mass = 0.0f;
       bodyDef.group = gero::asValue(Groups::ground);

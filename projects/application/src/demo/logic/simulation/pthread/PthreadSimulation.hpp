@@ -6,7 +6,7 @@
 #include "demo/logic/simulation/logic/CircuitBuilder.hpp"
 #include "machine-learning/NeuralNetwork.hpp"
 
-#include "geronimo/physic/PhysicWorld.hpp"
+#include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/multithreading/Producer.hpp"
 
 #include <array>
@@ -24,7 +24,7 @@ private:
    * need multiple physic worlds so that we can divide the
    * physical update and raycasting inside different threads
    */
-  std::vector<std::unique_ptr<gero::physic::PhysicWorld>> _physicWorlds;
+  std::vector<std::unique_ptr<gero::physics::PhysicWorld>> _physicWorlds;
 
   std::vector<AbstactSimulation::CoreState> _coreStates;
 

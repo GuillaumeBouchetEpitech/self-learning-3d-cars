@@ -54,29 +54,36 @@ endif
 
 DIR_LIB=									../libraries
 DIR_LIB_MACHINE_LEARNING=	$(DIR_LIB)/machine-learning
-DIR_LIB_GERONIMO=					$(DIR_LIB)/geronimo
+
+DIR_LIB_GERONIMO_SRC=						$(DIR_LIB_GERONIMO)/src
+DIR_LIB_GERONIMO_3RD_PARTY_DIR=	$(DIR_LIB_GERONIMO)/thirdparties
+
 
 ifeq ($(build_platform),native_pthread)
 
-NAME_LIB_MACHINE_LEARNING=						$(DIR_LIB_MACHINE_LEARNING)/lib/native/lib-machine-learning.a
+NAME_LIB_MACHINE_LEARNING=	$(DIR_LIB_MACHINE_LEARNING)/lib/native/lib-machine-learning.a
 
-NAME_LIB_GERONIMO_SYSTEM=							$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-system.a
-NAME_LIB_GERONIMO_GRAPHIC=						$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphic.a
-NAME_LIB_GERONIMO_PHYSIC=							$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-physic.a
-NAME_LIB_BULLET_PHYSICS_LINEARMATH=		$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-linearmath.a
-NAME_LIB_BULLET_PHYSICS_COLLISION=		$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-collision.a
-NAME_LIB_BULLET_PHYSICS_DYNAMICS=			$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-dynamics.a
+#
+
+NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-system.a
+NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphic.a
+NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-physics.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-dynamics.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-collision.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-linearmath.a
 
 else
 
-NAME_LIB_MACHINE_LEARNING=						$(DIR_LIB_MACHINE_LEARNING)/lib/web-wasm/lib-machine-learning.bc
+NAME_LIB_MACHINE_LEARNING=	$(DIR_LIB_MACHINE_LEARNING)/lib/web-wasm/lib-machine-learning.bc
 
-NAME_LIB_GERONIMO_SYSTEM=							$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-system.bc
-NAME_LIB_GERONIMO_GRAPHIC=						$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphic.bc
-NAME_LIB_GERONIMO_PHYSIC=							$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-physic.bc
-NAME_LIB_BULLET_PHYSICS_LINEARMATH=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-linearmath.bc
-NAME_LIB_BULLET_PHYSICS_COLLISION=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-collision.bc
-NAME_LIB_BULLET_PHYSICS_DYNAMICS=			$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-dynamics.bc
+#
+
+NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-system.bc
+NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphic.bc
+NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-physics.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-linearmath.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-collision.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-dynamics.bc
 
 endif
 
@@ -115,32 +122,43 @@ endif
 
 # pthread (native + web-pthread)
 
-SRC+=	$(wildcard $(DIR_SRC)/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/states/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/helpers/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/camera/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/hud/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/hud/helpers/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/scene/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/*.cpp)
+SRC+=	\
+	$(wildcard \
+		$(DIR_SRC)/*.cpp \
+		$(DIR_SRC)/demo/*.cpp \
+		$(DIR_SRC)/demo/states/*.cpp \
+		$(DIR_SRC)/demo/logic/*.cpp \
+		$(DIR_SRC)/demo/logic/helpers/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/camera/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/renderers/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/renderers/hud/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/renderers/hud/helpers/*.cpp \
+		$(DIR_SRC)/demo/logic/graphic/renderers/scene/*.cpp \
+		$(DIR_SRC)/demo/logic/simulation/*.cpp \
+		$(DIR_SRC)/demo/logic/simulation/logic/*.cpp \
+		)
 
 ifneq ($(build_platform),web_wasm_webworker)
 
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/pthread/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/physic/*.cpp)
+SRC+=	\
+	$(wildcard \
+		$(DIR_SRC)/demo/logic/simulation/pthread/*.cpp \
+		)
 
 else
 
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/*.cpp)
-SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/producer/*.cpp)
+SRC+=	\
+	$(wildcard \
+		$(DIR_SRC)/demo/logic/simulation/webworker/*.cpp \
+		$(DIR_SRC)/demo/logic/simulation/webworker/producer/*.cpp \
+		)
 
-SRC_WEB_WASM_WORKER+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/*.cpp)
-SRC_WEB_WASM_WORKER+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/consumer/*.cpp)
+SRC_WEB_WASM_WORKER+=	\
+	$(wildcard \
+		$(DIR_SRC)/demo/logic/simulation/logic/*.cpp \
+		$(DIR_SRC)/demo/logic/simulation/webworker/consumer/*.cpp \
+		)
 
 endif
 
@@ -167,8 +185,8 @@ BUILD_FLAG=		-g3 # debug flag
 
 endif
 
-# DEPENDENCIES += sdl2 glesv2 egl openal
-DEPENDENCIES_LIST += sdl2 glesv2 egl
+# DEPENDENCIES += sdl2 glesv2 openal
+DEPENDENCIES_LIST += sdl2 glesv2
 DEPENDENCIES_CXXFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --cflags)
 DEPENDENCIES_LDFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --libs)
 
@@ -178,6 +196,7 @@ CXXFLAGS += -Wall -W -Wextra -Wunused
 CXXFLAGS += -I$(DIR_SRC)
 CXXFLAGS += -I$(DIR_LIB_MACHINE_LEARNING_SRC)
 CXXFLAGS += -I$(DIR_LIB_GERONIMO_SRC)
+CXXFLAGS += -I$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)
 
 ifeq ($(build_platform),native_pthread)
 
@@ -187,13 +206,11 @@ AR=ar
 CXXFLAGS += $(DEPENDENCIES_CXXFLAGS)
 
 LDFLAGS += $(BUILD_FLAG)
-LDFLAGS += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
 LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
 LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS += $(DEPENDENCIES_LDFLAGS)
 LDFLAGS += -pthread
 
@@ -230,13 +247,11 @@ CXXFLAGS += $(FLAGS_WEB_WASM_MAIN)
 
 LDFLAGS += $(BUILD_FLAG)
 LDFLAGS += $(FLAGS_WEB_WASM_MAIN)
-LDFLAGS += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
 LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
 LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
-LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ../../assets/
 LDFLAGS += -Wl,--shared-memory,--no-check-features
@@ -252,12 +267,10 @@ LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ../../assets/
 
 LDFLAGS_WEB_WASM_WORKER += $(BUILD_FLAG)
-LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_SYSTEM)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_MACHINE_LEARNING)
-LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
-LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
-LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS_WEB_WASM_WORKER += -s BUILD_AS_WORKER=1
 

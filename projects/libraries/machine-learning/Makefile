@@ -29,8 +29,6 @@ LOG_INFO= '[$(build_mode)] [$(build_platform)]'
 
 #
 
-DIR_SHARED_LIB=		../geronimo
-
 ifeq ($(build_platform),native)
 
 DIR_TARGET=			./lib/native
@@ -47,8 +45,9 @@ endif
 
 #### DIRS
 
-DIR_SRC=							./src
-DIR_SHARED_LIB_SRC=		$(DIR_SHARED_LIB)/src
+DIR_SRC=											./src
+DIR_LIB_GERONIMO_SRC=					$(DIR_LIB_GERONIMO)/src
+DIR_LIB_GERONIMO_3RD_PARTY=		$(DIR_LIB_GERONIMO)/thirdparties
 
 #### /DIRS
 
@@ -89,7 +88,8 @@ CXXFLAGS += $(BUILD_FLAG)
 CXXFLAGS += -std=c++17
 CXXFLAGS += -Wall -W -Wextra -Wunused
 CXXFLAGS += -I$(DIR_SRC)
-CXXFLAGS += -I$(DIR_SHARED_LIB_SRC)
+CXXFLAGS += -I$(DIR_LIB_GERONIMO_SRC)
+CXXFLAGS += -I$(DIR_LIB_GERONIMO_3RD_PARTY)
 
 ifeq ($(build_platform),native)
 

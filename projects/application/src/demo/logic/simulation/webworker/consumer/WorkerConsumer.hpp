@@ -9,7 +9,7 @@
 #include "machine-learning/NeuralNetwork.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
-#include "geronimo/physic/PhysicWorld.hpp"
+#include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/messaging/MessageBuffer.hpp"
 #include "geronimo/system/messaging/MessageView.hpp"
@@ -23,7 +23,7 @@ class WorkerConsumer : public gero::NonCopyable {
 private:
   unsigned int _genomesPerCore = 0;
 
-  std::unique_ptr<gero::physic::PhysicWorld> _physicWorld;
+  std::unique_ptr<gero::physics::PhysicWorld> _physicWorld;
 
   CarAgents _carAgents;
 

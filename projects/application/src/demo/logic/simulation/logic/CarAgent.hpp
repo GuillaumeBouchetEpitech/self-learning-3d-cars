@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "geronimo/physic/PhysicWorld.hpp"
-#include "geronimo/physic/vehicle/PhysicVehicle.hpp"
+#include "geronimo/physics/PhysicWorld.hpp"
+#include "geronimo/physics/vehicle/PhysicVehicle.hpp"
 
 #include "machine-learning/NeuralNetwork.hpp"
 
@@ -25,9 +25,9 @@ public: // external structures
   };
 
 private: // attributes
-  gero::physic::PhysicWorld* _physicWorld = nullptr;
-  gero::physic::PhysicVehicleManager::VehicleWeakRef _physicVehicle;
-  gero::physic::PhysicBodyManager::BodyWeakRef _physicBody;
+  gero::physics::PhysicWorld* _physicWorld = nullptr;
+  gero::physics::PhysicVehicleManager::VehicleWeakRef _physicVehicle;
+  gero::physics::PhysicBodyManager::BodyWeakRef _physicBody;
 
   float _fitness;
   bool _isAlive;
@@ -48,7 +48,7 @@ public: // ctor/dtor
 public: // methods
   void update(float elapsedTime, const std::shared_ptr<NeuralNetwork> nn);
   void reset(
-    gero::physic::PhysicWorld* inPhysicWorld, const glm::vec3& position,
+    gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position,
     const glm::vec4& quaternion);
 
 private: // methods
@@ -64,8 +64,8 @@ public: // setter/getter
   bool isAlive() const;
   int getGroundIndex() const;
   const NeuralNetworkOutput& getNeuralNetworkOutput() const;
-  const gero::physic::PhysicBodyManager::BodyWeakRef getBody() const;
-  const gero::physic::PhysicVehicleManager::VehicleWeakRef getVehicle() const;
+  const gero::physics::PhysicBodyManager::BodyWeakRef getBody() const;
+  const gero::physics::PhysicVehicleManager::VehicleWeakRef getVehicle() const;
   float getLife() const;
   unsigned int getTotalUpdates() const;
 };

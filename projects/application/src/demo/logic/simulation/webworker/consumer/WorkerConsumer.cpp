@@ -299,7 +299,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, unsigned int totalSteps) {
 
 void
 WorkerConsumer::_resetPhysic() {
-  _physicWorld = std::make_unique<gero::physic::PhysicWorld>();
+  _physicWorld = std::make_unique<gero::physics::PhysicWorld>();
 
   { // generate circuit
 
@@ -313,8 +313,8 @@ WorkerConsumer::_resetPhysic() {
       static_cast<void>(colors);  // <= unused
       static_cast<void>(normals); // <= unused
 
-      gero::physic::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physic::PhysicShapeDef::Type::staticMesh;
+      gero::physics::PhysicShapeDef shapeDef;
+      shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
       shapeDef.data.staticMesh.verticesData =
         const_cast<glm::vec3*>(vertices.data());
       shapeDef.data.staticMesh.verticesLength = vertices.size();
@@ -322,7 +322,7 @@ WorkerConsumer::_resetPhysic() {
         const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
       shapeDef.data.staticMesh.indicesLength = indices.size();
 
-      gero::physic::PhysicBodyDef bodyDef;
+      gero::physics::PhysicBodyDef bodyDef;
       bodyDef.shape = shapeDef;
       bodyDef.mass = 0.0f;
       bodyDef.group = gero::asValue(Groups::ground);
@@ -342,8 +342,8 @@ WorkerConsumer::_resetPhysic() {
       static_cast<void>(colors);  // <= unused
       static_cast<void>(normals); // <= unused
 
-      gero::physic::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physic::PhysicShapeDef::Type::staticMesh;
+      gero::physics::PhysicShapeDef shapeDef;
+      shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
       shapeDef.data.staticMesh.verticesData =
         const_cast<glm::vec3*>(vertices.data());
       shapeDef.data.staticMesh.verticesLength = vertices.size();
@@ -351,7 +351,7 @@ WorkerConsumer::_resetPhysic() {
         const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
       shapeDef.data.staticMesh.indicesLength = indices.size();
 
-      gero::physic::PhysicBodyDef bodyDef;
+      gero::physics::PhysicBodyDef bodyDef;
       bodyDef.shape = shapeDef;
       bodyDef.mass = 0.0f;
       bodyDef.group = gero::asValue(Groups::wall);
@@ -366,11 +366,11 @@ WorkerConsumer::_resetPhysic() {
 
   { // generate floor
 
-    gero::physic::PhysicShapeDef shapeDef;
-    shapeDef.type = gero::physic::PhysicShapeDef::Type::box;
+    gero::physics::PhysicShapeDef shapeDef;
+    shapeDef.type = gero::physics::PhysicShapeDef::Type::box;
     shapeDef.data.box.size = {1000, 1000, 0.5f};
 
-    gero::physic::PhysicBodyDef bodyDef;
+    gero::physics::PhysicBodyDef bodyDef;
     bodyDef.shape = shapeDef;
     bodyDef.group = gero::asValue(Groups::ground);
     bodyDef.mask = gero::asValue(Masks::ground);

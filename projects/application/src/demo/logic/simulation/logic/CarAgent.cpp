@@ -115,15 +115,15 @@ CarAgent::_createVehicle() {
   if (_physicBody)
     _physicWorld->getPhysicBodyManager().destroyBody(_physicBody);
 
-  gero::physic::PhysicBodyDef bodyDef;
+  gero::physics::PhysicBodyDef bodyDef;
 
   // const glm::vec3 chassisSize = { 1.0f, 2.0f, 0.5f };
   const glm::vec3 chassisSize = {2.0f, 4.0f, 1.0f};
   const glm::vec3 chassisHSize = chassisSize * 0.5f;
 
-  bodyDef.shape.type = gero::physic::PhysicShapeDef::Type::compound;
+  bodyDef.shape.type = gero::physics::PhysicShapeDef::Type::compound;
   {
-    gero::physic::PhysicShapeDef::Data::Compound::ChildShape childShape;
+    gero::physics::PhysicShapeDef::Data::Compound::ChildShape childShape;
     {
       // elevate the chassis
       childShape.transform = glm::identity<glm::mat4>();
@@ -131,8 +131,8 @@ CarAgent::_createVehicle() {
         glm::translate(childShape.transform, glm::vec3(0.0f, 0.0f, 0.9f));
     }
     {
-      childShape.shape = std::make_shared<gero::physic::PhysicShapeDef>();
-      childShape.shape->type = gero::physic::PhysicShapeDef::Type::box;
+      childShape.shape = std::make_shared<gero::physics::PhysicShapeDef>();
+      childShape.shape->type = gero::physics::PhysicShapeDef::Type::box;
       childShape.shape->data.box.size = chassisSize;
     }
     bodyDef.shape.data.compound.childShapes.push_back(childShape);
@@ -194,7 +194,7 @@ CarAgent::_createVehicle() {
   // lowering the vehicle's centre of mass
   const float rollInfluence = 0.5f;
 
-  gero::physic::PhysicVehicleDef vehicleDef;
+  gero::physics::PhysicVehicleDef vehicleDef;
   vehicleDef.body = _physicBody;
   vehicleDef.coordinateSystem = {0, 2, 1};
   vehicleDef.wheelsCollisionGroup = gero::asValue(Groups::vehicle);
@@ -221,7 +221,7 @@ CarAgent::_createVehicle() {
       /*isFrontWheel = */ false}}};
 
   for (auto& wheelPos : wheelPositions) {
-    gero::physic::PhysicVehicleDef::WheelStats wheelStats;
+    gero::physics::PhysicVehicleDef::WheelStats wheelStats;
 
     wheelStats.connectionPoint = wheelPos.connectionPoint;
     wheelStats.isFrontWheel = wheelPos.isFrontWheel;
@@ -287,11 +287,11 @@ CarAgent::_collideEyeSensors() {
     sensor.value = 1.0f;
 
     // eye sensors collide ground + walls
-    gero::physic::Raycaster::RaycastParams params(
+    gero::physics::Raycaster::RaycastParams params(
       sensor.near, sensor.far, 0, gero::asValue(Groups::sensor),
       gero::asValue(Masks::eyeSensor));
 
-    gero::physic::Raycaster::RaycastParams::ResultArray<1> result;
+    gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
 
     _physicWorld->getRaycaster().raycast(params, result);
 
@@ -310,11 +310,11 @@ CarAgent::_collideGroundSensor() {
   // raycast the ground to get the checkpoints validation
 
   // ground sensor collide only ground
-  gero::physic::Raycaster::RaycastParams params(
+  gero::physics::Raycaster::RaycastParams params(
     _groundSensor.near, _groundSensor.far, 0, gero::asValue(Groups::sensor),
     gero::asValue(Masks::groundSensor));
 
-  gero::physic::Raycaster::RaycastParams::ResultArray<1> result;
+  gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
 
   _physicWorld->getRaycaster().raycast(params, result);
 
@@ -357,7 +357,7 @@ CarAgent::_collideGroundSensor() {
 
 void
 CarAgent::reset(
-  gero::physic::PhysicWorld* inPhysicWorld, const glm::vec3& position,
+  gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position,
   const glm::vec4& quaternion) {
   _isAlive = true;
   _fitness = 0;
@@ -411,12 +411,12 @@ CarAgent::getNeuralNetworkOutput() const {
   return _output;
 }
 
-const gero::physic::PhysicBodyManager::BodyWeakRef
+const gero::physics::PhysicBodyManager::BodyWeakRef
 CarAgent::getBody() const {
   return _physicBody;
 }
 
-const gero::physic::PhysicVehicleManager::VehicleWeakRef
+const gero::physics::PhysicVehicleManager::VehicleWeakRef
 CarAgent::getVehicle() const {
   return _physicVehicle;
 }
