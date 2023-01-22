@@ -1,0 +1,371 @@
+
+build_platform=native_pthread
+# build_platform=web_wasm_pthread
+# build_platform=web_wasm_webworker
+
+build_mode=release
+# build_mode=debug
+
+#
+
+ifeq ($(build_platform),native_pthread)
+# $(info build_platform is valid, value=$(build_platform))
+else ifeq ($(build_platform),web_wasm_pthread)
+# $(info build_platform is valid, value=$(build_platform))
+else ifeq ($(build_platform),web_wasm_webworker)
+# $(info build_platform is valid, value=$(build_platform))
+else
+$(error unsupported value for "build_platform", value=$(build_platform))
+endif
+
+#
+
+ifeq ($(build_mode),release)
+# $(info build_mode is valid, value=$(build_mode))
+else ifeq ($(build_mode),debug)
+# $(info build_mode is valid, value=$(build_mode))
+else
+$(error unsupported value for "build_mode", value=$(build_mode))
+endif
+
+LOG_INFO= '[$(build_mode)] [$(build_platform)]'
+
+#
+
+ifeq ($(build_platform),native_pthread)
+
+DIR_TARGET=					../../bin
+NAME_APPLICATION=		$(DIR_TARGET)/exec
+
+else ifeq ($(build_platform),web_wasm_pthread)
+
+DIR_TARGET=					../../dist/wasm/pthread
+NAME_APPLICATION=		$(DIR_TARGET)/index.js
+
+else ifeq ($(build_platform),web_wasm_webworker)
+
+DIR_TARGET=					../../dist/wasm/webworker
+NAME_APPLICATION=		$(DIR_TARGET)/index.js
+NAME_WEB_WASM_WORKER=		$(DIR_TARGET)/worker.js
+
+endif
+
+#
+
+DIR_LIB=									../libraries
+DIR_LIB_MACHINE_LEARNING=	$(DIR_LIB)/machine-learning
+DIR_LIB_GERONIMO=					$(DIR_LIB)/geronimo
+
+ifeq ($(build_platform),native_pthread)
+
+NAME_LIB_MACHINE_LEARNING=						$(DIR_LIB_MACHINE_LEARNING)/lib/native/lib-machine-learning.a
+
+NAME_LIB_GERONIMO_SYSTEM=							$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-system.a
+NAME_LIB_GERONIMO_GRAPHIC=						$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphic.a
+NAME_LIB_GERONIMO_PHYSIC=							$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-physic.a
+NAME_LIB_BULLET_PHYSICS_LINEARMATH=		$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-linearmath.a
+NAME_LIB_BULLET_PHYSICS_COLLISION=		$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-collision.a
+NAME_LIB_BULLET_PHYSICS_DYNAMICS=			$(DIR_LIB_GERONIMO)/lib/native/lib-bullet-physics-dynamics.a
+
+else
+
+NAME_LIB_MACHINE_LEARNING=						$(DIR_LIB_MACHINE_LEARNING)/lib/web-wasm/lib-machine-learning.bc
+
+NAME_LIB_GERONIMO_SYSTEM=							$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-system.bc
+NAME_LIB_GERONIMO_GRAPHIC=						$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphic.bc
+NAME_LIB_GERONIMO_PHYSIC=							$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-physic.bc
+NAME_LIB_BULLET_PHYSICS_LINEARMATH=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-linearmath.bc
+NAME_LIB_BULLET_PHYSICS_COLLISION=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-collision.bc
+NAME_LIB_BULLET_PHYSICS_DYNAMICS=			$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-bullet-physics-dynamics.bc
+
+endif
+
+
+
+#### DIRS
+
+DIR_SRC=											./src
+DIR_LIB_MACHINE_LEARNING_SRC=	$(DIR_LIB_MACHINE_LEARNING)/src
+DIR_LIB_GERONIMO_SRC=					$(DIR_LIB_GERONIMO)/src
+
+#### /DIRS
+
+
+
+ifeq ($(build_platform),native_pthread)
+
+DIR_OBJ=									./obj/native
+
+else
+
+ifeq ($(build_platform),web_wasm_pthread)
+
+DIR_OBJ=									./obj/web-wasm/pthread
+
+else ifeq ($(build_platform),web_wasm_webworker)
+
+DIR_OBJ=									./obj/web-wasm/webworker/main
+DIR_OBJ_WEB_WASM_WORKER=				./obj/web-wasm/webworker/worker
+
+endif
+
+endif
+
+#### SRC
+
+# pthread (native + web-pthread)
+
+SRC+=	$(wildcard $(DIR_SRC)/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/states/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/helpers/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/camera/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/hud/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/hud/helpers/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/graphic/renderers/scene/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/*.cpp)
+
+ifneq ($(build_platform),web_wasm_webworker)
+
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/pthread/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/physic/*.cpp)
+
+else
+
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/*.cpp)
+SRC+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/producer/*.cpp)
+
+SRC_WEB_WASM_WORKER+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/logic/*.cpp)
+SRC_WEB_WASM_WORKER+=	$(wildcard $(DIR_SRC)/demo/logic/simulation/webworker/consumer/*.cpp)
+
+endif
+
+#
+
+OBJ=	$(patsubst %.cpp, $(DIR_OBJ)/%.o, $(SRC))
+
+ifeq ($(build_platform),web_wasm_webworker)
+
+OBJ_WEB_WASM_WORKER=	$(patsubst %.cpp, $(DIR_OBJ_WEB_WASM_WORKER)/%.o, $(SRC_WEB_WASM_WORKER))
+
+endif
+
+#######
+
+
+ifeq ($(build_mode),release)
+
+BUILD_FLAG=		-O3 # optimisation flag
+
+else
+
+BUILD_FLAG=		-g3 # debug flag
+
+endif
+
+# DEPENDENCIES += sdl2 glesv2 egl openal
+DEPENDENCIES_LIST += sdl2 glesv2 egl
+DEPENDENCIES_CXXFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --cflags)
+DEPENDENCIES_LDFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --libs)
+
+CXXFLAGS += $(BUILD_FLAG)
+CXXFLAGS += -std=c++17
+CXXFLAGS += -Wall -W -Wextra -Wunused
+CXXFLAGS += -I$(DIR_SRC)
+CXXFLAGS += -I$(DIR_LIB_MACHINE_LEARNING_SRC)
+CXXFLAGS += -I$(DIR_LIB_GERONIMO_SRC)
+
+ifeq ($(build_platform),native_pthread)
+
+CXX=clang++
+AR=ar
+
+CXXFLAGS += $(DEPENDENCIES_CXXFLAGS)
+
+LDFLAGS += $(BUILD_FLAG)
+LDFLAGS += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
+LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS += $(DEPENDENCIES_LDFLAGS)
+LDFLAGS += -pthread
+
+else
+
+CXX=em++
+AR=emar
+
+CXXFLAGS += -s USE_SDL=2
+
+LDFLAGS_COMMON_WEB_WASM += -s USE_SDL=2
+LDFLAGS_COMMON_WEB_WASM += -s USE_WEBGL2=1
+LDFLAGS_COMMON_WEB_WASM += -s FULL_ES3=1
+LDFLAGS_COMMON_WEB_WASM += -s TOTAL_MEMORY=128Mb # 16Kb, 256Mb, etc.
+LDFLAGS_COMMON_WEB_WASM +=	-s WASM=1
+LDFLAGS_COMMON_WEB_WASM +=	-s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
+LDFLAGS_COMMON_WEB_WASM += -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0
+LDFLAGS_COMMON_WEB_WASM += -s EXPORTED_RUNTIME_METHODS=cwrap
+
+ifeq ($(build_mode),debug)
+
+LDFLAGS_COMMON_WEB_WASM += -s DEMANGLE_SUPPORT=1
+LDFLAGS_COMMON_WEB_WASM += -s GL_ASSERTIONS=1
+LDFLAGS_COMMON_WEB_WASM += -s GL_DEBUG=1
+LDFLAGS_COMMON_WEB_WASM += -s DISABLE_EXCEPTION_CATCHING=2
+
+endif
+
+ifeq ($(build_platform),web_wasm_pthread)
+
+FLAGS_WEB_WASM_MAIN += -s USE_PTHREADS=1
+
+CXXFLAGS += $(FLAGS_WEB_WASM_MAIN)
+
+LDFLAGS += $(BUILD_FLAG)
+LDFLAGS += $(FLAGS_WEB_WASM_MAIN)
+LDFLAGS += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
+LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
+LDFLAGS += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
+LDFLAGS += --preload-file ../../assets/
+LDFLAGS += -Wl,--shared-memory,--no-check-features
+LDFLAGS += -s PTHREAD_POOL_SIZE=17
+
+else
+
+LDFLAGS += $(BUILD_FLAG)
+LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
+LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
+LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
+LDFLAGS += --preload-file ../../assets/
+
+LDFLAGS_WEB_WASM_WORKER += $(BUILD_FLAG)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSIC)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_SYSTEM)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_DYNAMICS)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_COLLISION)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS_LINEARMATH)
+LDFLAGS_WEB_WASM_WORKER += $(LDFLAGS_COMMON_WEB_WASM)
+LDFLAGS_WEB_WASM_WORKER += -s BUILD_AS_WORKER=1
+
+endif
+
+endif
+
+
+RM=			rm -rf
+
+
+#######
+
+#
+## RULE(S)
+
+ifneq ($(build_platform),web_wasm_webworker)
+
+# all:	machine_learning application
+all:	application
+
+else ifeq ($(build_platform),web_wasm_webworker)
+
+# all:	machine_learning application web_wasm_worker
+all:	application web_wasm_worker
+
+endif
+
+ensurefolders:
+	@mkdir -p `dirname $(NAME_APPLICATION)`
+
+application:	ensurefolders $(OBJ)
+	@echo ' ---> building $(LOG_INFO): "application"'
+	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME_APPLICATION) $(LDFLAGS)
+	@echo '   --> built $(LOG_INFO): "application"'
+
+ifeq ($(build_platform),web_wasm_webworker)
+
+web_wasm_worker:		ensurefolders $(OBJ_WEB_WASM_WORKER)
+	@echo ' ---> building $(LOG_INFO): "web wasm worker application"'
+	@$(CXX) $(CXXFLAGS) $(OBJ_WEB_WASM_WORKER) -o $(NAME_WEB_WASM_WORKER) $(LDFLAGS_WEB_WASM_WORKER)
+	@echo '   --> built $(LOG_INFO): "web wasm worker application"'
+
+endif
+
+#
+
+# for every ".cpp" file
+# => ensure the "obj" folder(s)
+# => compile in a ".o" file
+
+$(DIR_OBJ)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	@echo ' ---> processing $(LOG_INFO):' $<
+	@$(CXX) -c $(CXXFLAGS) -MMD -MT "$@" -MF "$@.dep" -o "$@" $<
+
+include $(shell test -d $(DIR_OBJ) && find $(DIR_OBJ) -name "*.dep")
+
+ifeq ($(build_platform),web_wasm_webworker)
+
+$(DIR_OBJ_WEB_WASM_WORKER)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	@echo ' ---> processing $(LOG_INFO):' $<
+	@$(CXX) -c $(CXXFLAGS) -MMD -MT "$@" -MF "$@.dep" -o "$@" $<
+
+include $(shell test -d $(DIR_OBJ_WEB_WASM_WORKER) && find $(DIR_OBJ_WEB_WASM_WORKER) -name "*.dep")
+
+endif
+
+#
+
+ifneq ($(build_platform),web_wasm_webworker)
+
+clean:
+	@echo ' -> cleaning $(LOG_INFO): application build file(s)'
+	$(RM) $(DIR_OBJ)
+	@echo '   -> cleaned $(LOG_INFO): application build file(s)'
+
+fclean:	clean
+	@echo ' -> cleaning $(LOG_INFO): application file(s)'
+	$(RM) $(NAME_APPLICATION)
+	@echo '   -> cleaned $(LOG_INFO): application file(s)'
+
+else ifeq ($(build_platform),web_wasm_webworker)
+
+clean:
+	@echo ' -> cleaning $(LOG_INFO): application and webworker build file(s)'
+	$(RM) $(DIR_OBJ)
+	$(RM) $(DIR_OBJ_WEB_WASM_WORKER)
+	@echo '   -> cleaned $(LOG_INFO): application and webworker build file(s)'
+
+fclean:	clean
+	@echo ' -> cleaning $(LOG_INFO): application and webworker file(s)'
+	$(RM) $(NAME_APPLICATION)
+	$(RM) $(NAME_WEB_WASM_WORKER)
+	@echo '   -> cleaned $(LOG_INFO): application and webworker file(s)'
+
+endif
+
+re:			fclean all
+
+.PHONY: \
+			all \
+			application \
+			web_wasm_worker \
+			clean \
+			fclean \
+			re
+
+## RULE(S)
+#

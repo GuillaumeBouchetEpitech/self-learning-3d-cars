@@ -1,0 +1,25 @@
+
+#pragma once
+
+#include "demo/logic/Context.hpp"
+
+#include "geronimo/graphic/camera/Camera.hpp"
+#include "geronimo/helpers/GLMath.hpp"
+
+class Scene {
+public:
+  static void initialise();
+  static void renderSimple();
+  static void renderAll();
+
+  static void updateMatrices();
+  static void renderScene(const gero::graphic::Camera& inCamera);
+
+private:
+  static void _clear();
+
+private:
+  static void _renderLeadingCarSensors();
+  static void _renderHUD_ortho();
+  static void _renderHUD();
+};

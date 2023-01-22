@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <title>Self Learning 3d Cars (loading)</title>
+
+    <style>
+      body, h1, h2, p, ul, li {
+        background-color: #0F0F0F;
+        border: 0px 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+        font-family: arial;
+        color: #8F8F8F;
+      }
+
+      ul {
+        padding: 0px 0px 0px 20px;
+        font-family: arial;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      h3 {
+        font-size: 16px;
+        border: 7px 0px 0px 0px;
+        margin: 7px 0px 0px 0px;
+        padding: 7px 0px 0px 0px;
+      }
+
+      #renderArea {
+        border: 0px none;
+        margin: 0px auto; /* horizontally centered */
+        padding: 0px none;
+        background-color: black;
+        width: 800px;
+        height: 600px;
+      }
+
+      #title-description {
+        text-align: center;
+      }
+
+      #text-description {
+        text-align: center;
+      }
+
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      #canvas {
+        border: 0px none;
+        margin: 0px auto; /* horizontally centered */
+        padding: 0px none;
+        width: 800px; /* <= fix Apple retina display issue(s)*/
+        height: 600px; /* <= fix Apple retina display issue(s)*/
+        display: none;
+      }
+
+      #errorText {
+        position: relative;
+        left: 10px;
+        top: 10px;
+        margin: 0px auto; /* horizontally centered */
+        padding: 0px none;
+        border: 0px none;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        text-align: center;
+        outline: none;
+        display: block;
+      }
+
+      #loggerOutput {
+        width: 99%;
+        margin: 0px auto; /* horizontally centered */
+        border: 0px none;
+        padding: 0px none;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+        display: block;
+      }
+
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .blueButton {
+        background-color: #008CBA;
+      }
+
+      .redButton {
+        background-color: #f44336;
+      }
+
+      .grayButton {
+        background-color: #888888;
+      }
+    </style>
+
+    <script type="module" src="js/bundle.js"></script>
+  </head>
+  <body>
+
+    <div id="title-description">
+      <h1>Self Learning 3d Cars</h1>
+      <h1></h1>
+      <h2>Machine Learning / Artificial Intelligence / Genetic Algorithm
+        (Source Code:
+        <a href="https://github.com/GuillaumeBouchetEpitech/geneticAlgorithm_experiment/tree/master/emscripten/bullet">GitHub</a>)</h2>
+    </div>
+
+    <div id="renderArea">
+      <canvas id="canvas" width="800" height="600"></canvas>
+      <p id="errorText">Loading</p>
+    </div>
+
+    <textarea id="loggerOutput" rows="10" readonly></textarea>
+
+    <div id="text-description">
+
+      <h2>Change the total amount of cars:</h2>
+      <p>
+        <button id="try_with_90_cars" class="button grayButton">try with 90 cars</button>
+        <button id="try_with_270_cars" class="button grayButton">try with 270 cars</button>
+      </p>
+
+      <br/>
+      <h2>FAQs:</h2>
+      <h3>Camera controls?</h3>
+      <p><i>You can use the arrows or WASD or ZQSD or your mouse or your touch screen</i></p>
+      <h3>What are the white strips on the circuit?</h3>
+      <p><i>The checkpoints used to reward the cars, +1 point per checkpoint.</i></p>
+      <h3>What are the green lines on the leading car?</h3>
+      <p><i>The car's sensors, the "eye" of the car, it hit the ground and the "walls".</i></p>
+      <h3>What is the white line on the leading car?</h3>
+      <p><i>The car's "ground sensor", it help reward the car when passing checkpoints.</i></p>
+      <h3>What are the white/grey lines alongside the circuit?</h3>
+      <p><i>The skelton used to build the circuit, interpolated with a BSpline.</i></p>
+
+      <br/>
+      <h2>Technologies</h2>
+      <ul>
+        <li>it is develloped in C++ (using the emscripten compiler to target WebAssembly).</li>
+        <li>it uses Bullet Physics for the physic.</li>
+        <li>it uses OpenGL-ES2/WebGL1 for the rendering.</li>
+        <li>it was created on a Linux OS (BUT Windows is doable).</li>
+      </ul>
+
+      <br/>
+      <h2>Note</h2>
+      <p>The 'success' of this simulation is quite random, which mean that sometime <b>you might want to reload this page</b> and hope for a better result.</p>
+
+      <h2>Thank you for watching!</h2>
+    </div>
+  </body>
+</html>

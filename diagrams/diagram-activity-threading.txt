@@ -1,0 +1,82 @@
+
+@startuml
+
+skinparam backgroundColor #EEEEEE
+
+title diagram-activity-threading.txt
+
+partition "main thread" {
+
+    (*) --> "start frame"
+
+    if "all task\ncompleted?" then
+
+        -->[no] "render" as do_render
+
+        --> "end frame"
+        --> (*)
+
+    else
+
+        -->[yes] "
+            update latest data to render
+            ----
+            schedule an update
+            ----
+            push tasks to <b>PRODUCER</b>" as do_schedule
+
+        -left-> do_render
+
+    endif
+}
+
+partition "mutilthreaded" {
+
+    do_schedule --> "
+        wake up <b>PRODUCER</b> thread
+        ----
+        assign tasks and wake up <b>CONSUMER</b>s"
+
+    --> ===TEST===
+
+    --> "
+        <b>CONSUMER</b> run task
+        ----
+        <b>CONSUMER</b> notify
+        <b>PRODUCER</b> that
+        the task is completed
+        ----
+        <b>CONSUMER</b> can
+        be reassigned" as task_1
+
+    task_1 --> ===TEST2===
+
+    ===TEST=== --> "
+        <b>CONSUMER</b> run task
+        ----
+        <b>CONSUMER</b> notify
+        <b>PRODUCER</b> that
+        the task is completed
+        ----
+        <b>CONSUMER</b> can
+        be reassigned" as task_2
+
+    task_2 --> ===TEST2===
+
+    ===TEST=== --> "
+        <b>CONSUMER</b> run task
+        ----
+        <b>CONSUMER</b> notify
+        <b>PRODUCER</b> that
+        the task is completed
+        ----
+        <b>CONSUMER</b> can
+        be reassigned" as task_3
+
+    task_3 --> ===TEST2===
+
+    --> "all tasks completed"
+
+}
+
+@enduml
