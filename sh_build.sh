@@ -10,7 +10,7 @@ func_do_clean() {
     echo "  mode=${mode}"
     echo "  platform=${platform}"
     echo ""
-
+    # make build_mode="${mode}" build_platform="${platform}" fclean_ml
     make build_mode="${mode}" build_platform="${platform}" fclean
 }
 
@@ -25,6 +25,7 @@ func_do_build() {
     echo "  platform=${platform}"
     echo ""
 
+    # make build_mode="${mode}" build_platform="${platform}" machine_learning -j4
     make build_mode="${mode}" build_platform="${platform}" all -j4
 }
 
@@ -44,10 +45,13 @@ func_set_build_flags() {
 
     case $selected_platform in
     native)
-        ARG_SEL_PLATFORM="native"
+        ARG_SEL_PLATFORM="native_pthread"
         ;;
-    web_wasm)
-        ARG_SEL_PLATFORM="web_wasm"
+    web_pthread)
+        ARG_SEL_PLATFORM="web-wasm-pthread"
+        ;;
+    web_worker)
+        ARG_SEL_PLATFORM="web-wasm-webworker"
         ;;
     esac
 
@@ -66,9 +70,11 @@ func_ask_build_target () {
     echo ""
     echo "Build target?"
     echo "=> native:            1 (default)"
-    echo "=> web wasm:          2"
-    echo "=> full hard release: 3"
-    echo "=> full soft release: 4"
+    echo "=> web (pthread):     2"
+    echo "=> web (worker):      3"
+    echo "=> full hard release: 4"
+    echo "=> full soft release: 5"
+    echo "=> test wasm version: 6"
     echo ""
 
     read USER_INPUT_PLATFORM
@@ -76,11 +82,17 @@ func_ask_build_target () {
     case $USER_INPUT_PLATFORM in
     2)
         echo ""
-        echo "selected target: web wasm"
+        echo "selected target: web (pthread)"
         echo ""
-        selected_platform=web_wasm
+        selected_platform=web_pthread
         ;;
     3)
+        echo ""
+        echo "selected target: web (worker)"
+        echo ""
+        selected_platform=web_worker
+        ;;
+    4)
         echo ""
         echo "selected target: full hard release"
         echo ""
@@ -89,23 +101,25 @@ func_ask_build_target () {
         echo "=> cleanup"
         echo ""
 
-        func_do_clean release native
-        func_do_clean release web_wasm
+        func_do_clean release native_pthread
+        func_do_clean release web-wasm-webworker
+        func_do_clean release web-wasm-pthread
 
         echo ""
         echo "=> building"
         echo ""
 
-        func_do_build release native
-        func_do_build release web_wasm
+        func_do_build release native_pthread
+        func_do_build release web-wasm-webworker
+        func_do_build release web-wasm-pthread
 
         echo ""
         echo "=> building completed"
         echo ""
 
-        exit 0
+        exit 0;
         ;;
-    4)
+    5)
         echo ""
         echo "selected target: full soft release"
         echo ""
@@ -114,18 +128,37 @@ func_ask_build_target () {
         echo "=> building"
         echo ""
 
-        func_do_build release native
-        func_do_build release web_wasm
+        func_do_build release native_pthread
+        func_do_build release web-wasm-webworker
+        func_do_build release web-wasm-pthread
 
         echo ""
         echo "=> building completed"
         echo ""
 
-        exit 0
+        exit 0;
+        ;;
+    6)
+        echo ""
+        echo "selected target: ???"
+        echo ""
+
+        echo ""
+        echo "=> loading"
+        echo ""
+
+        firefox --new-window  http://127.0.0.1:9000/dist/index.html
+        firefox --new-window  http://127.0.0.1:9001/dist/index.html
+
+        echo ""
+        echo "=> building completed"
+        echo ""
+
+        exit 0;
         ;;
     *)
         echo ""
-        echo "selected target: experiment"
+        echo "selected target: native"
         echo ""
         selected_platform=native
         ;;

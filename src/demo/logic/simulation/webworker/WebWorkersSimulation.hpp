@@ -7,7 +7,7 @@
 #include "demo/logic/simulation/webworker/common.hpp"
 #include "demo/logic/simulation/webworker/producer/WorkerProducer.hpp"
 
-#include "machine-learning/GeneticAlgorithm.hpp"
+#include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
 
 #include "demo/defines.hpp"
 

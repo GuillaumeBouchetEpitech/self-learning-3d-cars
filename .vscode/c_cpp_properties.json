@@ -4,8 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/projects/application/src/**",
-                "${workspaceFolder}/projects/libraries/machine-learning/src/**",
+                "${workspaceFolder}/thirdparties/dependencies/basic-genetic-algorithm/src/**",
                 "${DIR_LIB_GERONIMO}/src/**",
+                "${DIR_LIB_GERONIMO}/thirdparties/**",
                 "/usr/include/SDL2/"
             ],
             "defines": [],

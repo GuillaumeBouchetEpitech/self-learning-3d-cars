@@ -8,6 +8,22 @@ DIR_ROOT=$PWD
 #
 #
 
+echo ""
+echo "#################################################"
+echo "#                                               #"
+echo "# IF THIS SCRIPT FAIL -> TRY THOSE TWO COMMANDS #"
+echo "# -> 'chmod +x ./sh_everything.sh'              #"
+echo "# -> './sh_everything.sh'                       #"
+echo "#                                               #"
+echo "#################################################"
+echo ""
+
+#
+#
+#
+#
+#
+
 func_ensure_pkg() {
 
   PKG_NAME=$1
@@ -116,15 +132,26 @@ esac
 #
 #
 
-echo "building projects libraries machine-learning"
+echo "ensuring the thirdparties are installed"
+
+sh sh_install_thirdparties.sh not-interactive
+
+#
+#
+#
+#
+#
+
+echo "building thirdparties libraries"
 echo "  native version"
-cd ./projects/libraries/machine-learning
+cd ./thirdparties/dependencies/basic-genetic-algorithm
+
 make build_mode="release" build_platform="native" all -j6
 
 case $WEB_WASM_AVAILABLE in
 yes)
   echo "  web-wasm version"
-  make build_mode="release" build_platform="web_wasm" all -j6
+  make build_mode="release" build_platform="web-wasm" all -j6
   ;;
 esac
 
@@ -138,19 +165,16 @@ cd $DIR_ROOT
 
 echo "building projects applicaton"
 echo "  native version"
-cd ./projects/application
 make build_mode="release" build_platform="native_pthread" all -j6
 
 case $WEB_WASM_AVAILABLE in
 yes)
   echo "  web-wasm version (webworker)"
-  make build_mode="release" build_platform="web_wasm_webworker" all -j6
+  make build_mode="release" build_platform="web-wasm-webworker" all -j6
   echo "  web-wasm version (pthread)"
-  make build_mode="release" build_platform="web_wasm_pthread" all -j6
+  make build_mode="release" build_platform="web-wasm-pthread" all -j6
   ;;
 esac
-
-cd $DIR_ROOT
 
 #
 #

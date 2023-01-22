@@ -1,10 +1,10 @@
 
 #pragma once
 
+#include "basic-genetic-algorithm/NeuralNetwork.hpp"
 #include "demo/logic/simulation/AbstactSimulation.hpp"
 #include "demo/logic/simulation/logic/CarAgent.hpp"
 #include "demo/logic/simulation/logic/CircuitBuilder.hpp"
-#include "machine-learning/NeuralNetwork.hpp"
 
 #include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/multithreading/Producer.hpp"

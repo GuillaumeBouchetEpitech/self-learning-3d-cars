@@ -4,7 +4,7 @@
 #include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/physics/vehicle/PhysicVehicle.hpp"
 
-#include "machine-learning/NeuralNetwork.hpp"
+#include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
 

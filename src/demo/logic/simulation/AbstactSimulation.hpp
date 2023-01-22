@@ -4,7 +4,7 @@
 #include "demo/logic/simulation/logic/CarData.hpp"
 #include "demo/logic/simulation/logic/CircuitBuilder.hpp"
 
-#include "machine-learning/GeneticAlgorithm.hpp"
+#include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
 
 #include "geronimo/system/NonCopyable.hpp"
 

@@ -8,8 +8,7 @@
   - [Diagrams](#diagrams)
 - [Dependencies](#dependencies)
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
-  - [Dependency: SDL2 (for native build)](#dependency-sdl2-for-native-build)
-  - [Dependency: GLESv2 (for native build)](#dependency-glesv2-for-native-build)
+  - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
   - [Dependency: Geronimo 0.0.1](#dependency-geronimo-001)
 - [How to Build](#how-to-build)
   - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
@@ -21,7 +20,11 @@
 
 ## Online Demo
 
+**`/!\ important /!\`**
+
 http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
+
+**`/!\ important /!\`**
 
 ## Diagrams
 
@@ -45,20 +48,16 @@ cd emsdk
 em++ --clear-cache
 ```
 
-## Dependency: SDL2 (for native build)
+## Dependency: SDL2, GLESv2 (for native build)
 ```
 libsdl2-dev
-```
-
-## Dependency: GLESv2 (for native build)
-```
 libglesv2
 ```
 
 ## Dependency: Geronimo 0.0.1
 
 ```bash
-cd <some-other-folder>
+cd <my-library-folder>
 git clone --depth 1 --branch 0.0.1 https://github.com/GuillaumeBouchetEpitech/geronimo.git
 # then just follow the README.md explanations of the repository
 ```
@@ -67,7 +66,7 @@ git clone --depth 1 --branch 0.0.1 https://github.com/GuillaumeBouchetEpitech/ge
 
 Then, to make it available
 ```bash
-export DIR_LIB_GERONIMO=<some-other-folder>
+export DIR_LIB_GERONIMO=<my-library-folder>/geronimo
 ```
 **`/!\ important /!\`**
 

@@ -1,18 +1,18 @@
 
-build_platform=native_pthread
-# build_platform=web_wasm_pthread
-# build_platform=web_wasm_webworker
+build_platform=native-pthread
+# build_platform=web-wasm-pthread
+# build_platform=web-wasm-webworker
 
 build_mode=release
 # build_mode=debug
 
 #
 
-ifeq ($(build_platform),native_pthread)
+ifeq ($(build_platform),native-pthread)
 # $(info build_platform is valid, value=$(build_platform))
-else ifeq ($(build_platform),web_wasm_pthread)
+else ifeq ($(build_platform),web-wasm-pthread)
 # $(info build_platform is valid, value=$(build_platform))
-else ifeq ($(build_platform),web_wasm_webworker)
+else ifeq ($(build_platform),web-wasm-webworker)
 # $(info build_platform is valid, value=$(build_platform))
 else
 $(error unsupported value for "build_platform", value=$(build_platform))
@@ -32,19 +32,19 @@ LOG_INFO= '[$(build_mode)] [$(build_platform)]'
 
 #
 
-ifeq ($(build_platform),native_pthread)
+ifeq ($(build_platform),native-pthread)
 
-DIR_TARGET=					../../bin
+DIR_TARGET=					./bin
 NAME_APPLICATION=		$(DIR_TARGET)/exec
 
-else ifeq ($(build_platform),web_wasm_pthread)
+else ifeq ($(build_platform),web-wasm-pthread)
 
-DIR_TARGET=					../../dist/wasm/pthread
+DIR_TARGET=					./dist/wasm/pthread
 NAME_APPLICATION=		$(DIR_TARGET)/index.js
 
-else ifeq ($(build_platform),web_wasm_webworker)
+else ifeq ($(build_platform),web-wasm-webworker)
 
-DIR_TARGET=					../../dist/wasm/webworker
+DIR_TARGET=					./dist/wasm/webworker
 NAME_APPLICATION=		$(DIR_TARGET)/index.js
 NAME_WEB_WASM_WORKER=		$(DIR_TARGET)/worker.js
 
@@ -52,16 +52,15 @@ endif
 
 #
 
-DIR_LIB=									../libraries
-DIR_LIB_MACHINE_LEARNING=	$(DIR_LIB)/machine-learning
+DIR_LIB_BASIC_GENTIC_ALGORITHM=	./thirdparties/dependencies/basic-genetic-algorithm
 
 DIR_LIB_GERONIMO_SRC=						$(DIR_LIB_GERONIMO)/src
 DIR_LIB_GERONIMO_3RD_PARTY_DIR=	$(DIR_LIB_GERONIMO)/thirdparties
 
 
-ifeq ($(build_platform),native_pthread)
+ifeq ($(build_platform),native-pthread)
 
-NAME_LIB_MACHINE_LEARNING=	$(DIR_LIB_MACHINE_LEARNING)/lib/native/lib-machine-learning.a
+NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/lib/native/lib-basic-genetic-algorithm.a
 
 #
 
@@ -74,7 +73,7 @@ NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bull
 
 else
 
-NAME_LIB_MACHINE_LEARNING=	$(DIR_LIB_MACHINE_LEARNING)/lib/web-wasm/lib-machine-learning.bc
+NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/lib/web-wasm/lib-basic-genetic-algorithm.bc
 
 #
 
@@ -91,28 +90,28 @@ endif
 
 #### DIRS
 
-DIR_SRC=											./src
-DIR_LIB_MACHINE_LEARNING_SRC=	$(DIR_LIB_MACHINE_LEARNING)/src
-DIR_LIB_GERONIMO_SRC=					$(DIR_LIB_GERONIMO)/src
+DIR_SRC=														./src
+DIR_LIB_BASIC_GENTIC_ALGORITHM_SRC=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/src
+DIR_LIB_GERONIMO_SRC=								$(DIR_LIB_GERONIMO)/src
 
 #### /DIRS
 
 
 
-ifeq ($(build_platform),native_pthread)
+ifeq ($(build_platform),native-pthread)
 
 DIR_OBJ=									./obj/native
 
 else
 
-ifeq ($(build_platform),web_wasm_pthread)
+ifeq ($(build_platform),web-wasm-pthread)
 
 DIR_OBJ=									./obj/web-wasm/pthread
 
-else ifeq ($(build_platform),web_wasm_webworker)
+else ifeq ($(build_platform),web-wasm-webworker)
 
 DIR_OBJ=									./obj/web-wasm/webworker/main
-DIR_OBJ_WEB_WASM_WORKER=				./obj/web-wasm/webworker/worker
+DIR_OBJ_WEB_WASM_WORKER=	./obj/web-wasm/webworker/worker
 
 endif
 
@@ -139,7 +138,7 @@ SRC+=	\
 		$(DIR_SRC)/demo/logic/simulation/logic/*.cpp \
 		)
 
-ifneq ($(build_platform),web_wasm_webworker)
+ifneq ($(build_platform),web-wasm-webworker)
 
 SRC+=	\
 	$(wildcard \
@@ -166,7 +165,7 @@ endif
 
 OBJ=	$(patsubst %.cpp, $(DIR_OBJ)/%.o, $(SRC))
 
-ifeq ($(build_platform),web_wasm_webworker)
+ifeq ($(build_platform),web-wasm-webworker)
 
 OBJ_WEB_WASM_WORKER=	$(patsubst %.cpp, $(DIR_OBJ_WEB_WASM_WORKER)/%.o, $(SRC_WEB_WASM_WORKER))
 
@@ -194,11 +193,11 @@ CXXFLAGS += $(BUILD_FLAG)
 CXXFLAGS += -std=c++17
 CXXFLAGS += -Wall -W -Wextra -Wunused
 CXXFLAGS += -I$(DIR_SRC)
-CXXFLAGS += -I$(DIR_LIB_MACHINE_LEARNING_SRC)
+CXXFLAGS += -I$(DIR_LIB_BASIC_GENTIC_ALGORITHM_SRC)
 CXXFLAGS += -I$(DIR_LIB_GERONIMO_SRC)
 CXXFLAGS += -I$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)
 
-ifeq ($(build_platform),native_pthread)
+ifeq ($(build_platform),native-pthread)
 
 CXX=clang++
 AR=ar
@@ -209,7 +208,7 @@ LDFLAGS += $(BUILD_FLAG)
 LDFLAGS += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
 LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
-LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS += $(DEPENDENCIES_LDFLAGS)
 LDFLAGS += -pthread
@@ -239,7 +238,7 @@ LDFLAGS_COMMON_WEB_WASM += -s DISABLE_EXCEPTION_CATCHING=2
 
 endif
 
-ifeq ($(build_platform),web_wasm_pthread)
+ifeq ($(build_platform),web-wasm-pthread)
 
 FLAGS_WEB_WASM_MAIN += -s USE_PTHREADS=1
 
@@ -250,10 +249,10 @@ LDFLAGS += $(FLAGS_WEB_WASM_MAIN)
 LDFLAGS += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
 LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
-LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
-LDFLAGS += --preload-file ../../assets/
+LDFLAGS += --preload-file ./assets/
 LDFLAGS += -Wl,--shared-memory,--no-check-features
 LDFLAGS += -s PTHREAD_POOL_SIZE=17
 
@@ -262,14 +261,14 @@ else
 LDFLAGS += $(BUILD_FLAG)
 LDFLAGS += $(NAME_LIB_GERONIMO_GRAPHIC)
 LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
-LDFLAGS += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
-LDFLAGS += --preload-file ../../assets/
+LDFLAGS += --preload-file ./assets/
 
 LDFLAGS_WEB_WASM_WORKER += $(BUILD_FLAG)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_SYSTEM)
-LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_MACHINE_LEARNING)
+LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS_WEB_WASM_WORKER += -s BUILD_AS_WORKER=1
@@ -287,12 +286,12 @@ RM=			rm -rf
 #
 ## RULE(S)
 
-ifneq ($(build_platform),web_wasm_webworker)
+ifneq ($(build_platform),web-wasm-webworker)
 
 # all:	machine_learning application
 all:	application
 
-else ifeq ($(build_platform),web_wasm_webworker)
+else ifeq ($(build_platform),web-wasm-webworker)
 
 # all:	machine_learning application web_wasm_worker
 all:	application web_wasm_worker
@@ -307,7 +306,7 @@ application:	ensurefolders $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME_APPLICATION) $(LDFLAGS)
 	@echo '   --> built $(LOG_INFO): "application"'
 
-ifeq ($(build_platform),web_wasm_webworker)
+ifeq ($(build_platform),web-wasm-webworker)
 
 web_wasm_worker:		ensurefolders $(OBJ_WEB_WASM_WORKER)
 	@echo ' ---> building $(LOG_INFO): "web wasm worker application"'
@@ -329,7 +328,7 @@ $(DIR_OBJ)/%.o: %.cpp
 
 include $(shell test -d $(DIR_OBJ) && find $(DIR_OBJ) -name "*.dep")
 
-ifeq ($(build_platform),web_wasm_webworker)
+ifeq ($(build_platform),web-wasm-webworker)
 
 $(DIR_OBJ_WEB_WASM_WORKER)/%.o: %.cpp
 	@mkdir -p $(dir $@)
@@ -342,7 +341,7 @@ endif
 
 #
 
-ifneq ($(build_platform),web_wasm_webworker)
+ifneq ($(build_platform),web-wasm-webworker)
 
 clean:
 	@echo ' -> cleaning $(LOG_INFO): application build file(s)'
@@ -354,7 +353,7 @@ fclean:	clean
 	$(RM) $(NAME_APPLICATION)
 	@echo '   -> cleaned $(LOG_INFO): application file(s)'
 
-else ifeq ($(build_platform),web_wasm_webworker)
+else ifeq ($(build_platform),web-wasm-webworker)
 
 clean:
 	@echo ' -> cleaning $(LOG_INFO): application and webworker build file(s)'

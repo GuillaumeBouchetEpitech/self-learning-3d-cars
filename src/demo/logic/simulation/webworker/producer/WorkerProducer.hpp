@@ -6,7 +6,7 @@
 #include "demo/logic/simulation/logic/CircuitBuilder.hpp"
 #include "demo/logic/simulation/webworker/common.hpp"
 
-#include "machine-learning/NeuralNetwork.hpp"
+#include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/NonCopyable.hpp"
