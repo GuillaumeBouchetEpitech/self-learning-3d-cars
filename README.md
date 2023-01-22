@@ -79,7 +79,7 @@ export DIR_LIB_GERONIMO=<some-other-folder>
 ```bash
 chmod +x ./sh_everything.sh
 ./sh_everything.sh
-# will tell if a depedency is missing
+# will tell if a dependency is missing
 # will skip the web-wasm build if emscripten is not detected
 ```
 
