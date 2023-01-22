@@ -107,8 +107,7 @@ FloorRenderer::render() {
     D_THROW(std::runtime_error, "shader not setup");
 
   // hide the floor if the gero::graphic::Camera is looking from beneath it
-  gero::graphic::GlContext::enable(
-    gero::graphic::GlContext::States::cullFace);
+  gero::graphic::GlContext::enable(gero::graphic::GlContext::States::cullFace);
 
   // transparency friendly
   gero::graphic::GlContext::disable(
@@ -122,8 +121,6 @@ FloorRenderer::render() {
   _texture.bind();
   _geometry.render();
 
-  gero::graphic::GlContext::disable(
-    gero::graphic::GlContext::States::cullFace);
-  gero::graphic::GlContext::enable(
-    gero::graphic::GlContext::States::depthTest);
+  gero::graphic::GlContext::disable(gero::graphic::GlContext::States::cullFace);
+  gero::graphic::GlContext::enable(gero::graphic::GlContext::States::depthTest);
 }

@@ -21,8 +21,8 @@ constexpr bool k_canResize = false;
 
 Demo::Demo(const Definition& def)
   : gero::graphic::SDLWindowWrapper(
-      "Self Learning 3d Cars", def.width, def.height, 30, SDLWindowWrapper::OpenGlEsVersion::v3,
-      k_canResize) {
+      "Self Learning 3d Cars", def.width, def.height, 30,
+      SDLWindowWrapper::OpenGlEsVersion::v3, k_canResize) {
   Context::create(def.width, def.height, def.totalCores, def.genomesPerCore);
   StateManager::create();
   Scene::initialise();

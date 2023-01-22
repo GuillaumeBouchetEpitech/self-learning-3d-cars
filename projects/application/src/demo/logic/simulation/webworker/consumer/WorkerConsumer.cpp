@@ -58,7 +58,8 @@ WorkerConsumer::_sendBackToProducer() {
 }
 
 void
-WorkerConsumer::_initialiseSimulation(gero::messaging::MessageView& receivedMsg) {
+WorkerConsumer::_initialiseSimulation(
+  gero::messaging::MessageView& receivedMsg) {
   CircuitBuilder::Knots circuitKnots;
 
   bool isUsingBias = true;

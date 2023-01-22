@@ -161,8 +161,7 @@ AnimatedCircuitRenderer::renderWalls() {
 
   _geometries.walls.render();
 
-  gero::graphic::GlContext::enable(
-    gero::graphic::GlContext::States::depthTest);
+  gero::graphic::GlContext::enable(gero::graphic::GlContext::States::depthTest);
 }
 
 void

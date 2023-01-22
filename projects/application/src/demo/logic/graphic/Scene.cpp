@@ -9,8 +9,7 @@
 
 void
 Scene::initialise() {
-  gero::graphic::GlContext::enable(
-    gero::graphic::GlContext::States::depthTest);
+  gero::graphic::GlContext::enable(gero::graphic::GlContext::States::depthTest);
   gero::graphic::GlContext::setDepthFunc(
     gero::graphic::GlContext::DepthFuncs::less);
 
@@ -19,8 +18,7 @@ Scene::initialise() {
     gero::graphic::GlContext::BlendFuncs::srcAlpha,
     gero::graphic::GlContext::BlendFuncs::oneMinuxSrcAlpha);
 
-  gero::graphic::GlContext::disable(
-    gero::graphic::GlContext::States::cullFace);
+  gero::graphic::GlContext::disable(gero::graphic::GlContext::States::cullFace);
 }
 
 void

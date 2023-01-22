@@ -422,8 +422,8 @@ initialiseHudStructures(gero::graphic::ResourceManager& rManager) {
         "a_offsetScale", gero::graphic::Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometryIds::textRenderer),
-      geometryBuilder.getDefinition(), true);
+      gero::asValue(GeometryIds::textRenderer), geometryBuilder.getDefinition(),
+      true);
   }
 
   //

@@ -19,11 +19,10 @@ ScreenTitles::fadeIn(float delay, float duration) {
                         .push(0.00f, _backgroundAlpha)
                         .push(step1, 1.0f);
 
-  _mainTitleEasing =
-    gero::easing::GenericEasing<3>()
-      .push(0.00f, _mainTitleAlpha)
-      .push(step1, _mainTitleAlpha, gero::easing::easeOutCubic)
-      .push(step2, 1.0f);
+  _mainTitleEasing = gero::easing::GenericEasing<3>()
+                       .push(0.00f, _mainTitleAlpha)
+                       .push(step1, _mainTitleAlpha, gero::easing::easeOutCubic)
+                       .push(step2, 1.0f);
 
   _fitnessTitleEasing =
     gero::easing::GenericEasing<3>()

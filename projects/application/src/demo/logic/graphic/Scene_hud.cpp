@@ -85,10 +85,8 @@ Scene::_renderHUD() {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  gero::graphic::GlContext::enable(
-    gero::graphic::GlContext::States::depthTest);
-  gero::graphic::GlContext::disable(
-    gero::graphic::GlContext::States::cullFace);
+  gero::graphic::GlContext::enable(gero::graphic::GlContext::States::depthTest);
+  gero::graphic::GlContext::disable(gero::graphic::GlContext::States::cullFace);
 
   graphic.hud.postProcess.render();
 

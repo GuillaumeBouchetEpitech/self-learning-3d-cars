@@ -39,8 +39,7 @@ public:
     const std::vector<glm::vec3>& skeletonVertices,
     const AnimatedVertices& groundVertices,
     const AnimatedVertices& wallsVertices, float maxUpperValue);
-  void
-  setMatricesData(const gero::graphic::Camera::MatricesData& matricesData);
+  void setMatricesData(const gero::graphic::Camera::MatricesData& matricesData);
 
 public:
   void update(float elapsedTime);

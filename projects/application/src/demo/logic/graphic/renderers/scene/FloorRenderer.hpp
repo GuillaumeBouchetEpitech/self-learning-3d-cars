@@ -19,8 +19,7 @@ public:
 
 public:
   void initialise(const glm::vec3& center, const glm::vec3& size);
-  void
-  setMatricesData(const gero::graphic::Camera::MatricesData& matricesData);
+  void setMatricesData(const gero::graphic::Camera::MatricesData& matricesData);
 
 public:
   void render();
