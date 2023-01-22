@@ -10,6 +10,7 @@
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
   - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
   - [Dependency: Geronimo 0.0.1](#dependency-geronimo-001)
+  - [Dependency: Basic Genetic Algorithm 0.0.1](#dependency-basic-genetic-algorithm-001)
 - [How to Build](#how-to-build)
   - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
 - [How to Run](#how-to-run)
@@ -69,6 +70,10 @@ Then, to make it available
 export DIR_LIB_GERONIMO=<my-library-folder>/geronimo
 ```
 **`/!\ important /!\`**
+
+## Dependency: Basic Genetic Algorithm 0.0.1
+
+This dependency will be donwloaded and built with the `Build Everything` method below
 
 
 # How to Build
