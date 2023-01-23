@@ -12,7 +12,7 @@ namespace {
 
 void
 initialiseSceneStructures(gero::graphic::ResourceManager& rManager) {
-  const std::string basePath = "./assets/shaders/scene/";
+  const std::string basePath = "./assets/graphic/shaders/scene/";
 
   gero::graphic::ShaderProgramBuilder shaderProgramBuilder;
   gero::graphic::GeometryBuilder geometryBuilder;
@@ -351,7 +351,7 @@ initialiseSceneStructures(gero::graphic::ResourceManager& rManager) {
 
 void
 initialiseHudStructures(gero::graphic::ResourceManager& rManager) {
-  const std::string basePath = "./assets/shaders/hud/";
+  const std::string basePath = "./assets/graphic/shaders/hud/";
 
   gero::graphic::ShaderProgramBuilder shaderProgramBuilder;
   gero::graphic::GeometryBuilder geometryBuilder;
@@ -475,7 +475,7 @@ Context::initialiseGraphicResource() {
   { // font
 
     rManager.createTexture(
-      0, "assets/textures/ascii_font.png",
+      0, "assets/graphic/textures/ascii_font.png",
       gero::graphic::Texture::Quality::pixelated,
       gero::graphic::Texture::Pattern::clamped);
 

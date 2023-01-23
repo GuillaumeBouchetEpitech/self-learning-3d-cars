@@ -35,11 +35,13 @@ ModelsRenderer::initialise() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
+  const std::string basePath = "./assets/graphic/model/";
+
   { // chassis gero::graphic::Geometry (instanced)
 
     gero::graphic::loader::ModelVertices modelVertices;
     gero::graphic::loader::loadObjModel(
-      "./assets/model/CarNoWheels.obj", "./assets/model/", modelVertices);
+      basePath + "CarNoWheels.obj", basePath, modelVertices);
 
     updateVerticesNormals(modelVertices);
 
@@ -57,7 +59,7 @@ ModelsRenderer::initialise() {
 
     gero::graphic::loader::ModelVertices modelVertices;
     gero::graphic::loader::loadObjModel(
-      "./assets/model/CarWheel.obj", "./assets/model/", modelVertices);
+      basePath + "CarWheel.obj", basePath, modelVertices);
 
     updateVerticesNormals(modelVertices); // TODO: useful?
 

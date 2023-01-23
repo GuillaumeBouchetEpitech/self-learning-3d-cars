@@ -11,7 +11,7 @@ in vec3 v_vertPos;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphic/shaders/scene/_common-apply-lighting.glsl.frag"
 
 void main(void)
 {
