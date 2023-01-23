@@ -37,9 +37,23 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
 ```mermaid
 
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#242424',
+      'primaryTextColor': '#DDD',
+      'primaryBorderColor': '#000',
+      'lineColor': '#A0A0A0',
+      'secondaryColor': '#454545',
+      'tertiaryColor': '#353535'
+    }
+  }
+}%%
+
   flowchart TD
 
-    subgraph Run The Simulation
+    subgraph simulation [Run The Simulation]
 
       run1[set the genomes and their vehicles]
       run2[try all the genomes]
@@ -47,7 +61,7 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
     end
 
-    subgraph Evolve The Simulation
+    subgraph evolution [Evolve The Simulation]
 
       evo1[Natural Selection]
       evo2[Elitism -> 10%]
@@ -56,19 +70,36 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
     end
 
-    Start --> run1 --> run2 --> run3
+    Start --> simulation
+    simulation --> evolution
+    evolution --> Stop
+
+    run1 --> run2 --> run3
+
     evo1 -- Select the best genomes --> evo2
     evo2 -- cross breed best genomes\nmutate the newly bred genomes --> evo3
     evo3 -- fill the generation\nwith random genomes --> evo4
 
-    run3 --> evo1
-    evo4 --> Stop
 
 ```
 
 ### Relationships
 
 ```mermaid
+
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#242424',
+      'primaryTextColor': '#DDD',
+      'primaryBorderColor': '#000',
+      'lineColor': '#A0A0A0',
+      'secondaryColor': '#454545',
+      'tertiaryColor': '#353535'
+    }
+  }
+}%%
 
   erDiagram
 
@@ -84,6 +115,20 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 ### Mutilthreaded Producer Consumer Pattern
 
 ```mermaid
+
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#242424',
+      'primaryTextColor': '#DDD',
+      'primaryBorderColor': '#000',
+      'lineColor': '#A0A0A0',
+      'secondaryColor': '#454545',
+      'tertiaryColor': '#353535'
+    }
+  }
+}%%
 
   sequenceDiagram
 
@@ -105,52 +150,48 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
           Note over P: Thread Safe On
           P->>P: store new task
-          P->>PT: notify
+          P->>+PT: notify
           Note over P: Thread Safe Off
 
         end
 
       end
 
-      rect rgb(64, 64, 64)
+      rect rgb(128, 64, 64)
 
-        rect rgb(128, 64, 64)
+        Note over PT: Thread Safe On
 
-          Note over PT: Thread Safe On
+        PT->>PT: wake up
 
-          PT->>+PT: wake up
+        loop Until no more task to assign
 
-          loop Until no more task to assign
+          PT->>PT: check for available task(s)
 
-            PT->>PT: check for available task(s)
+          critical no more tasks
 
-            critical no more tasks
+            PT-->>P: all tasks completed
 
-              PT-->>P: all tasks completed
+            P-->>-MT: all tasks completed
 
-              P-->>-MT: all tasks completed
+          option a task was found
 
-            option a task was found
-
-              PT->>PT: check for available consumer(s)
+            PT->>PT: check for available consumer(s)
 
 
-              break a consumer is available
+            break a consumer is available
 
-                PT->>CT: assign task to run
-                PT->>+CT: notify
-
-              end
+              PT->>CT: assign task to run
+              PT->>+CT: notify
 
             end
 
           end
 
-          Note over PT: Thread Safe Off
-
-          PT->>-PT: sleep
-
         end
+
+        Note over PT: Thread Safe Off
+
+        PT->>-PT: sleep
 
       end
 
