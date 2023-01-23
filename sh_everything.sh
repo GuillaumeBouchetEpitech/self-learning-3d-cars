@@ -67,71 +67,6 @@ fi
 #
 #
 
-if [ -z "${DIR_LIB_GERONIMO}" ]; then
-  echo "the env var 'DIR_LIB_GERONIMO' is missing (see the README.md to install/set it)"
-  exit 1
-fi
-echo "the env var 'DIR_LIB_GERONIMO' was found"
-
-#
-#
-#
-#
-#
-
-func_ensure_dependencies() {
-
-  ALL_DEPENDENCY_NAMES=${*}
-
-  for dependency_name in $ALL_DEPENDENCY_NAMES;
-  do
-
-    echo "check if local dependency is present: $dependency_name"
-
-    if test -f "${dependency_name}"; then
-      echo "${dependency_name} was found"
-    else
-      echo "${dependency_name} was not found, possibly not built"
-      exit 1
-    fi
-
-  done
-}
-
-declare -a all_dependency_names=(
-  "${DIR_LIB_GERONIMO}/lib/native/lib-geronimo-system.a"
-  "${DIR_LIB_GERONIMO}/lib/native/lib-geronimo-graphic.a"
-  "${DIR_LIB_GERONIMO}/lib/native/lib-geronimo-physics.a"
-  "${DIR_LIB_GERONIMO}/thirdparties/lib/native/lib-bullet-physics-dynamics.a"
-  "${DIR_LIB_GERONIMO}/thirdparties/lib/native/lib-bullet-physics-collision.a"
-  "${DIR_LIB_GERONIMO}/thirdparties/lib/native/lib-bullet-physics-linearmath.a"
-)
-
-func_ensure_dependencies ${all_dependency_names[*]}
-
-case $WEB_WASM_AVAILABLE in
-yes)
-
-  declare -a all_dependency_names=(
-    "${DIR_LIB_GERONIMO}/lib/web-wasm/lib-geronimo-system.bc"
-    "${DIR_LIB_GERONIMO}/lib/web-wasm/lib-geronimo-graphic.bc"
-    "${DIR_LIB_GERONIMO}/lib/web-wasm/lib-geronimo-physics.bc"
-    "${DIR_LIB_GERONIMO}/thirdparties/lib/web-wasm/lib-bullet-physics-dynamics.bc"
-    "${DIR_LIB_GERONIMO}/thirdparties/lib/web-wasm/lib-bullet-physics-collision.bc"
-    "${DIR_LIB_GERONIMO}/thirdparties/lib/web-wasm/lib-bullet-physics-linearmath.bc"
-  )
-
-  func_ensure_dependencies ${all_dependency_names[*]}
-
-  ;;
-esac
-
-#
-#
-#
-#
-#
-
 echo "ensuring the thirdparties are installed"
 
 sh sh_install_thirdparties.sh not-interactive
@@ -145,6 +80,22 @@ sh sh_install_thirdparties.sh not-interactive
 echo "building thirdparties libraries"
 echo "  native version"
 
+#
+#
+#
+
+cd ./thirdparties/dependencies/geronimo
+
+./sh_everything.sh
+
+export DIR_LIB_GERONIMO=$DIR_ROOT/thirdparties/dependencies/geronimo
+
+cd $DIR_ROOT
+
+#
+#
+#
+
 cd ./thirdparties/dependencies/basic-genetic-algorithm
 
 make build_mode="release" build_platform="native" all -j6
@@ -155,16 +106,6 @@ yes)
   make build_mode="release" build_platform="web-wasm" all -j6
   ;;
 esac
-
-cd $DIR_ROOT
-
-#
-#
-#
-
-cd ./thirdparties/dependencies/geronimo
-
-./sh_everything.sh
 
 cd $DIR_ROOT
 
