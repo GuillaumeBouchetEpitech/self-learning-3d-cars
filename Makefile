@@ -54,6 +54,7 @@ endif
 
 DIR_LIB_BASIC_GENTIC_ALGORITHM=	./thirdparties/dependencies/basic-genetic-algorithm
 
+DIR_LIB_GERONIMO=								./thirdparties/dependencies/geronimo
 DIR_LIB_GERONIMO_SRC=						$(DIR_LIB_GERONIMO)/src
 DIR_LIB_GERONIMO_3RD_PARTY_DIR=	$(DIR_LIB_GERONIMO)/thirdparties
 

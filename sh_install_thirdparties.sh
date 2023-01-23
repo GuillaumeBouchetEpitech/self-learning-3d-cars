@@ -22,6 +22,10 @@ BASIC_GENETIC_ALGORITHM_DIR=basic-genetic-algorithm
 BASIC_GENETIC_ALGORITHM_URL=GuillaumeBouchetEpitech/basic-genetic-algorithm
 BASIC_GENETIC_ALGORITHM_TAG=v0.0.1
 
+GERONIMO_DIR=geronimo
+GERONIMO_URL=GuillaumeBouchetEpitech/geronimo
+GERONIMO_TAG=v0.0.2
+
 mkdir -p $DIR_DEPENDENCIES
 
 clone_repo() {
@@ -85,6 +89,7 @@ clone_repo() {
 }
 
 clone_repo $BASIC_GENETIC_ALGORITHM_URL $BASIC_GENETIC_ALGORITHM_TAG $BASIC_GENETIC_ALGORITHM_DIR
+clone_repo $GERONIMO_URL $GERONIMO_TAG $GERONIMO_DIR
 
 
 

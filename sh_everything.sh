@@ -144,6 +144,7 @@ sh sh_install_thirdparties.sh not-interactive
 
 echo "building thirdparties libraries"
 echo "  native version"
+
 cd ./thirdparties/dependencies/basic-genetic-algorithm
 
 make build_mode="release" build_platform="native" all -j6
@@ -160,12 +161,22 @@ cd $DIR_ROOT
 #
 #
 #
+
+cd ./thirdparties/dependencies/geronimo
+
+./sh_everything.sh
+
+cd $DIR_ROOT
+
+#
+#
+#
 #
 #
 
 echo "building projects applicaton"
 echo "  native version"
-make build_mode="release" build_platform="native_pthread" all -j6
+make build_mode="release" build_platform="native-pthread" all -j6
 
 case $WEB_WASM_AVAILABLE in
 yes)
