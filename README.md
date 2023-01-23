@@ -4,8 +4,11 @@
 ## Table of Contents
 - [Self Learning 3d Cars](#self-learning-3d-cars)
   - [Table of Contents](#table-of-contents)
-  - [Online Demo](#online-demo)
+  - [Online Demo Link](#online-demo-link)
   - [Diagrams](#diagrams)
+    - [Main Logic](#main-logic)
+    - [Relationships](#relationships)
+    - [Mutilthreaded Producer Consumer Pattern](#mutilthreaded-producer-consumer-pattern)
 - [Dependencies](#dependencies)
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
   - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
@@ -19,7 +22,7 @@
   - [Web Wasm Build - with multithreading support (desktop friendly)](#web-wasm-build---with-multithreading-support-desktop-friendly)
 - [Thanks for watching!](#thanks-for-watching)
 
-## Online Demo
+## Online Demo Link
 
 **`/!\ important /!\`**
 
@@ -29,9 +32,150 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
 ## Diagrams
 
-![diagram-activity-details.svg](./diagrams/diagram-activity-details.svg "diagram-activity-details.svg")
-![diagram-usecase-relationships.svg](./diagrams/diagram-usecase-relationships.svg "diagram-usecase-relationships.svg")
-![diagram-activity-threading.svg](./diagrams/diagram-activity-threading.svg "diagram-activity-threading.svg")
+
+### Main Logic
+
+```mermaid
+
+  flowchart TD
+
+    subgraph Run The Simulation
+
+      run1[set the genomes and their vehicles]
+      run2[try all the genomes]
+      run3[rate all the genomes]
+
+    end
+
+    subgraph Evolve The Simulation
+
+      evo1[Natural Selection]
+      evo2[Elitism -> 10%]
+      evo3[Reproduction and Mutation -> 80%]
+      evo4[Diversity -> anything left]
+
+    end
+
+    Start --> run1 --> run2 --> run3
+    evo1 -- Select the best genomes --> evo2
+    evo2 -- cross breed best genomes\nmutate the newly bred genomes --> evo3
+    evo3 -- fill the generation\nwith random genomes --> evo4
+
+    run3 --> evo1
+    evo4 --> Stop
+
+```
+
+### Relationships
+
+```mermaid
+
+  erDiagram
+
+    SIMULATION ||--|| GENETIC-ALGORITHM : manage
+    SIMULATION ||--|{ CAR : manage
+    GENETIC-ALGORITHM ||--|{ GENOME : manage
+    GENETIC-ALGORITHM ||--|{ NEURAL-NETWORK : manage
+    GENOME ||--|| NEURAL-NETWORK : use
+    CAR ||--|| NEURAL-NETWORK : use
+
+```
+
+### Mutilthreaded Producer Consumer Pattern
+
+```mermaid
+
+  sequenceDiagram
+
+    autonumber
+
+    participant MT as Main Thread
+    participant P as Producer
+    participant PT as Producer Thread
+    participant CT as Consumer Thread
+
+
+    rect rgb(32, 32, 32)
+
+      rect rgb(64, 64, 64)
+
+        MT->>+P: push task(s) to run in parallel
+
+        rect rgb(128, 64, 64)
+
+          Note over P: Thread Safe On
+          P->>P: store new task
+          P->>PT: notify
+          Note over P: Thread Safe Off
+
+        end
+
+      end
+
+      rect rgb(64, 64, 64)
+
+        rect rgb(128, 64, 64)
+
+          Note over PT: Thread Safe On
+
+          PT->>+PT: wake up
+
+          loop Until no more task to assign
+
+            PT->>PT: check for available task(s)
+
+            critical no more tasks
+
+              PT-->>P: all tasks completed
+
+              P-->>-MT: all tasks completed
+
+            option a task was found
+
+              PT->>PT: check for available consumer(s)
+
+
+              break a consumer is available
+
+                PT->>CT: assign task to run
+                PT->>+CT: notify
+
+              end
+
+            end
+
+          end
+
+          Note over PT: Thread Safe Off
+
+          PT->>-PT: sleep
+
+        end
+
+      end
+
+      rect rgb(64, 64, 64)
+
+        CT->>CT: wake up
+        CT->>CT: run task
+
+        rect rgb(128, 64, 64)
+
+          Note over CT: Thread Safe On
+          CT->>CT: task completed
+          CT-->>PT: set task as completed
+          CT-->>PT: notify
+          CT->>-CT: sleep
+          Note over CT: Thread Safe Off
+
+        end
+
+      end
+
+
+    end
+
+```
 
 # Dependencies
 
