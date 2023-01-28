@@ -104,15 +104,22 @@
       }
 
       .blueButton {
-        background-color: #008CBA;
+        background-color: #8888FF;
+        color: #000000;
       }
 
       .redButton {
-        background-color: #f44336;
+        background-color: #FF8888;
+        color: #000000;
       }
 
       .grayButton {
-        background-color: #888888;
+        background-color: #666666;
+        color: #999999;
+      }
+
+      .redText {
+        color: #FF8888;
       }
     </style>
 
@@ -122,10 +129,9 @@
 
     <div id="title-description">
       <h1>Self Learning 3d Cars</h1>
-      <h1></h1>
       <h2>Machine Learning / Artificial Intelligence / Genetic Algorithm
-        (Source Code:
-        <a href="https://github.com/GuillaumeBouchetEpitech/self-learning-3d-cars">GitHub</a>)</h2>
+        <span class="redText">(Source Code:
+        <a class="redText" href="https://github.com/GuillaumeBouchetEpitech/self-learning-3d-cars">GitHub</a>)</span></h2>
     </div>
 
     <div id="renderArea">
@@ -138,10 +144,10 @@
     <div id="text-description">
 
       <h2>Change the total amount of cars:</h2>
-      <p>
-        <button id="try_with_90_cars" class="button grayButton">try with 90 cars</button>
-        <button id="try_with_270_cars" class="button grayButton">try with 270 cars</button>
-      </p>
+      <div>
+        <button id="try_with_90_cars" class="button grayButton">switch to 90 cars</button>
+        <button id="try_with_270_cars" class="button grayButton">switch to 270 cars</button>
+      </div>
 
       <br/>
       <h2>FAQs:</h2>
@@ -161,8 +167,8 @@
       <ul>
         <li>it is develloped in C++ (using the emscripten compiler to target WebAssembly).</li>
         <li>it uses Bullet Physics for the physic.</li>
-        <li>it uses OpenGL-ES2/WebGL1 for the rendering.</li>
-        <li>it was created on a Linux OS (BUT Windows is doable).</li>
+        <li>it uses OpenGL-ES3/WebGL2 for the rendering.</li>
+        <li>it was built on a Linux OS.</li>
       </ul>
 
       <br/>

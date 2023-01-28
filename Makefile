@@ -52,38 +52,34 @@ endif
 
 #
 
-DIR_LIB_BASIC_GENTIC_ALGORITHM=	./thirdparties/dependencies/basic-genetic-algorithm
-
-DIR_LIB_GERONIMO=								./thirdparties/dependencies/geronimo
-DIR_LIB_GERONIMO_SRC=						$(DIR_LIB_GERONIMO)/src
-DIR_LIB_GERONIMO_3RD_PARTY_DIR=	$(DIR_LIB_GERONIMO)/thirdparties
-
+DIR_LIB_BASIC_GENETIC_ALGORITHM=	./thirdparties/dependencies/basic-genetic-algorithm
+DIR_LIB_GERONIMO=									./thirdparties/dependencies/geronimo
 
 ifeq ($(build_platform),native-pthread)
 
-NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/lib/native/lib-basic-genetic-algorithm.a
+NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/lib/native/lib-basic-genetic-algorithm.a
 
 #
 
 NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-system.a
 NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphic.a
 NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-physics.a
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-dynamics.a
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-collision.a
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/native/lib-bullet-physics-linearmath.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/native/lib-bullet-physics-dynamics.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/native/lib-bullet-physics-collision.a
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/native/lib-bullet-physics-linearmath.a
 
 else
 
-NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/lib/web-wasm/lib-basic-genetic-algorithm.bc
+NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/lib/web-wasm/lib-basic-genetic-algorithm.bc
 
 #
 
 NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-system.bc
 NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphic.bc
 NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-physics.bc
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-linearmath.bc
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-collision.bc
-NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)/lib/web-wasm/lib-bullet-physics-dynamics.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/web-wasm/lib-bullet-physics-linearmath.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/web-wasm/lib-bullet-physics-collision.bc
+NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/web-wasm/lib-bullet-physics-dynamics.bc
 
 endif
 
@@ -92,8 +88,6 @@ endif
 #### DIRS
 
 DIR_SRC=														./src
-DIR_LIB_BASIC_GENTIC_ALGORITHM_SRC=	$(DIR_LIB_BASIC_GENTIC_ALGORITHM)/src
-DIR_LIB_GERONIMO_SRC=								$(DIR_LIB_GERONIMO)/src
 
 #### /DIRS
 
@@ -194,9 +188,9 @@ CXXFLAGS += $(BUILD_FLAG)
 CXXFLAGS += -std=c++17
 CXXFLAGS += -Wall -W -Wextra -Wunused
 CXXFLAGS += -I$(DIR_SRC)
-CXXFLAGS += -I$(DIR_LIB_BASIC_GENTIC_ALGORITHM_SRC)
-CXXFLAGS += -I$(DIR_LIB_GERONIMO_SRC)
-CXXFLAGS += -I$(DIR_LIB_GERONIMO_3RD_PARTY_DIR)
+CXXFLAGS += -I$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/src
+CXXFLAGS += -I$(DIR_LIB_GERONIMO)/src
+CXXFLAGS += -I$(DIR_LIB_GERONIMO)/thirdparties
 
 ifeq ($(build_platform),native-pthread)
 

@@ -433,12 +433,20 @@ PthreadSimulation::setOnGenerationEndCallback(
   _callbacks.onGenerationEnd = callback;
 }
 
-const Genomes&
-PthreadSimulation::getGenomes() const {
-  return _geneticAlgorithm.getGenomes();
+std::size_t PthreadSimulation::getTotalGenomes() const
+{
+  return _geneticAlgorithm.getTotalGenomes();
+}
+AbstractGenome& PthreadSimulation::getGenome(std::size_t inIndex)
+{
+  return _geneticAlgorithm.getGenome(inIndex);
+}
+const AbstractGenome& PthreadSimulation::getGenome(std::size_t inIndex) const
+{
+  return _geneticAlgorithm.getGenome(inIndex);
 }
 
-const Genome&
+const AbstractGenome&
 PthreadSimulation::getBestGenome() const {
   return _geneticAlgorithm.getBestGenome();
 }

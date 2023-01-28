@@ -86,7 +86,7 @@ Context::initialiseSimulationCallbacks() {
     });
 
   logic.simulation->setOnGenerationEndCallback([this](bool isSmarter) -> void {
-    logic.fitnessStats.update(logic.simulation->getBestGenome().fitness);
+    logic.fitnessStats.update(logic.simulation->getBestGenome().getFitness());
 
     if (isSmarter)
       graphic.scene.carTailsRenderer.updateLatestTrail();

@@ -21,12 +21,10 @@ CarWheelsTrails::reset(const AbstactSimulation& simulation) {
     }
   }
 
-  const auto& genomes = simulation.getGenomes();
-
-  const std::size_t safeSize = std::min<std::size_t>(totalCars, genomes.size());
+  const std::size_t safeSize = std::min<std::size_t>(totalCars, simulation.getTotalGenomes());
   for (std::size_t ii = 0; ii < safeSize; ++ii) {
     // record the trail index with it's genome id in the lookup map
-    _genomeIndexMap[genomes.at(ii).id] = ii;
+    _genomeIndexMap[simulation.getGenome(ii).getId()] = ii;
   }
 }
 

@@ -174,7 +174,7 @@ WorkerProducer::resetAndProcessSimulation(
   std::vector<float> weights;
 
   for (std::size_t ii = 0; ii < _carsData.size(); ++ii) {
-    neuralNetworks.at(ii)->getWeights(weights);
+    neuralNetworks.at(ii)->getConnectionsWeights(weights);
 
     _message.append(weights.data(), weights.size() * sizeof(float));
   }

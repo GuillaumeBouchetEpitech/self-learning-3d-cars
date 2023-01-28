@@ -228,12 +228,20 @@ WebWorkersSimulation::setOnGenerationEndCallback(
   _callbacks.onGenerationEnd = callback;
 }
 
-const Genomes&
-WebWorkersSimulation::getGenomes() const {
-  return _geneticAlgorithm.getGenomes();
+std::size_t WebWorkersSimulation::getTotalGenomes() const
+{
+  return _geneticAlgorithm.getTotalGenomes();
+}
+AbstractGenome& WebWorkersSimulation::getGenome(std::size_t inIndex)
+{
+  return _geneticAlgorithm.getGenome(inIndex);
+}
+const AbstractGenome& WebWorkersSimulation::getGenome(std::size_t inIndex) const
+{
+  return _geneticAlgorithm.getGenome(inIndex);
 }
 
-const Genome&
+const AbstractGenome&
 WebWorkersSimulation::getBestGenome() const {
   return _geneticAlgorithm.getBestGenome();
 }

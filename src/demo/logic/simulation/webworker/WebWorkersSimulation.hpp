@@ -86,8 +86,12 @@ public:
     AbstactSimulation::GenerationEndCallback callback) override;
 
 public:
-  virtual const Genomes& getGenomes() const override;
-  virtual const Genome& getBestGenome() const override;
+  virtual std::size_t getTotalGenomes() const override;
+  virtual AbstractGenome& getGenome(std::size_t inIndex) override;
+  virtual const AbstractGenome& getGenome(std::size_t inIndex) const override;
+  virtual const AbstractGenome& getBestGenome() const override;
+
+public:
   virtual unsigned int getGenerationNumber() const override;
   virtual const glm::vec3& getStartPosition() const override;
   virtual const GeneticAlgorithm& getGeneticAlgorithm() const override;

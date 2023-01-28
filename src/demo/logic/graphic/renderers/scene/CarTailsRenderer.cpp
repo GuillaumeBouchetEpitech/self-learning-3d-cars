@@ -39,7 +39,7 @@ CarTailsRenderer::updateLatestTrail() {
   const auto& bestGenome = logic.simulation->getBestGenome();
 
   const auto& bestWheelsTrailData =
-    logic.carWheelsTrails.getTrailById(bestGenome.id);
+    logic.carWheelsTrails.getTrailById(bestGenome.getId());
 
   auto& currCarNewTrail = _geometries.bestNewCarsTrails.at(_currentTrailIndex);
 

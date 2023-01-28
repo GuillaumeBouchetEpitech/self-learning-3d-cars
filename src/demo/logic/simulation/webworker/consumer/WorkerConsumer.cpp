@@ -162,7 +162,7 @@ WorkerConsumer::_resetSimulation(gero::messaging::MessageView& receivedMsg) {
     receivedMsg.read(newWeightsRaw, byteWeightsSize);
 
     std::memcpy(weightsBufferRaw, newWeightsRaw, byteWeightsSize);
-    _neuralNetworks.at(ii)->setWeights(weightsBuffer);
+    _neuralNetworks.at(ii)->setConnectionsWeights(weightsBuffer);
 
     _carAgents.at(ii).reset(
       _physicWorld.get(), _startTransform.position, _startTransform.quaternion);

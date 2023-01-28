@@ -159,10 +159,10 @@ FitnessDataRenderer::renderHudText() {
     std::stringstream sstr;
     sstr << std::fixed << std::setprecision(1);
     sstr << "Fitness: " << localBestFitness << "/"
-         << simulation.getBestGenome().fitness;
+         << simulation.getBestGenome().getFitness();
     const std::string str = sstr.str();
 
-    const float bestFitness = simulation.getBestGenome().fitness;
+    const float bestFitness = simulation.getBestGenome().getFitness();
     const float coef =
       bestFitness == 0.0f
         ? 0.0f

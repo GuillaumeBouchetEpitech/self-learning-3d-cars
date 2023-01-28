@@ -63,8 +63,12 @@ public:
   virtual void setOnGenerationEndCallback(GenerationEndCallback callback) = 0;
 
 public:
-  virtual const Genomes& getGenomes() const = 0;
-  virtual const Genome& getBestGenome() const = 0;
+  virtual std::size_t getTotalGenomes() const = 0;
+  virtual AbstractGenome& getGenome(std::size_t inIndex) = 0;
+  virtual const AbstractGenome& getGenome(std::size_t inIndex) const = 0;
+  virtual const AbstractGenome& getBestGenome() const = 0;
+
+public:
   virtual unsigned int getGenerationNumber() const = 0;
   virtual const glm::vec3& getStartPosition() const = 0;
   virtual const GeneticAlgorithm& getGeneticAlgorithm() const = 0;

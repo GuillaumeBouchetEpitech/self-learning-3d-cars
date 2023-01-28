@@ -113,7 +113,7 @@ TopologyRenderer::render() {
 
   std::vector<float> connectionsWeights;
   const auto leaderNnPtr = neuralNetworks.at(logic.leaderCar.leaderIndex());
-  leaderNnPtr->getWeights(connectionsWeights);
+  leaderNnPtr->getConnectionsWeights(connectionsWeights);
 
   struct NeuronData {
     glm::vec2 position;

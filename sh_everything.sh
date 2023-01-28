@@ -12,7 +12,7 @@ echo ""
 echo "#################################################"
 echo "#                                               #"
 echo "# IF THIS SCRIPT FAIL -> TRY THOSE TWO COMMANDS #"
-echo "# -> 'chmod +x ./sh_everything.sh'              #"
+echo "# -> 'chmod u+x ./sh_everything.sh'              #"
 echo "# -> './sh_everything.sh'                       #"
 echo "#                                               #"
 echo "#################################################"
@@ -69,7 +69,8 @@ fi
 
 echo "ensuring the thirdparties are installed"
 
-sh sh_install_thirdparties.sh not-interactive
+chmod u+x ./sh_install_thirdparties.sh
+./sh_install_thirdparties.sh not-interactive
 
 #
 #
@@ -86,6 +87,7 @@ echo "  native version"
 
 cd ./thirdparties/dependencies/geronimo
 
+chmod u+x ./sh_everything.sh
 ./sh_everything.sh
 
 export DIR_LIB_GERONIMO=$DIR_ROOT/thirdparties/dependencies/geronimo
