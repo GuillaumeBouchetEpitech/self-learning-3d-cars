@@ -117,7 +117,7 @@ cd $DIR_ROOT
 #
 #
 
-echo "building projects applicaton"
+echo "building projects application"
 echo "  native version"
 make build_mode="release" build_platform="native-pthread" all -j6
 

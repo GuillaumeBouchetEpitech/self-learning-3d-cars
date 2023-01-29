@@ -54,6 +54,12 @@
         text-align: center;
       }
 
+      #sub-text-description {
+        width: 400px;
+        margin: 0px auto; /* horizontally centered */
+        text-align: left;
+      }
+
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
       #canvas {
         border: 0px none;
@@ -104,22 +110,20 @@
       }
 
       .blueButton {
-        background-color: #8888FF;
-        color: #000000;
+        background-color: #44A;
       }
 
       .redButton {
-        background-color: #FF8888;
-        color: #000000;
+        background-color: #A44;
       }
 
       .grayButton {
-        background-color: #666666;
-        color: #999999;
+        background-color: #666;
+        color: #999;
       }
 
       .redText {
-        color: #FF8888;
+        color: #C88;
       }
     </style>
 
@@ -131,7 +135,7 @@
       <h1>Self Learning 3d Cars</h1>
       <h2>Machine Learning / Artificial Intelligence / Genetic Algorithm
         <span class="redText">(Source Code:
-        <a class="redText" href="https://github.com/GuillaumeBouchetEpitech/self-learning-3d-cars">GitHub</a>)</span></h2>
+        <a class="redText" href="https://github.com/GuillaumeBouchetEpitech/self-learning-3d-cars">GitHub link</a>)</span></h2>
     </div>
 
     <div id="renderArea">
@@ -139,43 +143,139 @@
       <p id="errorText">Loading</p>
     </div>
 
+    <div id="title-description">
+      <h2 class="redText">You can also scroll down (if curious).</h2>
+    </div>
+
     <textarea id="loggerOutput" rows="10" readonly></textarea>
 
     <div id="text-description">
 
+      <br/>
+
       <h2>Change the total amount of cars:</h2>
+      <p>(This will reload the page)</p>
       <div>
         <button id="try_with_90_cars" class="button grayButton">switch to 90 cars</button>
         <button id="try_with_270_cars" class="button grayButton">switch to 270 cars</button>
       </div>
 
       <br/>
-      <h2>FAQs:</h2>
-      <h3>Camera controls?</h3>
-      <p><i>You can use the arrows or WASD or ZQSD or your mouse or your touch screen</i></p>
-      <h3>What are the white strips on the circuit?</h3>
-      <p><i>The checkpoints used to reward the cars, +1 point per checkpoint.</i></p>
-      <h3>What are the green lines on the leading car?</h3>
-      <p><i>The car's sensors, the "eye" of the car, it hit the ground and the "walls".</i></p>
-      <h3>What is the white line on the leading car?</h3>
-      <p><i>The car's "ground sensor", it help reward the car when passing checkpoints.</i></p>
-      <h3>What are the white/grey lines alongside the circuit?</h3>
-      <p><i>The skelton used to build the circuit, interpolated with a BSpline.</i></p>
+
+      <h2>Source Code:</h2>
+      <p class="redText"><a class="redText" href="https://github.com/GuillaumeBouchetEpitech/self-learning-3d-cars">GitHub link</a></p>
 
       <br/>
+
+      <h2>FAQs:</h2>
+      <div id="sub-text-description">
+
+        <h3>Camera controls?</h3>
+        <ul>
+          <li>You can use:</li>
+          <ul>
+            <li>a keyboard</li>
+            <ul>
+              <li>they arrows keys</li>
+              <li>they WASD keys (UK/US)</li>
+              <li>they ZQSD keys (FR)</li>
+            </ul>
+            <li>a computer mouse (click+drag)</li>
+            <li>a touch screen (touch+drag)</li>
+          </ul>
+        </ul>
+
+        <h3>What are the white strips on the circuit?</h3>
+        <ul>
+          <li>The checkpoints used to reward the cars.</li>
+          <li>The cars is rewarded for passing checkpoints.</li>
+        </ul>
+
+        <h3>What are the colored lines on the leading car?</h3>
+        <ul>
+          <li>The car's sensors, it's "eye".</li>
+          <li>The sensors:</li>
+          <ul>
+            <li>can hit the ground and the "walls".</li>
+            <li>are the only inputs the cars uses.</li>
+            <ul>
+              <li>decide to accelerate/decelerate.</li>
+              <li>decide to turn left/right.</li>
+            </ul>
+          </ul>
+        </ul>
+
+        <h3>What is the white line bellow the leading car?</h3>
+        <ul>
+          <li>The car's "ground sensor".</li>
+          <li>It detect the checkpoints (for the rewards).</li>
+        </ul>
+
+        <h3>What are the white/grey lines alongside the circuit?</h3>
+        <ul>
+          <li>The "skeleton" used to generate the circuit.</li>
+          <li>The circuit is made by interpolating the "skeleton".</li>
+          <ul>
+            <li>it uses the BSpline method (degree: 3).</li>
+          </ul>
+        </ul>
+
+      </div>
+
+      <br/>
+
       <h2>Technologies</h2>
-      <ul>
-        <li>it is develloped in C++ (using the emscripten compiler to target WebAssembly).</li>
-        <li>it uses Bullet Physics for the physic.</li>
-        <li>it uses OpenGL-ES3/WebGL2 for the rendering.</li>
-        <li>it was built on a Linux OS.</li>
-      </ul>
+      <div id="sub-text-description">
+        <ul>
+          <li>this project was written in C++.</li>
+          <li>the web version was compiled to WebAssembly.</li>
+          <ul>
+            <li>the source code of the native build is reused.</li>
+            <li>it relies on emscripten (clang based compiler).</li>
+          </ul>
+          <li>it uses "Bullet Physics" (bullet3) for the physic.</li>
+          <li>it uses a homemade rendering engine.</li>
+          <ul>
+            <li>native build: rely on OpenGL-ES3.</li>
+            <li>WebAssembly build: is translated to WebGL2.</li>
+          </ul>
+          <li>it uses a homemade machine learning library.</li>
+          <ul>
+            <li>very basic fixed topology genetic algorithm.</li>
+          </ul>
+          <li>it is composed of 3 builds:</li>
+          <ul>
+            <li><u>build 1:</u> native build.</li>
+            <ul>
+              <li>multithreading for parallel computing (pthread).</li>
+            </ul>
+            <li><u>build 2:</u>: WebAssembly build (#1).</li>
+            <ul>
+              <li>multithreading for parallel computing (pthread).</li>
+              <ul>
+                <li>only when the server and browser allows it.</li>
+              </ul>
+            </ul>
+            <li><u>build 3:</u>: WebAssembly build (#2).</li>
+            <ul>
+              <li>webworkers for parallel computing.</li>
+              <ul>
+                <li>as a fallback when <u>build 2</u> is unavailable.</li>
+              </ul>
+            </ul>
+          </ul>
+          <li>it was built on a Linux OS.</li>
+        </ul>
+      </div>
 
       <br/>
       <h2>Note</h2>
       <p>The 'success' of this simulation is quite random, which mean that sometime <b>you might want to reload this page</b> and hope for a better result.</p>
 
-      <h2>Thank you for watching!</h2>
+      <br/>
+      <h2 class="redText">Thank you for watching!</h2>
+      <br/>
+
     </div>
   </body>
 </html>
