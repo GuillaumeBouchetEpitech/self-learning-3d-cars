@@ -6,8 +6,16 @@
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/asValue.hpp"
+#include "geronimo/system/aliasing.hpp"
 
 #include <chrono>
+
+namespace {
+
+D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
+D_ALIAS_FUNCTION(_asMicroSeconds, std::chrono::duration_cast<std::chrono::microseconds>);
+
+} // namespace
 
 PthreadSimulation::~PthreadSimulation() {
   // the threads must be stopped before anything else is destroyed
@@ -214,7 +222,7 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
   for (std::size_t threadIndex = 0; threadIndex < _physicWorlds.size();
        ++threadIndex) {
     auto taskCallback = [this, threadIndex, elapsedTime, totalSteps]() -> void {
-      auto start = std::chrono::high_resolution_clock::now();
+      auto start = _getTime();
 
       //
       //
@@ -274,9 +282,8 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
       //
       //
 
-      auto finish = std::chrono::high_resolution_clock::now();
-      auto microseconds =
-        std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
+      auto finish = _getTime();
+      auto microseconds = _asMicroSeconds(finish - start);
       coreState.delta = microseconds.count();
     };
 

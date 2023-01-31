@@ -42,28 +42,28 @@ Demo::_onEvent(const SDL_Event& event) {
 
 void
 Demo::_onUpdate(uint32_t deltaTime) {
-  auto startTime = std::chrono::high_resolution_clock::now();
+
+  auto& perfProfiler = Context::get().logic.metrics.performanceProfiler;
+  perfProfiler.start("Update");
 
   const float elapsedTime = float(deltaTime) / 1000.0f;
-
   StateManager::get()->update(elapsedTime);
 
-  auto endTime = std::chrono::high_resolution_clock::now();
-  auto microseconds =
-    std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-  Context::get().logic.metrics.updateTime = microseconds.count();
+  perfProfiler.stop("Update");
 }
 
 void
 Demo::_onRender(const SDL_Window& screen) {
-  auto startTime = std::chrono::high_resolution_clock::now();
+
+  auto& perfProfiler = Context::get().logic.metrics.performanceProfiler;
+  perfProfiler.start("Render");
 
   StateManager::get()->render(screen);
 
-  auto endTime = std::chrono::high_resolution_clock::now();
-  auto microseconds =
-    std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-  Context::get().logic.metrics.renderTime = microseconds.count();
+  perfProfiler.stop("Render");
+
+  perfProfiler.stop("Frame");
+  perfProfiler.start("Frame");
 }
 
 void

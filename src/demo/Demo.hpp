@@ -18,7 +18,7 @@ public:
   Demo(const Definition& def);
   virtual ~Demo();
 
-protected:
+private:
   virtual void _onEvent(const SDL_Event& event) override;
   virtual void _onUpdate(uint32_t deltaTime) override;
   virtual void _onRender(const SDL_Window& screen) override;

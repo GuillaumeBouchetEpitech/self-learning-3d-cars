@@ -11,6 +11,7 @@
 #include "helpers/FitnessStats.hpp"
 #include "helpers/LeaderCar.hpp"
 #include "helpers/ProfileData.hpp"
+#include "helpers/PerformanceProfiler.hpp"
 
 #include "graphic/renderers/hud/CoreUsageRenderer.hpp"
 #include "graphic/renderers/hud/FitnessDataRenderer.hpp"
@@ -40,6 +41,8 @@
 #include <memory> // <= unique_ptr / make_unique
 #include <string>
 #include <unordered_map>
+#include <chrono>
+
 
 class Context : public gero::NonCopyable {
 
@@ -129,8 +132,9 @@ public:
 
   struct Logic {
     struct Metrics {
-      unsigned int updateTime = 0;
-      unsigned int renderTime = 0;
+
+      PerformanceProfiler performanceProfiler;
+
     } metrics;
 
     NeuralNetworkTopology annTopology;

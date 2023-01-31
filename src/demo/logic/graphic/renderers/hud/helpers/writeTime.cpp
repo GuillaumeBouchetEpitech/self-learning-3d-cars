@@ -4,9 +4,12 @@
 #include <string>
 
 std::string
-writeTime(unsigned int time) {
+writeTime(unsigned int time, int32_t leftPadValue /*= 5*/) {
   std::stringstream sstr;
-  sstr << std::setw(5) << std::fixed << std::setprecision(1);
+
+  sstr << std::setw(std::max(0, leftPadValue));
+  sstr << std::fixed;
+  sstr << std::setprecision(1);
 
   // if (time < 1000)
   // {

@@ -70,11 +70,58 @@ InformationTextRenderer::render() {
   { // top-left performance stats
 
     std::stringstream sstr;
-    sstr << "Update:" << std::endl;
-    sstr << writeTime(logic.metrics.updateTime) << std::endl;
-    sstr << std::endl;
-    sstr << "Render:" << std::endl;
-    sstr << writeTime(logic.metrics.renderTime);
+
+    {
+
+      auto& timeDataMap =
+        context.logic.metrics.performanceProfiler.getTimeDataMap();
+
+      std::array<std::string_view, 3> allProfleNames = {{
+        "Update",
+        "Render",
+        "Frame",
+      }};
+
+      for (std::string_view& currName : allProfleNames) {
+
+        auto it = timeDataMap.find(currName.data());
+        if (it != timeDataMap.end()) {
+
+          auto& timeData = it->second;
+
+          sstr << currName << ":";
+          sstr << std::endl;
+
+          sstr << writeTime(timeData.getLatestDuration(), 0) << std::endl;
+          if (timeData.getAverageDuration() > 0) {
+            sstr << "~" << writeTime(timeData.getAverageDuration(), 0);
+            sstr << std::endl;
+          }
+          sstr << std::endl;
+        }
+
+      }
+
+      auto it = timeDataMap.find("Frame");
+      if (it != timeDataMap.end()) {
+
+        auto& timeData = it->second;
+
+        const int32_t latestFpsValue = int32_t(1000000.0f / float(timeData.getLatestDuration()));
+
+        sstr << "FPS:" << std::endl;
+        sstr << latestFpsValue << std::endl;
+
+        if (timeData.getAverageDuration() > 0) {
+          const int32_t averageFpsValue = int32_t(1000000.0f / float(timeData.getAverageDuration()));
+          if (averageFpsValue > 0) {
+            sstr << "~" << averageFpsValue << std::endl;
+          }
+        }
+      }
+
+    }
+
     const std::string str = sstr.str();
 
     const glm::vec2 textPos = {8, vSize.y - 5 * 16 - 8};

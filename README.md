@@ -12,7 +12,7 @@
 - [Dependencies](#dependencies)
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
   - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
-  - [Dependency: Geronimo 0.0.4](#dependency-geronimo-004)
+  - [Dependency: Geronimo 0.0.5](#dependency-geronimo-005)
   - [Dependency: Basic Genetic Algorithm 0.0.4](#dependency-basic-genetic-algorithm-004)
 - [How to Build](#how-to-build)
   - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
@@ -240,11 +240,15 @@ libsdl2-dev
 libglesv2
 ```
 
-## Dependency: Geronimo 0.0.4
+## Dependency: Geronimo 0.0.5
+
+[Github Link](https://github.com/GuillaumeBouchetEpitech/geronimo)
 
 This dependency will be donwloaded and built with the `Build Everything` method below
 
 ## Dependency: Basic Genetic Algorithm 0.0.4
+
+[Github Link](https://github.com/GuillaumeBouchetEpitech/basic-genetic-algorithm)
 
 This dependency will be donwloaded and built with the `Build Everything` method below
 

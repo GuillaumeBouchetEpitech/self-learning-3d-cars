@@ -7,11 +7,19 @@
 #include "demo/defines.hpp"
 
 #include "geronimo/system/ErrorHandler.hpp"
+#include "geronimo/system/aliasing.hpp"
 
 #include <chrono>
 #include <memory> // std::make_unique
 
 #include <emscripten/emscripten.h> // <= emscripten_worker_respond()
+
+namespace {
+
+D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
+D_ALIAS_FUNCTION(_asMilliseconds, std::chrono::duration_cast<std::chrono::milliseconds>);
+
+} // namespace
 
 void
 WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
@@ -173,7 +181,7 @@ void
 WorkerConsumer::_processSimulation(float elapsedTime, unsigned int totalSteps) {
   // update the simulation
 
-  const auto startTime = std::chrono::high_resolution_clock::now();
+  const auto startTime = _getTime();
 
   //
   //
@@ -215,10 +223,8 @@ WorkerConsumer::_processSimulation(float elapsedTime, unsigned int totalSteps) {
   //
   //
 
-  const auto finishTime = std::chrono::high_resolution_clock::now();
-  const auto milliseconds =
-    std::chrono::duration_cast<std::chrono::milliseconds>(
-      finishTime - startTime);
+  const auto finishTime = _getTime();
+  const auto milliseconds = _asMilliseconds(finishTime - startTime);
   const unsigned int delta = milliseconds.count() * 1000;
 
   //
