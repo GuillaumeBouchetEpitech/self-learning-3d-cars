@@ -3,6 +3,8 @@
 
 #include "demo/logic/Context.hpp"
 
+#include "helpers/renderTextBackground.hpp"
+
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/clamp.hpp"
 
@@ -13,11 +15,14 @@ namespace {
 constexpr float k_faceInX = +8.0f;
 constexpr float k_faceOutX = -400.0f;
 
+constexpr float k_textScale = 16.0f;
+constexpr float k_textHScale = k_textScale * 0.5f;
+
 } // namespace
 
 FitnessDataRenderer::FitnessDataRenderer() {
   _position.x = k_faceOutX;
-  _position.y = 160;
+  _position.y = 60 + 2.0f * k_textScale + k_textHScale;
 
   _size = {150, 75};
 }
@@ -102,6 +107,12 @@ FitnessDataRenderer::renderWireframe() {
     stackRenderers.wireframes.pushLine(
       glm::vec3(_position + prevPos, 0.0f),
       glm::vec3(_position + currPos, 0.0f), whiteColor);
+
+    stackRenderers.wireframes.pushLine(
+      glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
+      glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
+      //glm::vec3(_position + currPos, 0.0f),
+      whiteColor);
   }
 }
 
@@ -113,7 +124,7 @@ FitnessDataRenderer::renderHudText() {
   auto& logic = context.logic;
   auto& simulation = *logic.simulation;
   auto& textRenderer = graphic.hud.textRenderer;
-  auto& stackRenderers = graphic.hud.stackRenderers;
+  // auto& stackRenderers = graphic.hud.stackRenderers;
 
   const unsigned int totalCars = logic.cores.totalCars;
   unsigned int carsLeft = 0;
@@ -129,73 +140,78 @@ FitnessDataRenderer::renderHudText() {
       localBestFitness = carData.fitness;
   }
 
-  const glm::vec4 color = glm::vec4(0.8f, 0.8f, 0.8f, _alpha);
+  const float bestFitness = simulation.getBestGenome().getFitness();
+
+  const glm::vec4 color = glm::vec4(glm::vec3(0.8f), _alpha);
+  const glm::vec4 outlineColor = glm::vec4(glm::vec3(0.4f), _alpha);
   const glm::vec4 colorRed = glm::vec4(0.5f, 0.0f, 0.0f, _alpha);
   const glm::vec4 colorGreen = glm::vec4(0.0f, 0.5f, 0.0f, _alpha);
-  const glm::vec4 bgColor = glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f);
-  const float scale = 1.0f;
-  const float depth = 0.25f;
-  const float bgDepth = depth - 0.1f;
-  std::vector<TextRenderer::Rectangle> outRectangles;
+  const float textDepth = 0.25f;
+
+  const glm::vec2 basePos = { k_textHScale, k_textHScale + 4.0f * k_textScale};
+  glm::vec2 currPos = basePos;
 
   {
-    const glm::vec2 textPos = {8, 8 + 2 * 16};
+    const glm::vec2 textPos = currPos;
 
     std::stringstream sstr;
+
     sstr << "Generation: " << simulation.getGenerationNumber();
-    const std::string str = sstr.str();
 
-    textRenderer.push(textPos, str, color, scale, depth);
+    sstr << std::endl;
 
-    textRenderer.getSizes(outRectangles, textPos, str, scale);
-    for (const auto& rec : outRectangles)
-      stackRenderers.triangles.pushQuad(
-        rec.pos + rec.size * 0.5f, rec.size, bgColor, bgDepth);
-  }
-
-  {
-    const glm::vec2 textPos = {8, 8 + 1 * 16};
-
-    std::stringstream sstr;
     sstr << std::fixed << std::setprecision(1);
-    sstr << "Fitness: " << localBestFitness << "/"
-         << simulation.getBestGenome().getFitness();
-    const std::string str = sstr.str();
+    sstr << "Fitness:" << std::endl;
+    sstr << "${1}" << localBestFitness << "${0}/" << bestFitness;
+    if (bestFitness > 0)
+      sstr << " (${1}" << int32_t((localBestFitness / bestFitness) * 100.0f) << "%${0})";
+    else
+      sstr << " (${1}" << int32_t(localBestFitness * 100.0f) << "%${0})";
 
-    const float bestFitness = simulation.getBestGenome().getFitness();
-    const float coef =
-      bestFitness == 0.0f
-        ? 0.0f
-        : gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
+    sstr << std::endl;
 
-    const glm::vec4 textColor = glm::mix(colorRed, colorGreen, coef);
-
-    textRenderer.push(textPos, str, color, scale, depth, textColor);
-
-    textRenderer.getSizes(outRectangles, textPos, str, scale);
-    for (const auto& rec : outRectangles)
-      stackRenderers.triangles.pushQuad(
-        rec.pos + rec.size * 0.5f, rec.size, bgColor, bgDepth);
-  }
-
-  {
-    const glm::vec2 textPos = {8, 8 + 0 * 16};
-
-    std::stringstream sstr;
+    sstr << "Cars:" << std::endl;
     sstr << std::fixed << std::setprecision(1);
-    sstr << "Cars: " << carsLeft << "/" << totalCars;
+    sstr << "${2}" << carsLeft << "${0}/" << totalCars;
+    sstr << " (${2}" << int32_t((float(carsLeft) / totalCars) * 100) << "%${0})";
+
     const std::string str = sstr.str();
 
-    const float coef =
-      1.0f - gero::math::clamp(float(carsLeft) / totalCars, 0.0f, 1.0f);
+    float bestFitnessCoef = 0.0f;
+    if (bestFitness == 0.0f) {
+      bestFitnessCoef = localBestFitness > 0.0f ? 1.0f : 0.5f;
+    } else {
+      bestFitnessCoef = gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
+    }
 
-    const glm::vec4 textColor = glm::mix(colorGreen, colorRed, coef);
+    const glm::vec4 bestFitnessColor = glm::mix(colorRed, colorGreen, bestFitnessCoef);
 
-    textRenderer.push(textPos, str, color, scale, depth, textColor);
+    const float carLeftCoef = 1.0f - gero::math::clamp(float(carsLeft) / totalCars, 0.0f, 1.0f);
 
-    textRenderer.getSizes(outRectangles, textPos, str, scale);
-    for (const auto& rec : outRectangles)
-      stackRenderers.triangles.pushQuad(
-        rec.pos + rec.size * 0.5f, rec.size, bgColor, bgDepth);
+    const glm::vec4 carLeftColor = glm::mix(colorGreen, colorRed, carLeftCoef);
+
+    textRenderer.pushText(
+      textPos,
+      str,
+      color,
+      k_textScale,
+      textDepth,
+      outlineColor,
+      TextRenderer::TextAlign::left,
+      //
+      TextRenderer::State(color, outlineColor),
+      TextRenderer::State(color, bestFitnessColor),
+      TextRenderer::State(color, carLeftColor)
+      );
+
+    helpers::renderTextBackground(
+      textDepth,
+      glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha),
+      3.0f,
+      6.0f
+    );
+
   }
+
 }

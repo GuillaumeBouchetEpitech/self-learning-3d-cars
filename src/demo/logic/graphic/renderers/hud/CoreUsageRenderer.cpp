@@ -3,6 +3,7 @@
 
 #include "demo/logic/Context.hpp"
 #include "helpers/writeTime.hpp"
+#include "helpers/renderTextBackground.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 
@@ -14,11 +15,14 @@ constexpr float k_divider = 5000.0f; // 5ms
 constexpr float k_faceInX = +8.0f;
 constexpr float k_faceOutX = -400.0f;
 
+constexpr float k_textScale = 16.0f;
+constexpr float k_textHScale = k_textScale * 0.5f;
+
 } // namespace
 
 CoreUsageRenderer::CoreUsageRenderer() {
   _position.x = k_faceOutX;
-  _position.y = 4 * 16 + 7;
+  _position.y = 14.0f * k_textScale;
 
   _size = {150, 100};
 }
@@ -72,8 +76,8 @@ CoreUsageRenderer::renderWireframe() {
   const glm::vec3 whiteColor(0.8f, 0.8f, 0.8f);
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
 
-  const glm::vec3 borderPos = {_position.x, _position.y + 16 + 8, 0.1f};
-  const glm::vec2 borderSize = {_size.x, _size.y - 16 * 3};
+  const glm::vec3 borderPos = {_position.x, _position.y + k_textScale + k_textHScale, 0.1f};
+  const glm::vec2 borderSize = {_size.x, _size.y - k_textScale * 3.0f};
 
   const auto& profileData = context.logic.cores.profileData;
 
@@ -152,11 +156,12 @@ CoreUsageRenderer::renderHudText() {
   auto& logic = context.logic;
   auto& textRenderer = graphic.hud.textRenderer;
   auto& profileData = logic.cores.profileData;
-  auto& stackRenderers = graphic.hud.stackRenderers;
 
-  std::vector<TextRenderer::Rectangle> outRectangles;
+  std::vector<TextRenderer::MessageRectangle> outRectangles;
   const glm::vec4 color = glm::vec4(0.8, 0.8, 0.8, 1);
-  const glm::vec4 bgColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.75f);
+  const glm::vec4 outlineColor = glm::vec4(0.3, 0.3, 0.3, 1);
+
+  glm::vec2 currPos = _position;
 
   {
     std::stringstream sstr;
@@ -171,44 +176,33 @@ CoreUsageRenderer::renderHudText() {
 
 #endif
 
+    sstr << std::endl;
+    sstr << "CPU time:" << std::endl;
+    sstr << writeTime(profileData.getLatestTotalDelta());
+
     std::string str = sstr.str();
 
-    const glm::vec2 textPos = {_position.x, _position.y};
-    const float textScale = 1.0f;
+    const glm::vec2 textPos = currPos;
     const float textDepth = 0.25f;
 
-    textRenderer.push(textPos, str, color, textScale, textDepth);
+    textRenderer.pushText(
+      textPos,
+      str,
+      color,
+      k_textScale,
+      textDepth,
+      outlineColor,
+      TextRenderer::TextAlign::left
+      );
 
-    textRenderer.getSizes(outRectangles, textPos, str, textScale);
-    for (const auto& rec : outRectangles)
-      if (rec.size.x > 0.0f)
-        stackRenderers.triangles.pushQuad(
-          rec.pos + rec.size * 0.5f, rec.size, bgColor, textDepth - 0.1f);
+    helpers::renderTextBackground(
+      textDepth,
+      glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
+      3.0f,
+      6.0f
+    );
+
   }
 
-  {
-
-    const unsigned int totalDelta = profileData.getLatestTotalDelta();
-
-    std::stringstream sstr;
-    sstr << "CPU time: " << writeTime(totalDelta);
-    std::string str = sstr.str();
-
-    const glm::vec2 textPos = {_position.x, _position.y - 16};
-    const float textScale = 1.0f;
-    const float textDepth = 0.25f;
-
-    const glm::vec4 textColor =
-      profileData.getAllTimeMaxDelta() > k_slowdownDelta
-        ? glm::vec4(0.5f, 0.0f, 0.0f, 1)
-        : glm::vec4(0.0f, 0.0f, 0.0f, 1);
-
-    textRenderer.push(textPos, str, color, textScale, textDepth, textColor);
-
-    textRenderer.getSizes(outRectangles, textPos, str, textScale);
-    for (const auto& rec : outRectangles)
-      if (rec.size.x > 0.0f)
-        stackRenderers.triangles.pushQuad(
-          rec.pos + rec.size * 0.5f, rec.size, bgColor, textDepth - 0.1f);
-  }
 }

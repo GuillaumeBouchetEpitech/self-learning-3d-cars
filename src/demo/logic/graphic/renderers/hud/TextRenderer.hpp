@@ -13,16 +13,38 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <regex>
 
 class Shader;
 
 struct TextRenderer {
-  // public:
-  //   enum class TextAllign {
-  //     left = 0,
-  //     center,
-  //     right,
-  //   };
+
+public:
+  enum class TextAlign {
+    left = 0,
+    center,
+    right,
+  };
+
+public:
+  struct State
+  {
+    std::optional<glm::vec4> color;
+    std::optional<glm::vec4> outline;
+
+    State(
+      std::optional<glm::vec4> inColor = std::nullopt,
+      std::optional<glm::vec4> inOutline = std::nullopt)
+      : color(inColor)
+      , outline(inOutline)
+    {}
+  };
+
+public:
+  struct MessageRectangle {
+    glm::vec2 pos;
+    glm::vec2 size;
+  };
 
 private:
   struct LetterOffset {
@@ -31,46 +53,98 @@ private:
     glm::vec4 color;
     float scale;
   };
-  using LettersOffsets = std::vector<LetterOffset>;
 
 private:
-  LettersOffsets _lettersOffsetColored;
-  LettersOffsets _lettersOffsetBackground;
-  std::unordered_map<char, glm::vec2> _lettersTexCoordMap;
 
-  std::shared_ptr<gero::graphic::ShaderProgram> _shader;
+  struct Graphic {
+    std::vector<LetterOffset> vertices;
+    std::shared_ptr<gero::graphic::ShaderProgram> shader;
+    std::shared_ptr<gero::graphic::Texture> texture;
+    gero::graphic::Geometry geometry;
+    gero::graphic::Camera::MatricesData matricesData;
+  }
+  _graphic;
 
-  std::shared_ptr<gero::graphic::Texture> _texture;
-
-  gero::graphic::Geometry _geometry;
-
-  gero::graphic::Camera::MatricesData _matricesData;
+  struct Logic {
+    std::unordered_map<char, glm::vec2> charactersTexCoordMap;
+    std::vector<uint32_t> allLinesWidth;
+    std::vector<MessageRectangle> latestMessageRectangles;
+    std::regex stateRegexp;
+  }
+  _logic;
 
 public:
   TextRenderer() = default;
+  ~TextRenderer() = default;
 
 public:
   void initialise();
   void setMatricesData(const gero::graphic::Camera::MatricesData& matricesData);
 
 public:
-  void push(
-    const glm::vec2& position, std::string_view message, const glm::vec4& color,
-    float scale = 1.0f, float zDepth = 0.0f,
-    const glm::vec3& inBackColor = {0, 0, 0}
-    // TextAllign allign = TextAllign::left
+  void pushText(
+    const glm::vec2& inPosition,
+    const std::string_view inMessage,
+    const glm::vec4& inColor,
+    float inScale = 1.0f,
+    float inDepth = 0.0f,
+    const glm::vec4& inOutlineColor = {0, 0, 0, 1},
+    TextAlign inTextAlign = TextAlign::left
   );
 
-  struct Rectangle {
-    glm::vec2 pos;
-    glm::vec2 size;
-  };
+  template<typename ... Args>
+  void pushText(
+    const glm::vec2& inPosition,
+    const std::string_view inMessage,
+    const glm::vec4& inColor,
+    float inScale,
+    float inDepth,
+    const glm::vec4& inOutlineColor,
+    TextAlign inTextAlign,
+    Args ... args
+  ) {
 
-  void getSizes(
-    std::vector<Rectangle>& outRectangles, const glm::vec2& position,
-    std::string_view message, float scale = 1.0f);
+    std::array<State, sizeof...(args)> allStates{{ args... }};
 
+    _pushText(
+      inPosition,
+      inMessage,
+      inColor,
+      inScale,
+      inDepth,
+      inOutlineColor,
+      inTextAlign,
+      allStates.data(),
+      allStates.size()
+    );
+  }
+
+private:
+  void _pushText(
+    const glm::vec2& inPosition,
+    const std::string_view inMessage,
+    const glm::vec4& inColor,
+    float inScale,
+    float inDepth,
+    const glm::vec4& inOutlineColor,
+    TextAlign inTextAlign,
+    const State* pStates,
+    std::size_t totalStates
+  );
+
+private:
+  void _pushSingleCharacter(
+    const glm::vec3& inPosition,
+    const glm::vec2& inTexCoord,
+    float inScale,
+    const glm::vec4& inColor,
+    const glm::vec4& inOutlineColor
+  );
+
+public:
+  const std::vector<MessageRectangle>& getLatestTextRectangles() const;
+
+public:
   void clear();
-
   void render();
 };

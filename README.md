@@ -12,7 +12,7 @@
 - [Dependencies](#dependencies)
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
   - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
-  - [Dependency: Geronimo 0.0.5](#dependency-geronimo-005)
+  - [Dependency: Geronimo 0.0.6](#dependency-geronimo-006)
   - [Dependency: Basic Genetic Algorithm 0.0.4](#dependency-basic-genetic-algorithm-004)
 - [How to Build](#how-to-build)
   - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
@@ -189,9 +189,9 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
         end
 
-        Note over PT: Thread Safe Off
-
         PT->>-PT: sleep
+
+        Note over PT: Thread Safe Off
 
       end
 
@@ -240,7 +240,7 @@ libsdl2-dev
 libglesv2
 ```
 
-## Dependency: Geronimo 0.0.5
+## Dependency: Geronimo 0.0.6
 
 [Github Link](https://github.com/GuillaumeBouchetEpitech/geronimo)
 

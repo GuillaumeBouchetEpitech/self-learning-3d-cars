@@ -45,7 +45,7 @@ func_set_build_flags() {
 
     case $selected_platform in
     native)
-        ARG_SEL_PLATFORM="native_pthread"
+        ARG_SEL_PLATFORM="native-pthread"
         ;;
     web_pthread)
         ARG_SEL_PLATFORM="web-wasm-pthread"
@@ -101,7 +101,7 @@ func_ask_build_target () {
         echo "=> cleanup"
         echo ""
 
-        func_do_clean release native_pthread
+        func_do_clean release native-pthread
         func_do_clean release web-wasm-webworker
         func_do_clean release web-wasm-pthread
 
@@ -109,7 +109,7 @@ func_ask_build_target () {
         echo "=> building"
         echo ""
 
-        func_do_build release native_pthread
+        func_do_build release native-pthread
         func_do_build release web-wasm-webworker
         func_do_build release web-wasm-pthread
 
@@ -128,7 +128,7 @@ func_ask_build_target () {
         echo "=> building"
         echo ""
 
-        func_do_build release native_pthread
+        func_do_build release native-pthread
         func_do_build release web-wasm-webworker
         func_do_build release web-wasm-pthread
 

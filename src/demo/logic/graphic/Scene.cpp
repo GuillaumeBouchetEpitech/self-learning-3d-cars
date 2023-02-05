@@ -28,21 +28,24 @@ Scene::renderSimple() {
 
   auto& graphic = Context::get().graphic;
 
-  graphic.hud.postProcess.startRecording();
+  if (StateManager::get()->getState() != StateManager::States::Paused) {
 
-  { // scene
+    graphic.hud.postProcess.startRecording();
 
-    const auto& vSize = graphic.cameraData.viewportSize;
+    { // scene
 
-    gero::graphic::GlContext::setViewport(0, 0, vSize.x, vSize.y);
+      const auto& vSize = graphic.cameraData.viewportSize;
 
-    gero::graphic::GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    gero::graphic::GlContext::clear(
-      gero::asValue(gero::graphic::GlContext::Buffers::color) |
-      gero::asValue(gero::graphic::GlContext::Buffers::depth));
+      gero::graphic::GlContext::setViewport(0, 0, vSize.x, vSize.y);
+
+      gero::graphic::GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      gero::graphic::GlContext::clear(
+        gero::asValue(gero::graphic::GlContext::Buffers::color) |
+        gero::asValue(gero::graphic::GlContext::Buffers::depth));
+    }
+
+    graphic.hud.postProcess.stopRecording();
   }
-
-  graphic.hud.postProcess.stopRecording();
 
   { // HUD
 

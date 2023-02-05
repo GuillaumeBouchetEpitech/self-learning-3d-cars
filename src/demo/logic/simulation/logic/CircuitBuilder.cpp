@@ -6,7 +6,7 @@
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/math/BSpline.hpp"
-#include "geronimo/system/parser-utils/BasicRegexpParser.hpp"
+#include "geronimo/system/parser-utils/BasicRegexParser.hpp"
 #include "geronimo/system/string-utils/trim.hpp"
 
 #include <algorithm>
@@ -46,7 +46,7 @@ CircuitBuilder::parse(const std::string_view& filename) {
   //
   // build command handler (parser)
 
-  gero::parserUtils::BasicRegexpParser regexpParser;
+  gero::parserUtils::BasicRegexParser regexpParser;
 
   std::unordered_map<std::string, std::function<void(std::istringstream&)>>
     commandsMap;
@@ -64,7 +64,7 @@ CircuitBuilder::parse(const std::string_view& filename) {
         regexpParser.setErrorHint(cmd_name_agent_start_transform);
         regexpParser.forEachArgs(
           isstr.str(), [this, &regexpParser](
-                         const std::string& key, const std::string& value) {
+                         const std::string_view key, const std::string_view value) {
             if (key == "position") {
               _startTransform.position =
                 regexpParser.get3F(value, -10000.0f, +10000.0f);
@@ -84,7 +84,7 @@ CircuitBuilder::parse(const std::string_view& filename) {
         regexpParser.setErrorHint(cmd_name_next_knots_states);
         regexpParser.forEachArgs(
           isstr.str(), [&regexpParser, &currentKnotsSize, &currentColor](
-                         const std::string& key, const std::string& value) {
+                         const std::string_view key, const std::string_view value) {
             if (key == "size") {
               currentKnotsSize = regexpParser.get1F(value, 0.001f, +10000.0f);
             } else if (key == "color") {
@@ -106,7 +106,7 @@ CircuitBuilder::parse(const std::string_view& filename) {
         regexpParser.setErrorHint(cmd_name_push_knots);
         regexpParser.forEachArgs(
           isstr.str(), [&regexpParser, &left, &right](
-                         const std::string& key, const std::string& value) {
+                         const std::string_view key, const std::string_view value) {
             if (key == "left") {
               left = regexpParser.get3F(value, -10000.0, +10000.0f);
             } else if (key == "right") {

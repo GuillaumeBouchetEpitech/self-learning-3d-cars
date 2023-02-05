@@ -8,10 +8,15 @@ class ScreenTitles {
 private:
   gero::Timer _timer;
 
-  gero::easing::GenericEasing<3> _backgroundEasing;
-  gero::easing::GenericEasing<3> _mainTitleEasing;
-  gero::easing::GenericEasing<3> _fitnessTitleEasing;
-  gero::easing::GenericEasing<3> _commentTitleEasing;
+  gero::easing::GenericEasing<2> _backgroundEasing;
+  gero::easing::GenericEasing<2> _mainTitleAlphaEasing;
+  gero::easing::GenericEasing<2> _fitnessTitleAlphaEasing;
+  gero::easing::GenericEasing<2> _commentTitleAlphaEasing;
+
+  gero::Timer _titleAnimTimer;
+  gero::easing::GenericEasing<2> _mainTitleAnimEasing;
+  gero::easing::GenericEasing<2> _fitnessTitleAnimEasing;
+  gero::easing::GenericEasing<2> _commentTitleAnimEasing;
 
   float _backgroundAlpha = 1.0f;
   float _mainTitleAlpha = 0.0f;

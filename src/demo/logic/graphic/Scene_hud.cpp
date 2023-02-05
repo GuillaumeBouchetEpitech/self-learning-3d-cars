@@ -4,6 +4,7 @@
 #include "demo/states/StateManager.hpp"
 
 #include "renderers/hud/NewLeaderRenderer.hpp"
+#include "renderers/hud/helpers/renderTextBackground.hpp"
 
 #include "geronimo/graphic/GlContext.hpp"
 #include "geronimo/system/TraceLogger.hpp"
@@ -17,7 +18,7 @@ void
 Scene::_renderHUD_ortho() {
 
   auto& graphic = Context::get().graphic;
-  auto& stackRenderer = graphic.hud.stackRenderers;
+  auto& stackRenderers = graphic.hud.stackRenderers;
   auto& textRenderer = graphic.hud.textRenderer;
   const auto& vSize = graphic.cameraData.viewportSize;
 
@@ -46,37 +47,61 @@ Scene::_renderHUD_ortho() {
     StateManager::States currentState = StateManager::get()->getState();
 
 #if defined D_WEB_WEBWORKER_BUILD
+
     if (currentState == StateManager::States::WorkersLoading) {
-      float scale = 2.0f;
+
+      const glm::vec4 color = glm::vec4(1);
+      const glm::vec4 outlineColor = glm::vec4(0.4f, 0.4f, 0, 1);
+      const float scale = 30.0f;
+      const float depth = 0.75f;
+
+      const glm::vec2 textPos = vSize * 0.5f;
 
       std::stringstream sstr;
       sstr << "WEB WORKERS" << std::endl << "  LOADING  " << std::endl;
-      std::string message = sstr.str();
+      const std::string message = sstr.str();
 
-      glm::vec2 textPos;
-      textPos.x = vSize.x * 0.5f - 5 * 16 * scale;
-      textPos.y = vSize.y * 0.5f - 8 * scale;
+      textRenderer.pushText(textPos, message, color, scale, depth, outlineColor, TextRenderer::TextAlign::center);
 
-      textRenderer.push(textPos, message, glm::vec4(1), scale, 0.75f);
+      helpers::renderTextBackground(
+        depth,
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
+        50.0f,
+        60.0f
+      );
+
     }
+
 #endif
 
     if (currentState == StateManager::States::Paused) {
-      float scale = 5.0f;
 
-      std::string message = "PAUSED";
+      const glm::vec4 color = glm::vec4(1);
+      const glm::vec4 outlineColor = glm::vec4(0.4f, 0.4f, 0, 1);
+      const float scale = 80.0f;
+      const float depth = 0.75f;
 
-      glm::vec2 textPos;
-      textPos.x = vSize.x * 0.5f - float(message.size()) / 2 * 16 * scale;
-      textPos.y = vSize.y * 0.5f - 8 * scale;
+      const glm::vec2 textPos = vSize * 0.5f;
 
-      textRenderer.push(textPos, message, glm::vec4(1), scale, 0.75f);
+      const std::string message = "PAUSED";
+
+      textRenderer.pushText(textPos, message, color, scale, depth, outlineColor, TextRenderer::TextAlign::center);
+
+      helpers::renderTextBackground(
+        depth,
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
+        50.0f,
+        60.0f
+      );
+
     }
 
   } // big titles
 
-  stackRenderer.wireframes.flush();
-  stackRenderer.triangles.flush();
+  stackRenderers.wireframes.flush();
+  stackRenderers.triangles.flush();
   textRenderer.render();
 }
 
