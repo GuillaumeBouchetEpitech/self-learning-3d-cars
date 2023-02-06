@@ -1,7 +1,7 @@
 
 import Logger from "./Logger";
 import { Demo } from "./Demo";
-import { extractVarsFromUrl } from "./helpers";
+import { extractVarsFromUrl } from "./helpers/index";
 
 const findOrFailHtmlElement = <T extends Element>(elementId: string): T => {
   const textAreaElement = document.querySelector<T>(elementId);
@@ -152,11 +152,11 @@ const onGlobalPageLoad = async () => {
   }
   catch (err) {
     logger.error(`[JS] dependencies check failed: message="${err.message}"`);
-    showErrorText(`
-      this browser isn't compatible<br>
-      error message:<br>
-      => ${err.message}
-    `);
+    showErrorText([
+      "this browser isn't compatible",
+      "error message:",
+      `=> ${err.message}`,
+    ].join("<br>"));
   }
 
   const deltaTime = Math.floor(1000 / 30); // 30fps

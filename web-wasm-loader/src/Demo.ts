@@ -3,13 +3,13 @@ import Logger from "./Logger";
 import {
   scriptLoadingUtility,
   getWebGl2Context,
-} from "./helpers";
+} from "./helpers/index";
 import {
   isWebWorkerSupported,
   isWasmSupported,
   isWebGL2Supported,
   isMultithreadingSupported,
-} from "./environment";
+} from "./environment/index";
 
 export class Demo {
 
@@ -51,7 +51,7 @@ export class Demo {
     // WebWorker support
 
     if (!isWebWorkerSupported()) {
-      throw new Error("missing WebWorker feature (unsuported)");
+      throw new Error("missing WebWorker feature (unsupported)");
     }
     inLogger.log("[JS][check] WebWorker feature => supported");
 
@@ -60,7 +60,7 @@ export class Demo {
     // WebAssembly support
 
     if (!isWasmSupported()) {
-      throw new Error("missing WebAssembly feature (unsuported)");
+      throw new Error("missing WebAssembly feature (unsupported)");
     }
 
     inLogger.log("[JS][check] WebAssembly feature => supported");
@@ -82,7 +82,7 @@ export class Demo {
     // WebGL2 support
 
     if (!isWebGL2Supported()) {
-      throw new Error("missing WebGL2 feature (unsuported)");
+      throw new Error("missing WebGL2 feature (unsupported)");
     }
     inLogger.log("[JS][check] WebGL2 feature => supported");
 
