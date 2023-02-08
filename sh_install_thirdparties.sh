@@ -18,7 +18,7 @@ DIR_DEPENDENCIES=$PWD/thirdparties/dependencies
 
 declare -a all_dependencies_array=(
   "BASIC_GENETIC_ALGORITHM;basic-genetic-algorithm;GuillaumeBouchetEpitech/basic-genetic-algorithm;v0.0.4"
-  "GERONIMO;geronimo;GuillaumeBouchetEpitech/geronimo;v0.0.6"
+  "GERONIMO;geronimo;GuillaumeBouchetEpitech/geronimo;v0.0.7"
 )
 
 mkdir -p $DIR_DEPENDENCIES

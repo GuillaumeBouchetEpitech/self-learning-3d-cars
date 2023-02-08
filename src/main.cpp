@@ -1,6 +1,6 @@
 
-#include "demo/Demo.hpp"
-#include "demo/defines.hpp"
+#include "application/Application.hpp"
+#include "application/defines.hpp"
 
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
@@ -47,8 +47,8 @@ validateInputs(
 namespace {
 
 void
-processCommandLineArgs(Demo::Definition& def, int argc, char** argv) {
-  // array of pointers toward the demo definition arguments
+processCommandLineArgs(Application::Definition& def, int argc, char** argv) {
+  // array of pointers toward the application definition arguments
   std::array<uint32_t*, 4> arguments{{
     &def.width,
     &def.height,
@@ -77,7 +77,7 @@ processCommandLineArgs(Demo::Definition& def, int argc, char** argv) {
 
 int
 main(int argc, char** argv) {
-  Demo::Definition def;
+  Application::Definition def;
   def.width = 800;
   def.height = 600;
   def.totalCores = 3;
@@ -87,8 +87,8 @@ main(int argc, char** argv) {
 
   validateInputs(def.width, def.height, def.totalCores, def.genomesPerCore);
 
-  Demo myDemo(def);
-  myDemo.run();
+  Application myApplication(def);
+  myApplication.run();
 
   return EXIT_SUCCESS;
 }
@@ -97,20 +97,20 @@ main(int argc, char** argv) {
 
 namespace /* anonymous */
 {
-Demo* myDemo = nullptr;
+Application* myApplication = nullptr;
 };
 
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
 void
-startDemo(
+startApplication(
   uint32_t inWidth, uint32_t inHeight, uint32_t inTotalCores,
   uint32_t inGenomesPerCore) {
-  if (myDemo)
+  if (myApplication)
     return;
 
-  Demo::Definition def;
+  Application::Definition def;
   def.width = inWidth;
   def.height = inHeight;
   def.totalCores = inTotalCores;
@@ -118,16 +118,16 @@ startDemo(
 
   validateInputs(def.width, def.height, def.totalCores, def.genomesPerCore);
 
-  myDemo = new Demo(def);
+  myApplication = new Application(def);
 }
 
 EMSCRIPTEN_KEEPALIVE
 void
-updateDemo(uint32_t inDelta) {
-  if (!myDemo)
+updateApplication(uint32_t inDelta) {
+  if (!myApplication)
     return;
 
-  myDemo->process(inDelta);
+  myApplication->process(inDelta);
 }
 }
 

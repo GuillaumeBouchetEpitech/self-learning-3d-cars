@@ -1,6 +1,6 @@
 
 import Logger from "./Logger";
-import { Demo } from "./Demo";
+import { Application } from "./Application";
 import { extractVarsFromUrl } from "./helpers/index";
 
 const findOrFailHtmlElement = <T extends Element>(elementId: string): T => {
@@ -136,11 +136,11 @@ const onGlobalPageLoad = async () => {
     showErrorText(statusMsg);
   };
 
-  const myDemo = new Demo(mainCanvas, onProgress, showErrorText);
+  const myApplication = new Application(mainCanvas, onProgress, showErrorText);
 
   try {
 
-    await myDemo.initialise(
+    await myApplication.initialise(
       config.width,
       config.height,
       config.totalCores,
@@ -164,7 +164,7 @@ const onGlobalPageLoad = async () => {
     if (isRunning)
       setTimeout(onFrame, deltaTime);
 
-    myDemo.update(deltaTime);
+    myApplication.update(deltaTime);
   };
   onFrame();
 };

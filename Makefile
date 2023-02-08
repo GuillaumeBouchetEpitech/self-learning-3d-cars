@@ -62,7 +62,7 @@ NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/lib/native/l
 #
 
 NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-system.a
-NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphic.a
+NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-graphics.a
 NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/native/lib-geronimo-physics.a
 NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/native/lib-bullet-physics-dynamics.a
 NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/native/lib-bullet-physics-collision.a
@@ -75,7 +75,7 @@ NAME_LIB_BASIC_GENTIC_ALGORITHM=	$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/lib/web-wasm
 #
 
 NAME_LIB_GERONIMO_SYSTEM=		$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-system.bc
-NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphic.bc
+NAME_LIB_GERONIMO_GRAPHIC=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-graphics.bc
 NAME_LIB_GERONIMO_PHYSICS=	$(DIR_LIB_GERONIMO)/lib/web-wasm/lib-geronimo-physics.bc
 NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/web-wasm/lib-bullet-physics-linearmath.bc
 NAME_LIB_BULLET_PHYSICS+=		$(DIR_LIB_GERONIMO)/thirdparties/lib/web-wasm/lib-bullet-physics-collision.bc
@@ -119,39 +119,39 @@ endif
 SRC+=	\
 	$(wildcard \
 		$(DIR_SRC)/*.cpp \
-		$(DIR_SRC)/demo/*.cpp \
-		$(DIR_SRC)/demo/states/*.cpp \
-		$(DIR_SRC)/demo/logic/*.cpp \
-		$(DIR_SRC)/demo/logic/helpers/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/camera/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/renderers/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/renderers/hud/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/renderers/hud/helpers/*.cpp \
-		$(DIR_SRC)/demo/logic/graphic/renderers/scene/*.cpp \
-		$(DIR_SRC)/demo/logic/simulation/*.cpp \
-		$(DIR_SRC)/demo/logic/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/*.cpp \
+		$(DIR_SRC)/application/states/*.cpp \
+		$(DIR_SRC)/application/context/*.cpp \
+		$(DIR_SRC)/application/context/helpers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/*.cpp \
+		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/hud/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/hud/helpers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/*.cpp \
+		$(DIR_SRC)/application/context/simulation/*.cpp \
+		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
 		)
 
 ifneq ($(build_platform),web-wasm-webworker)
 
 SRC+=	\
 	$(wildcard \
-		$(DIR_SRC)/demo/logic/simulation/pthread/*.cpp \
+		$(DIR_SRC)/application/context/simulation/pthread/*.cpp \
 		)
 
 else
 
 SRC+=	\
 	$(wildcard \
-		$(DIR_SRC)/demo/logic/simulation/webworker/*.cpp \
-		$(DIR_SRC)/demo/logic/simulation/webworker/producer/*.cpp \
+		$(DIR_SRC)/application/context/simulation/webworker/*.cpp \
+		$(DIR_SRC)/application/context/simulation/webworker/producer/*.cpp \
 		)
 
 SRC_WEB_WASM_WORKER+=	\
 	$(wildcard \
-		$(DIR_SRC)/demo/logic/simulation/logic/*.cpp \
-		$(DIR_SRC)/demo/logic/simulation/webworker/consumer/*.cpp \
+		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/context/simulation/webworker/consumer/*.cpp \
 		)
 
 endif
@@ -226,10 +226,11 @@ LDFLAGS_COMMON_WEB_WASM += -s EXPORTED_RUNTIME_METHODS=cwrap
 
 ifeq ($(build_mode),debug)
 
-LDFLAGS_COMMON_WEB_WASM += -s DEMANGLE_SUPPORT=1
-LDFLAGS_COMMON_WEB_WASM += -s GL_ASSERTIONS=1
-LDFLAGS_COMMON_WEB_WASM += -s GL_DEBUG=1
-LDFLAGS_COMMON_WEB_WASM += -s DISABLE_EXCEPTION_CATCHING=2
+# LDFLAGS_COMMON_WEB_WASM += -s DEMANGLE_SUPPORT=1
+# LDFLAGS_COMMON_WEB_WASM += -s GL_ASSERTIONS=1
+# LDFLAGS_COMMON_WEB_WASM += -s GL_DEBUG=1
+# LDFLAGS_COMMON_WEB_WASM += -s DISABLE_EXCEPTION_CATCHING=2
+LDFLAGS_COMMON_WEB_WASM += -s ASSERTIONS
 
 endif
 

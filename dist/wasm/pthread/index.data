@@ -10661,15 +10661,15 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
-in vec2 a_texCoord;
+in vec3 a_vertex_position;
+in vec2 a_vertex_texCoord;
 
 out vec2 v_texCoord;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
-	v_texCoord = a_texCoord;
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
+	v_texCoord = a_vertex_texCoord;
 }
 #version 300 es
 
@@ -10689,16 +10689,16 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
-in vec4 a_color;
+in vec3 a_vertex_position;
+in vec4 a_vertex_color;
 
 out vec4 v_color;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
 
-	v_color = a_color;
+	v_color = a_vertex_color;
 }
 #version 300 es
 
@@ -10729,82 +10729,134 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec2 a_position;
-in vec2 a_texCoord;
-in vec3 a_offsetPosition;
-in vec2 a_offsetTexCoord;
-in vec4 a_offsetColor;
-in float a_offsetScale;
+in vec2 a_vertex_position;
+in vec2 a_vertex_texCoord;
+in vec3 a_offset_position;
+in vec2 a_offset_texCoord;
+in vec4 a_offset_color;
+in float a_offset_scale;
 
 out vec2 v_texCoord;
 out vec4 v_color;
 
 void main(void)
 {
-	vec2 position = a_position * a_offsetScale + a_offsetPosition.xy;
+	vec2 position = a_vertex_position * a_offset_scale + a_offset_position.xy;
 
-	gl_Position = u_composedMatrix * vec4(position, a_offsetPosition.z, 1.0);
+	gl_Position = u_composedMatrix * vec4(position, a_offset_position.z, 1.0);
 
-	v_texCoord = a_texCoord + a_offsetTexCoord;
-	v_color = a_offsetColor;
+	v_texCoord = a_vertex_texCoord + a_offset_texCoord;
+	v_color = a_offset_color;
 }
 
-const float k_ambiant = 0.4;
-const vec3 k_lightPos = vec3(0.0, 0.0, 0.0);
 const vec3 k_specColor = vec3(1.0, 1.0, 1.0);
 
-vec3 applyLighting(vec3 inColor, vec3 inNormal, vec3 inVertexPos)
+vec4 applyLighting(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
 {
-    inNormal = normalize(inNormal);
-    vec3 lightDir = normalize(k_lightPos - inVertexPos);
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
 
-    float lambertian = max(dot(lightDir, inNormal.xyz), 0.0);
-    float specular = 0.0;
+  float diffuseCoef = max(dot(lightDir, normal.xyz), 0.0);
+  float specularCoef = 0.0;
 
-    if (lambertian > 0.0)
-    {
-        // lighting specular
+  if (diffuseCoef > 0.0)
+  {
+    // lighting specular
 
-        vec3 reflectDir = reflect(-lightDir, inNormal);
-        vec3 viewDir = normalize(-inVertexPos);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 viewDir = normalize(-worldPos);
 
-        float specAngle = max(dot(reflectDir, viewDir), 0.0);
-        specular = pow(specAngle, 64.0);
-    }
+    float specAngle = max(dot(reflectDir, viewDir), 0.0);
+    specularCoef = pow(specAngle, 64.0);
+  }
 
-    // lighting output
+  // lighting output
 
-    vec3 ambiant_color = inColor * k_ambiant;
-    vec3 diffuse_color = inColor * lambertian;
-    vec3 specular_color = k_specColor * specular;
+  vec3 ambiantColor = currentColor.xyz * ambiantCoef;
+  vec3 diffuseColor = currentColor.xyz * diffuseCoef;
+  vec3 specularColor = k_specColor * specularCoef;
 
-    return ambiant_color + diffuse_color + specular_color;
+  return vec4(ambiantColor + diffuseColor + specularColor, currentColor.a);
+}
+
+vec4 quat_from_axis_angle(vec3 axis, float angle)
+{
+  vec4 qr;
+  // float half_angle = (angle * 0.5) * 3.14159 / 180.0;
+  float half_angle = (angle * 0.5);
+  qr.x = axis.x * sin(half_angle);
+  qr.y = axis.y * sin(half_angle);
+  qr.z = axis.z * sin(half_angle);
+  qr.w = cos(half_angle);
+  return qr;
+}
+
+// vec4 quat_conj(vec4 q)
+// {
+//   return vec4(-q.x, -q.y, -q.z, q.w);
+// }
+
+// vec4 quat_mult(vec4 q1, vec4 q2)
+// {
+//   vec4 qr;
+//   qr.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
+//   qr.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
+//   qr.z = (q1.w * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
+//   qr.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
+//   return qr;
+// }
+
+// vec3 rotate_vec3(vec3 position, vec3 axis, float angle)
+// {
+//   vec4 qr = quat_from_axis_angle(axis, angle);
+//   vec4 qr_conj = quat_conj(qr);
+//   vec4 q_pos = vec4(position.x, position.y, position.z, 0);
+
+//   vec4 q_tmp = quat_mult(qr, q_pos);
+//   qr = quat_mult(q_tmp, qr_conj);
+
+//   return vec3(qr.x, qr.y, qr.z);
+// }
+
+// vec3 rotate_vec3(vec3 position, vec3 axis, float angle)
+// {
+//   vec4 q = quat_from_axis_angle(axis, angle);
+//   vec3 v = position.xyz;
+//   return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+// }
+
+vec3 apply_quat_to_vec3(vec3 position, vec4 q)
+{
+  vec3 v = position.xyz;
+  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
 }
 #version 300 es
 
 precision lowp float;
 
+uniform vec3 u_lightPos;
+
+const float k_ambiantCoef = 0.2;
+
 in vec4 v_color;
-in vec3 v_normal;
-in vec3 v_vertPos;
+in vec3 v_worldSpaceNormal;
+in vec3 v_worldSpacePosition;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphic/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
 
 void main(void)
 {
-    out_color = vec4(applyLighting(v_color.xyz, v_normal, v_vertPos), v_color.a);
+    out_color = applyLighting(u_lightPos, v_color, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
     out_outline = vec4(0.0);
 }
 #version 300 es
 
 precision highp float;
 
-uniform mat4 u_projectionMatrix;
-uniform mat4 u_modelViewMatrix;
-
+uniform mat4 u_composedMatrix;
 uniform float u_alpha;
 uniform float u_lowerLimit;
 uniform float u_upperLimit;
@@ -10816,8 +10868,8 @@ in vec3 a_vertex_animatedNormal;
 in float a_vertex_index;
 
 out vec4 v_color;
-out vec3 v_normal;
-out vec3 v_vertPos;
+out vec3 v_worldSpaceNormal;
+out vec3 v_worldSpacePosition;
 
 const vec3 k_white = vec3(1.0);
 
@@ -10857,11 +10909,9 @@ void main(void)
 		position -= a_vertex_animatedNormal * deformationCoef;
 	}
 
-	vec4 vertPos4 = u_modelViewMatrix * vec4(position, 1.0);
-
-	v_normal = vec3(u_modelViewMatrix * vec4(a_vertex_normal, 0.0));
-	v_vertPos = vec3(vertPos4) / vertPos4.w;
-	gl_Position = u_projectionMatrix * vertPos4;
+	v_worldSpaceNormal = a_vertex_normal;
+	v_worldSpacePosition = position;
+	gl_Position = u_composedMatrix * vec4(position, 1.0);
 }
 #version 300 es
 
@@ -10956,113 +11006,119 @@ precision highp float;
 uniform mat4 u_composedMatrix;
 uniform float u_animationCoef;
 
-in vec3 a_position;
-in vec2 a_texCoord;
+in vec3 a_vertex_position;
+in vec2 a_vertex_texCoord;
 
 out vec2 v_texCoord;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
-	v_texCoord = vec2(a_texCoord.x + u_animationCoef, a_texCoord.y);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
+	v_texCoord = vec2(a_vertex_texCoord.x + u_animationCoef, a_vertex_texCoord.y);
 }
 #version 300 es
 
 precision lowp float;
 
 uniform sampler2D u_texture;
+uniform vec3 u_lightPos;
+
+const float k_ambiantCoef = 0.2;
 
 in vec2 v_texCoord;
-in vec3 v_normal;
-in vec3 v_vertPos;
+in vec3 v_worldSpaceNormal;
+in vec3 v_worldSpacePosition;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphic/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
 
 void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
-  out_color = vec4(applyLighting(texColor.xyz, v_normal, v_vertPos), texColor.a);
+  out_color = applyLighting(u_lightPos, texColor, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
   out_outline = vec4(0.0);
 }
 #version 300 es
 
 precision highp float;
 
-// uniform mat4 u_composedMatrix;
-uniform mat4 u_projectionMatrix;
-uniform mat4 u_modelViewMatrix;
+uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
-in vec3 a_normal;
-in vec2 a_texCoord;
+in vec3 a_vertex_position;
+in vec3 a_vertex_normal;
+in vec2 a_vertex_texCoord;
 
 out vec2 v_texCoord;
-out vec3 v_normal;
-out vec3 v_vertPos;
+out vec3 v_worldSpaceNormal;
+out vec3 v_worldSpacePosition;
 
 void main(void)
 {
-	vec4 vertPos4 = u_modelViewMatrix * vec4(a_position, 1.0);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
 
-	gl_Position = u_projectionMatrix * vertPos4;
-
-	v_texCoord = a_texCoord;
-	v_normal = vec3(u_modelViewMatrix * vec4(a_normal, 0.0));
-	v_vertPos = vec3(vertPos4) / vertPos4.w;
+	v_texCoord = a_vertex_texCoord;
+	v_worldSpaceNormal = a_vertex_normal;
+	v_worldSpacePosition = a_vertex_position;
 }
 #version 300 es
 
 precision lowp float;
 
+uniform vec3 u_lightPos;
+
+const float k_ambiantCoef = 0.2;
+
 in vec4 v_color;
 in vec4 v_outlineColor;
-in vec3 v_normal;
-in vec3 v_vertPos;
+in vec3 v_worldSpacePosition;
+in vec3 v_worldSpaceNormal;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphic/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
 
 void main(void)
 {
-  out_color = vec4(applyLighting(v_color.rgb, v_normal, v_vertPos), v_color.a);
+  out_color = applyLighting(u_lightPos, v_color, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
   out_outline = v_outlineColor;
 }
 #version 300 es
 
 precision highp float;
 
-uniform mat4 u_projectionMatrix;
-uniform mat4 u_modelViewMatrix;
+uniform mat4 u_composedMatrix;
 
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
 in vec3 a_vertex_normal;
 
-in mat4 a_offset_transform;
+in vec3 a_offset_position;
+in vec4 a_offset_orientation; // quaternion
+in vec3 a_offset_scale;
 in vec4 a_offset_color;
 in vec4 a_offset_outlineColor;
 
 out vec4 v_color;
 out vec4 v_outlineColor;
-out vec3 v_normal;
-out vec3 v_vertPos;
+out vec3 v_worldSpacePosition;
+out vec3 v_worldSpaceNormal;
+
+#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
 
 void main(void)
 {
-	mat4 transform = u_modelViewMatrix * a_offset_transform;
-	vec4 vertPos4 = transform * vec4(a_vertex_position, 1.0);
+	vec3 worldSpacePosition = a_offset_position + apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, a_offset_orientation);
 
-	gl_Position = u_projectionMatrix * vertPos4;
+	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
 	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
 	v_outlineColor = a_offset_outlineColor;
-	v_normal = vec3(transform * vec4(a_vertex_normal, 0.0));
-	v_vertPos = vec3(vertPos4) / vertPos4.w;
+	v_worldSpacePosition = worldSpacePosition;
+	v_worldSpaceNormal = worldSpaceNormal;
 }
 #version 300 es
 
@@ -11088,16 +11144,23 @@ uniform mat4 u_composedMatrix;
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
 
-in mat4 a_offset_transform;
+in vec3 a_offset_position;
+in vec4 a_offset_orientation; // quaternion
+in vec3 a_offset_scale;
 in vec4 a_offset_color;
 in vec4 a_offset_outlineColor;
 
 out vec4 v_color;
 out vec4 v_outlineColor;
 
+#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+
 void main(void)
 {
-	gl_Position = u_composedMatrix * a_offset_transform * vec4(a_vertex_position, 1.0);
+	vec3 worldSpacePosition = a_offset_position + apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+
+	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
+
 	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
 	v_outlineColor = a_offset_outlineColor;
 }
@@ -11121,20 +11184,21 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3  a_position;
-in vec3  a_offsetPosition;
-in float a_offsetScale;
-in vec3  a_offsetColor;
+in vec3  a_vertex_position;
+
+in vec3  a_offset_position;
+in float a_offset_scale;
+in vec3  a_offset_color;
 
 out vec4 v_color;
 
 void main(void)
 {
-	vec3 position = a_position * a_offsetScale + a_offsetPosition;
+	vec3 position = a_vertex_position * a_offset_scale + a_offset_position;
 
 	gl_Position = u_composedMatrix * vec4(position, 1.0);
 
-	v_color = vec4(a_offsetColor, 1.0);
+	v_color = vec4(a_offset_color, 1.0);
 }
 #version 300 es
 
@@ -11158,16 +11222,16 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
-in vec2 a_texCoord;
+in vec3 a_vertex_position;
+in vec2 a_vertex_texCoord;
 
 out vec2 v_texCoord;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
 
-	v_texCoord = a_texCoord;
+	v_texCoord = a_vertex_texCoord;
 }
 #version 300 es
 
@@ -11189,16 +11253,16 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
-in vec4 a_color;
+in vec3 a_vertex_position;
+in vec4 a_vertex_color;
 
 out vec4 v_color;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
 
-	v_color = a_color;
+	v_color = a_vertex_color;
 }
 #version 300 es
 
@@ -11220,11 +11284,11 @@ precision highp float;
 
 uniform mat4 u_composedMatrix;
 
-in vec3 a_position;
+in vec3 a_vertex_position;
 
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_position, 1.0);
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
 }
 ‰PNG
 
