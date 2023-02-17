@@ -8,41 +8,52 @@
 
 #include "application/defines.hpp"
 
-WorkerProducer::WorkerProducer(
-  const Definition& def, GeneticAlgorithm& geneticAlgorithm, uint32_t coreIndex)
-  : _def(def), _geneticAlgorithm(geneticAlgorithm), _coreIndex(coreIndex) {
+
+WorkerProducer::AgentData::AgentData(uint32_t inDataIndex)
+  : dataIndex(inDataIndex)
+{}
+
+
+WorkerProducer::WorkerProducer(const Definition& def)
+  : _def(def)
+{
   _workerHandle = emscripten_create_worker(D_WORKER_SCRIPT_URL);
 
   _flags[gero::asValue(Status::WebWorkerLoaded)] = false;
   _flags[gero::asValue(Status::Processing)] = false;
   _flags[gero::asValue(Status::Updated)] = false;
 
-  _carsData.resize(def.genomesPerCore);
+  _waitingAgentsData.reserve(128);
+  _allAgentsData.reserve(128);
 
-  { // send intiialisation message to worker consumer
+  { // send initialisation message to worker consumer
 
     _message.clear();
     _message << char(Messages::FromProducer::LoadWorker);
 
+    //
+    // circuit data
+
     _message << def.startTransform.position;
     _message << def.startTransform.quaternion;
-
     _message << int(def.knots.size());
-
     for (const auto& knot : def.knots)
       _message << knot.left << knot.right << knot.size << knot.color;
 
-    _message << def.genomesPerCore;
+    //
+    // neural network data
 
     const auto& topology = def.neuralNetworkTopology;
-    const auto& hiddenLayers = topology.getHiddens();
+    const auto& hiddenLayers = topology.getHiddenLayers();
 
     _message << topology.isUsingBias();
-    _message << topology.getInput();
+    _message << topology.getInputLayerSize();
     _message << int(hiddenLayers.size());
     for (unsigned int layerValue : hiddenLayers)
       _message << layerValue;
-    _message << topology.getOutput();
+    _message << topology.getOutputLayerSize();
+
+    //
 
     _sendToConsumer();
 
@@ -73,75 +84,126 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
   }
 
   case Messages::FromConsumer::SimulationResult: {
-    receivedMsg >> _coreState.delta >> _coreState.genomesAlive;
 
-    std::vector<float> neuronsValues;
+    receivedMsg >> _coreState.delta;
 
-    // for (auto& car : _carsData)
-    for (uint32_t carIndex = 0; carIndex < _carsData.size(); ++carIndex) {
-      auto& car = _carsData.at(carIndex);
+    //
 
-      receivedMsg >> car.isAlive >> car.life >> car.fitness >> car.totalUpdates >> car.groundIndex;
+    int32_t totalDeltasPerTotalAgents = 0;
+    receivedMsg >> totalDeltasPerTotalAgents;
+    for (int32_t ii = 0; ii < totalDeltasPerTotalAgents; ++ii)
+    {
+      int32_t totalLiveVehicles = 0;
+      int32_t stepMilliSeconds = 0;
+
+      receivedMsg >> totalLiveVehicles >> stepMilliSeconds;
+
+      _frameProfiler.set(totalLiveVehicles, stepMilliSeconds);
+    }
+
+    //
+
+    receivedMsg >> _coreState.genomesAlive;
+
+    //
+
+    uint32_t totalAgents = 0;
+    receivedMsg >> totalAgents;
+
+    for (uint32_t ii = 0; ii < totalAgents; ++ii)
+    {
+      //
+      // core data
+
+      uint64_t dataIndex = 0;
+
+      receivedMsg >> dataIndex;
+
+      auto it = _agentsDataMap.find(dataIndex);
+      if (it == _agentsDataMap.end())
+        D_THROW(std::invalid_argument, "data index not found -> " << dataIndex);
+
+      auto& currValue = *it->second;
+      auto& currData = currValue.carData;
+
+      const bool carWasAlive = currData.isAlive;
+
+      receivedMsg
+        >> currData.isAlive
+        >> currData.life
+        >> currData.fitness
+        >> currData.totalUpdates
+        >> currData.groundIndex;
+
+      if (carWasAlive && !currData.isAlive) {
+        _currentLiveAgents -= 1;
+      }
 
       //
-      //
-      //
+      // transform history
 
-      int totalHistory = 0;
+      int32_t totalHistory = 0;
       receivedMsg >> totalHistory;
 
-      car.latestTransformsHistory.clear();
-      car.latestTransformsHistory.reserve(totalHistory);
+      currData.latestTransformsHistory.clear();
+      currData.latestTransformsHistory.reserve(totalHistory);
 
       CarData::CarTransform newData;
-      for (int ii = 0; ii < totalHistory; ++ii) {
+      for (int32_t jj = 0; jj < totalHistory; ++jj)
+      {
         receivedMsg >> newData.chassis.position;
         receivedMsg >> newData.chassis.orientation;
-        for (std::size_t jj = 0; jj < newData.wheels.size(); ++jj)
+        for (auto& currWheel : newData.wheels)
         {
-          receivedMsg >> newData.wheels.at(jj).position;
-          receivedMsg >> newData.wheels.at(jj).orientation;
+          receivedMsg >> currWheel.position;
+          receivedMsg >> currWheel.orientation;
         }
 
-        car.latestTransformsHistory.push_back(newData);
+        currData.latestTransformsHistory.push_back(newData);
       }
 
       //
       //
       //
 
-      if (!car.isAlive)
+      if (!currData.isAlive)
         continue;
 
-      receivedMsg >> car.liveTransforms.chassis.position;
-      receivedMsg >> car.liveTransforms.chassis.orientation;
-      for (auto& transform : car.liveTransforms.wheels)
+      //
+      //
+      //
+
+      //
+      // spatial data
+
+      receivedMsg >> currData.liveTransforms.chassis.position;
+      receivedMsg >> currData.liveTransforms.chassis.orientation;
+      for (auto& wheelTransform : currData.liveTransforms.wheels)
       {
-        receivedMsg >> transform.position;
-        receivedMsg >> transform.orientation;
+        receivedMsg >> wheelTransform.position;
+        receivedMsg >> wheelTransform.orientation;
       }
 
-      receivedMsg >> car.velocity;
+      receivedMsg >> currData.velocity;
 
-      for (auto& sensor : car.eyeSensors)
+      //
+      // sensor data
+
+      for (auto& sensor : currData.eyeSensors)
         receivedMsg >> sensor.near >> sensor.far >> sensor.value;
 
-      auto& gSensor = car.groundSensor;
+      auto& gSensor = currData.groundSensor;
       receivedMsg >> gSensor.near >> gSensor.far >> gSensor.value;
 
-      auto& output = car.neuralNetworkOutput;
-      receivedMsg >> output.steer >> output.speed;
+      //
+      // neural network data
 
-      std::size_t totalNeuronsValues;
+      int32_t totalNeuronsValues;
       receivedMsg >> totalNeuronsValues;
-      neuronsValues.clear();
-      neuronsValues.resize(totalNeuronsValues);
-      for (std::size_t neuronIndex = 0; neuronIndex < totalNeuronsValues; ++neuronIndex)
-        receivedMsg >> neuronsValues.at(neuronIndex);
-
-      _geneticAlgorithm.getNeuralNetworks()
-        .at(_coreIndex * _def.genomesPerCore + carIndex)
-        ->setNeuronsValues(neuronsValues);
+      currData.neuronsValues.clear();
+      currData.neuronsValues.resize(totalNeuronsValues);
+      for (int32_t jj = 0; jj < totalNeuronsValues; ++jj)
+        receivedMsg >> currData.neuronsValues.at(jj);
     }
 
     _flags[gero::asValue(Status::Updated)] = true;
@@ -170,20 +232,16 @@ WorkerProducer::_sendToConsumer() {
 
 void
 WorkerProducer::resetAndProcessSimulation(
-  float elapsedTime, unsigned int totalSteps,
-  const NeuralNetworks& neuralNetworks) {
+  float elapsedTime, unsigned int totalSteps
+  // ,
+  // const NeuralNetworks& neuralNetworks
+) {
   _message.clear();
   _message << char(Messages::FromProducer::ResetAndProcessSimulation);
   _message << elapsedTime;
   _message << totalSteps;
 
-  std::vector<float> weights;
-
-  for (std::size_t ii = 0; ii < _carsData.size(); ++ii) {
-    neuralNetworks.at(ii)->getConnectionsWeights(weights);
-
-    _message.append(weights.data(), weights.size() * sizeof(float));
-  }
+  _fillMessageWithAgentToAdd();
 
   _sendToConsumer();
 }
@@ -195,7 +253,78 @@ WorkerProducer::processSimulation(float elapsedTime, unsigned int totalSteps) {
   _message << elapsedTime;
   _message << totalSteps;
 
+  _fillMessageWithAgentToAdd();
+
   _sendToConsumer();
+}
+
+void
+WorkerProducer::_fillMessageWithAgentToAdd()
+{
+  const uint32_t totalAgentsToAdd = _waitingAgentsData.size();
+  _message << totalAgentsToAdd;
+
+  for (const auto currAgent : _waitingAgentsData)
+  {
+    _message << currAgent->dataIndex;
+
+    const auto& weights = currAgent->connectionsWeights;
+    _message.append(weights.data(), weights.size() * sizeof(float));
+
+    _allAgentsData.push_back(currAgent);
+    // _agentsDataMap[currAgent->dataIndex] = currAgent;
+
+    _currentLiveAgents += 1;
+  }
+
+  _waitingAgentsData.clear();
+}
+
+bool
+WorkerProducer::addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome)
+{
+  const uint32_t totalLiveVehicles = getTotalLiveAgents();
+
+  if (totalLiveVehicles > 20)
+  {
+    if (_waitingAgentsData.size() >= 10)
+      return false;
+
+    if (_frameProfiler.getMaxDelta(totalLiveVehicles) >= 30)
+      return false;
+  }
+
+  auto newAgent = std::make_shared<AgentData>(inDataIndex);
+
+  // TODO: copy/realloc (-_-)
+  newAgent->connectionsWeights = inGenome.getConnectionsWeights();
+
+  _waitingAgentsData.push_back(newAgent);
+  _agentsDataMap[newAgent->dataIndex] = newAgent;
+
+  return true;
+}
+
+void WorkerProducer::cleanupDeadAgents()
+{
+  for (std::size_t index = 0; index < _allAgentsData.size(); )
+  {
+    auto& currData = _allAgentsData.at(index);
+
+    if (!currData->carData.isAlive)
+    {
+      _agentsDataMap.erase(currData->dataIndex);
+
+      // fast removal (no reallocation)
+      if (index + 1 < _allAgentsData.size())
+        std::swap(currData, _allAgentsData.back());
+      _allAgentsData.pop_back();
+    }
+    else
+    {
+      ++index;
+    }
+  }
 }
 
 bool
@@ -213,12 +342,39 @@ WorkerProducer::isUpdated() const {
   return _flags[gero::asValue(Status::Updated)];
 }
 
-const CarDatas&
-WorkerProducer::getCarsData() const {
-  return _carsData;
+// const AllCarsData&
+// WorkerProducer::getCarsData() const {
+//   return _allAgentsData;
+// }
+
+const CarData& WorkerProducer::getCarDataByDataIndex(uint32_t inDataIndex) const
+{
+  auto it = _agentsDataMap.find(inDataIndex);
+  if (it == _agentsDataMap.end())
+    D_THROW(std::invalid_argument, "data index not found, value -> " << inDataIndex);
+
+  return it->second->carData;
 }
 
-const AbstactSimulation::CoreState&
+const CarData& WorkerProducer::getCarDataByIndex(uint32_t inIndex) const
+{
+  return _allAgentsData.at(inIndex)->carData;
+}
+
+std::size_t WorkerProducer::getTotalCarsData() const
+{
+  return _allAgentsData.size();
+}
+
+
+const AbstractSimulation::CoreState&
 WorkerProducer::getCoreState() const {
   return _coreState;
 }
+
+uint32_t WorkerProducer::getTotalLiveAgents() const
+{
+  return _currentLiveAgents + uint32_t(_waitingAgentsData.size());
+}
+
+

@@ -1,17 +1,18 @@
 
 #include "WebWorkersSimulation.hpp"
 
+#include "application/defines.hpp"
+
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
-
-#include "application/defines.hpp"
+#include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 void
 WebWorkersSimulation::initialise(const Definition& def) {
-  if (def.genomesPerCore == 0)
+  if (def.totalGenomes == 0)
     D_THROW(
-      std::invalid_argument, "received invalid number of genomes per core"
-                               << ", input=" << def.genomesPerCore);
+      std::invalid_argument, "received invalid number of total genomes"
+                               << ", input=" << def.totalGenomes);
 
   if (def.totalCores == 0)
     D_THROW(
@@ -21,23 +22,31 @@ WebWorkersSimulation::initialise(const Definition& def) {
   if (!def.neuralNetworkTopology.isValid())
     D_THROW(std::invalid_argument, "received invalid neural network topology");
 
+  _def = def;
+
   CircuitBuilder circuit;
   circuit.parse(def.filename);
 
-  circuit.generateWireframeSkeleton(def.onSkeletonPatch);
+  circuit.generateWireFrameSkeleton(def.onSkeletonPatch);
   circuit.generateCircuitGeometry(def.onNewGroundPatch, def.onNewWallPatch);
 
   //
 
-  _totalCores = def.totalCores;
-  _genomesPerCore = def.genomesPerCore;
-  _totalGenomes = _genomesPerCore * _totalCores;
-
-  _carsData.data.resize(_totalGenomes);
+  _allCarsData.resize(def.totalGenomes);
 
   GeneticAlgorithm::Definition genAlgoDef;
   genAlgoDef.topology = def.neuralNetworkTopology;
-  genAlgoDef.totalGenomes = _totalGenomes;
+  genAlgoDef.totalGenomes = def.totalGenomes;
+  genAlgoDef.minimumMutations = 2;
+  genAlgoDef.mutationMaxChance = 0.2f;
+  genAlgoDef.mutationMaxEffect = 0.2f;
+
+  gero::rng::RNG::ensureRandomSeed();
+
+  genAlgoDef.getRandomCallback = []()
+  {
+    return gero::rng::RNG::getNormalisedValue();
+  };
 
   _geneticAlgorithm.initialise(genAlgoDef);
 
@@ -47,20 +56,18 @@ WebWorkersSimulation::initialise(const Definition& def) {
 
   WorkerProducer::Definition workerDef;
   workerDef.startTransform = circuit.getStartTransform();
-  workerDef.knots = circuit.getKnots();
-  workerDef.genomesPerCore = _genomesPerCore;
+  workerDef.knots = circuit.getKnots(); // TODO: copy/reallocation
   workerDef.neuralNetworkTopology = def.neuralNetworkTopology;
 
-  _workerProducers.reserve(_totalCores);
-  for (uint32_t coreIndex = 0; coreIndex < _totalCores; ++coreIndex)
-    _workerProducers.emplace_back(std::make_shared<WorkerProducer>(
-      workerDef, _geneticAlgorithm, coreIndex));
+  _workerProducers.reserve(def.totalCores);
+  for (uint32_t coreIndex = 0; coreIndex < def.totalCores; ++coreIndex)
+    _workerProducers.emplace_back(std::make_shared<WorkerProducer>(workerDef));
 
   _currentRequest = WorkerRequest::WorkersLoading;
 }
 
 void
-WebWorkersSimulation::update(float elapsedTime, unsigned int totalSteps) {
+WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
   // do nothing if the worker(s) are:
   // => not initialised
   // => not finished working
@@ -81,22 +88,27 @@ WebWorkersSimulation::update(float elapsedTime, unsigned int totalSteps) {
     return;
   }
 
-  for (unsigned int index = 0; index < _totalGenomes; ++index) {
-    const unsigned int workerIndex = index / _genomesPerCore;
-    const unsigned int carDataIndex = index % _genomesPerCore;
+  for (uint32_t index = 0; index < _def.totalGenomes; ++index) {
 
-    const auto& latestData =
-      _workerProducers.at(workerIndex)->getCarsData().at(carDataIndex);
-    auto& oldData = _carsData.data.at(index);
+    const auto it = _agentsWorkerMap.find(index);
+    if (it == _agentsWorkerMap.end())
+      continue;
 
-    if (oldData.isAlive && !latestData.isAlive) {
+    const auto& latestData = it->second->getCarDataByDataIndex(index);
+
+    auto& oldData = _allCarsData.at(index);
+
+    if (oldData.isAlive && !latestData.isAlive)
+    {
+      _addNewAgents();
+
       if (_callbacks.onGenomeDie)
         _callbacks.onGenomeDie(index);
     }
 
-    oldData = latestData;
+    oldData = latestData; // TODO: copy/realloc (-_-)
   }
-  _carsData.isUpToDate = true;
+  _carsDataIsUpToDate = true;
 
   if (_currentRequest == WorkerRequest::ResetAndProcess) {
     if (_callbacks.onGenerationReset)
@@ -118,7 +130,7 @@ WebWorkersSimulation::breed() {
   if (!isGenerationComplete())
     return;
 
-  for (unsigned int ii = 0; ii < _totalGenomes; ++ii) {
+  for (uint32_t ii = 0; ii < _def.totalGenomes; ++ii) {
     const auto& carData = getCarResult(ii);
 
     // this penalty reward fast cars (reaching farther in less updates)
@@ -132,19 +144,29 @@ WebWorkersSimulation::breed() {
   if (_callbacks.onGenerationEnd)
     _callbacks.onGenerationEnd(isSmarter);
 
+  for (auto workerProducer : _workerProducers)
+    workerProducer->cleanupDeadAgents();
+
+  // reset
+  for (auto& currData : _allCarsData)
+  {
+    currData.totalUpdates = 0;
+    currData.fitness = 0.0f;
+  }
+
   // ask the worker(s) to reset the (physic) simulation
   const float elapsedTime = 0.0f;
-  const unsigned int totalSteps = 1;
+  const uint32_t totalSteps = 1;
   _resetAndProcessSimulation(elapsedTime, totalSteps);
 }
 
 bool
 WebWorkersSimulation::isGenerationComplete() const {
 
-  if (!_carsData.isUpToDate)
+  if (!_carsDataIsUpToDate)
     return false;
 
-  for (unsigned int ii = 0; ii < _totalGenomes; ++ii)
+  for (uint32_t ii = 0; ii < _def.totalGenomes; ++ii)
     if (getCarResult(ii).isAlive)
       return false;
 
@@ -153,7 +175,7 @@ WebWorkersSimulation::isGenerationComplete() const {
 
 void
 WebWorkersSimulation::_processSimulation(
-  float elapsedTime, unsigned int totalSteps) {
+  float elapsedTime, uint32_t totalSteps) {
   for (auto workerProducer : _workerProducers)
     workerProducer->processSimulation(elapsedTime, totalSteps);
 
@@ -161,71 +183,114 @@ WebWorkersSimulation::_processSimulation(
 }
 
 void
-WebWorkersSimulation::_resetAndProcessSimulation(
-  float elapsedTime, unsigned int totalSteps) {
-  const auto& NNetworks = _geneticAlgorithm.getNeuralNetworks();
+WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t totalSteps)
+{
+  _currentAgentIndex = 0;
+  _agentsWorkerMap.clear();
 
-  for (std::size_t ii = 0; ii < _workerProducers.size(); ++ii) {
-    auto first = NNetworks.begin() + (ii + 0) * _genomesPerCore;
-    auto last = NNetworks.begin() + (ii + 1) * _genomesPerCore;
-    const NeuralNetworks subNetwork(first, last);
+  _addNewAgents();
 
-    _workerProducers.at(ii)->resetAndProcessSimulation(
-      elapsedTime, totalSteps, subNetwork);
-  }
+  for (auto currProducer : _workerProducers)
+    currProducer->resetAndProcessSimulation(elapsedTime, totalSteps);
 
-  _carsData.isUpToDate = false;
+  _carsDataIsUpToDate = false;
   _currentRequest = WorkerRequest::ResetAndProcess;
 }
 
-unsigned int
-WebWorkersSimulation::getTotalCores() const {
-  return _totalCores;
+void WebWorkersSimulation::_addNewAgents()
+{
+  while (_currentAgentIndex < _def.totalGenomes)
+  {
+    // select the worker with fewest agents
+
+    uint32_t bestWorkerIndex = 0;
+    for (std::size_t index = 1; index < _workerProducers.size(); ++index)
+    {
+      const auto& bestWorker = _workerProducers.at(bestWorkerIndex);
+      const auto& currWorker = _workerProducers.at(index);
+
+      if (bestWorker->getTotalLiveAgents() < currWorker->getTotalLiveAgents())
+        continue;
+
+      bestWorkerIndex = index;
+    }
+
+    // make the car live
+
+    const auto& targetWorker = _workerProducers.at(bestWorkerIndex);
+    const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
+    if (targetWorker->addNewAgent(_currentAgentIndex, currGenome) == false)
+      break;
+
+    _agentsWorkerMap[_currentAgentIndex] = targetWorker;
+
+    //
+
+    _currentAgentIndex += 1;
+  }
 }
 
-const AbstactSimulation::CoreState&
-WebWorkersSimulation::getCoreState(unsigned int index) const {
+uint32_t
+WebWorkersSimulation::getTotalCores() const {
+  return _def.totalCores;
+}
+
+const AbstractSimulation::CoreState&
+WebWorkersSimulation::getCoreState(uint32_t index) const {
   return _workerProducers.at(index)->getCoreState();
 }
 
 const CarData&
-WebWorkersSimulation::getCarResult(unsigned int index) const {
-  return _carsData.data.at(index);
+WebWorkersSimulation::getCarResult(uint32_t index) const {
+  return _allCarsData.at(index);
 }
 
-unsigned int
+uint32_t
 WebWorkersSimulation::getTotalCars() const {
-  return _totalGenomes;
+  return _def.totalGenomes;
 }
 
 void
 WebWorkersSimulation::setOnWorkersReadyCallback(
-  AbstactSimulation::SimpleCallback callback) {
+  AbstractSimulation::SimpleCallback callback) {
   _callbacks.onWorkersReady = callback;
 }
 
 void
 WebWorkersSimulation::setOnGenerationResetCallback(
-  AbstactSimulation::SimpleCallback callback) {
+  AbstractSimulation::SimpleCallback callback) {
   _callbacks.onGenerationReset = callback;
 }
 
 void
 WebWorkersSimulation::setOnGenerationStepCallback(
-  AbstactSimulation::SimpleCallback callback) {
+  AbstractSimulation::SimpleCallback callback) {
   _callbacks.onGenerationStep = callback;
 }
 
 void
 WebWorkersSimulation::setOnGenomeDieCallback(
-  AbstactSimulation::GenomeDieCallback callback) {
+  AbstractSimulation::GenomeDieCallback callback) {
   _callbacks.onGenomeDie = callback;
 }
 
 void
 WebWorkersSimulation::setOnGenerationEndCallback(
-  AbstactSimulation::GenerationEndCallback callback) {
+  AbstractSimulation::GenerationEndCallback callback) {
   _callbacks.onGenerationEnd = callback;
+}
+
+std::size_t WebWorkersSimulation::getWaitingGenomes() const
+{
+  return std::size_t(_def.totalGenomes - _currentAgentIndex);
+}
+
+std::size_t WebWorkersSimulation::getLiveGenomes() const
+{
+  std::size_t totalLiveAgents = 0;
+  for (const auto& worker : _workerProducers)
+    totalLiveAgents += std::size_t(worker->getTotalLiveAgents());
+  return totalLiveAgents;
 }
 
 std::size_t WebWorkersSimulation::getTotalGenomes() const
@@ -246,7 +311,7 @@ WebWorkersSimulation::getBestGenome() const {
   return _geneticAlgorithm.getBestGenome();
 }
 
-unsigned int
+uint32_t
 WebWorkersSimulation::getGenerationNumber() const {
   return _geneticAlgorithm.getGenerationNumber();
 }

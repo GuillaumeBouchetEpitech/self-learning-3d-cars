@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstactSimulation.hpp"
+#include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
 #include "application/context/simulation/webworker/common.hpp"
@@ -16,9 +16,9 @@
 #include <memory>
 #include <vector>
 
-class WebWorkersSimulation : public AbstactSimulation {
+class WebWorkersSimulation : public AbstractSimulation {
 private:
-  enum class WorkerRequest : unsigned int {
+  enum class WorkerRequest : uint32_t {
     None = 0,
     WorkersLoading,
     ResetAndProcess,
@@ -28,26 +28,24 @@ private:
   glm::vec3 _startPosition;
 
   std::vector<std::shared_ptr<WorkerProducer>> _workerProducers;
+  std::unordered_map<uint64_t, std::shared_ptr<WorkerProducer>> _agentsWorkerMap;
 
-  unsigned int _totalCores = 0;
-  unsigned int _genomesPerCore = 0;
-  unsigned int _totalGenomes = 0;
+  uint32_t _currentAgentIndex = 0;
 
-  struct AllCarsData {
-    CarDatas data;
-    bool isUpToDate = false;
-  } _carsData;
+  AllCarsData _allCarsData;
+  bool _carsDataIsUpToDate = false;
 
 private:
+  Definition _def;
   NeuralNetworkTopology _neuralNetworkTopology;
   GeneticAlgorithm _geneticAlgorithm;
 
   struct t_callbacks {
-    AbstactSimulation::SimpleCallback onWorkersReady;
-    AbstactSimulation::SimpleCallback onGenerationReset;
-    AbstactSimulation::SimpleCallback onGenerationStep;
-    AbstactSimulation::GenomeDieCallback onGenomeDie;
-    AbstactSimulation::GenerationEndCallback onGenerationEnd;
+    AbstractSimulation::SimpleCallback onWorkersReady;
+    AbstractSimulation::SimpleCallback onGenerationReset;
+    AbstractSimulation::SimpleCallback onGenerationStep;
+    AbstractSimulation::GenomeDieCallback onGenomeDie;
+    AbstractSimulation::GenerationEndCallback onGenerationEnd;
   } _callbacks;
 
 public:
@@ -58,41 +56,44 @@ public:
   virtual void initialise(const Definition& def) override;
 
 public:
-  virtual void update(float elapsedTime, unsigned int totalSteps) override;
+  virtual void update(float elapsedTime, uint32_t totalSteps) override;
   virtual void breed() override;
   virtual bool isGenerationComplete() const override;
 
 private:
-  void _processSimulation(float elapsedTime, unsigned int totalSteps);
-  void _resetAndProcessSimulation(float elapsedTime, unsigned int totalSteps);
+  void _processSimulation(float elapsedTime, uint32_t totalSteps);
+  void _resetAndProcessSimulation(float elapsedTime, uint32_t totalSteps);
+  void _addNewAgents();
 
 public:
-  virtual unsigned int getTotalCores() const override;
-  virtual const AbstactSimulation::CoreState&
-  getCoreState(unsigned int index) const override;
-  virtual const CarData& getCarResult(unsigned int index) const override;
-  virtual unsigned int getTotalCars() const override;
+  virtual uint32_t getTotalCores() const override;
+  virtual const AbstractSimulation::CoreState&
+  getCoreState(uint32_t index) const override;
+  virtual const CarData& getCarResult(uint32_t index) const override;
+  virtual uint32_t getTotalCars() const override;
 
 public:
   virtual void setOnWorkersReadyCallback(
-    AbstactSimulation::SimpleCallback callback) override;
+    AbstractSimulation::SimpleCallback callback) override;
   virtual void setOnGenerationResetCallback(
-    AbstactSimulation::SimpleCallback callback) override;
+    AbstractSimulation::SimpleCallback callback) override;
   virtual void setOnGenerationStepCallback(
-    AbstactSimulation::SimpleCallback callback) override;
+    AbstractSimulation::SimpleCallback callback) override;
   virtual void setOnGenomeDieCallback(
-    AbstactSimulation::GenomeDieCallback callback) override;
+    AbstractSimulation::GenomeDieCallback callback) override;
   virtual void setOnGenerationEndCallback(
-    AbstactSimulation::GenerationEndCallback callback) override;
+    AbstractSimulation::GenerationEndCallback callback) override;
 
 public:
+  virtual std::size_t getWaitingGenomes() const override;
+  virtual std::size_t getLiveGenomes() const override;
   virtual std::size_t getTotalGenomes() const override;
   virtual AbstractGenome& getGenome(std::size_t inIndex) override;
   virtual const AbstractGenome& getGenome(std::size_t inIndex) const override;
   virtual const AbstractGenome& getBestGenome() const override;
 
 public:
-  virtual unsigned int getGenerationNumber() const override;
+  virtual uint32_t getGenerationNumber() const override;
   virtual const glm::vec3& getStartPosition() const override;
   virtual const GeneticAlgorithm& getGeneticAlgorithm() const override;
 };

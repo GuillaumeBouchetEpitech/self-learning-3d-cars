@@ -1,10 +1,11 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstactSimulation.hpp"
+#include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
 #include "application/context/simulation/webworker/common.hpp"
+#include "application/context/simulation/utilities/FrameProfiler.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
@@ -25,7 +26,6 @@ public:
   struct Definition {
     CircuitBuilder::StartTransform startTransform;
     CircuitBuilder::Knots knots;
-    unsigned int genomesPerCore = 0;
     NeuralNetworkTopology neuralNetworkTopology;
 
     Definition() = default;
@@ -35,8 +35,8 @@ private:
   worker_handle _workerHandle;
 
   Definition _def;
-  GeneticAlgorithm& _geneticAlgorithm;
-  uint32_t _coreIndex;
+
+  uint32_t _currentLiveAgents = 0;
 
   enum class Status : unsigned int {
     WebWorkerLoaded = 0,
@@ -47,16 +47,28 @@ private:
 
   std::bitset<gero::asValue(Status::Count)> _flags;
 
-  AbstactSimulation::CoreState _coreState;
+  AbstractSimulation::CoreState _coreState;
 
-  CarDatas _carsData;
+  struct AgentData
+  {
+    uint32_t dataIndex = 0;
+    CarData carData;
+
+    std::vector<float> connectionsWeights;
+
+    AgentData(uint32_t inDataIndex);
+  };
+
+  std::vector<std::shared_ptr<AgentData>> _waitingAgentsData;
+  std::vector<std::shared_ptr<AgentData>> _allAgentsData;
+  std::unordered_map<uint32_t, std::shared_ptr<AgentData>> _agentsDataMap;
+
+  FrameProfiler _frameProfiler;
 
   gero::messaging::MessageBuffer _message;
 
 public:
-  WorkerProducer(
-    const Definition& def, GeneticAlgorithm& geneticAlgorithm,
-    uint32_t coreIndex);
+  WorkerProducer(const Definition& def);
 
 private:
   static void _onMessageCallback(char* dataPointer, int dataSize, void* arg);
@@ -68,16 +80,29 @@ private:
   void _sendToConsumer();
 
 public:
-  void resetAndProcessSimulation(
-    float elapsedTime, unsigned int totalSteps,
-    const NeuralNetworks& neuralNetworks);
+  void resetAndProcessSimulation(float elapsedTime, unsigned int totalSteps);
   void processSimulation(float elapsedTime, unsigned int totalSteps);
+
+private:
+  void _fillMessageWithAgentToAdd();
+
+public:
+  bool addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome);
+
+public:
+  void cleanupDeadAgents();
 
 public:
   bool isLoaded() const;
   bool isProcessing() const;
   bool isUpdated() const;
-  const CarDatas& getCarsData() const;
 
-  const AbstactSimulation::CoreState& getCoreState() const;
+  const CarData& getCarDataByDataIndex(uint32_t inDataIndex) const;
+  const CarData& getCarDataByIndex(uint32_t inIndex) const;
+  std::size_t getTotalCarsData() const;
+
+  const AbstractSimulation::CoreState& getCoreState() const;
+
+  uint32_t getTotalLiveAgents() const;
+
 };

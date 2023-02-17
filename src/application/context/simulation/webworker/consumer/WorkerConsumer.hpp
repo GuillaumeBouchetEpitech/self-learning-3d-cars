@@ -5,6 +5,7 @@
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
 #include "application/context/simulation/webworker/common.hpp"
+#include "application/context/simulation/utilities/FrameProfiler.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
@@ -18,25 +19,39 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 class WorkerConsumer : public gero::NonCopyable {
+
 private:
-  unsigned int _genomesPerCore = 0;
+  struct AgentValues
+  {
+    uint32_t dataIndex;
+    CarAgent carAgent;
+    NeuralNetwork neuralNet;
+    std::vector<CarData::CarTransform> transformsHistory;
+
+    AgentValues(
+      uint32_t inDataIndex,
+      const NeuralNetworkTopology& inNeuralNetworkTopology
+    );
+  };
+
+private:
 
   std::unique_ptr<gero::physics::PhysicWorld> _physicWorld;
 
-  CarAgents _carAgents;
 
-  std::vector<std::vector<CarData::CarTransform>> _latestTransformsHistory;
+  std::vector<std::shared_ptr<AgentValues>> _allAgentValues;
 
   NeuralNetworkTopology _neuralNetworkTopology;
-  std::vector<std::shared_ptr<NeuralNetwork>> _neuralNetworks;
 
   CircuitBuilder::StartTransform _startTransform;
-  // CircuitBuilder::Knots _circuitKnots;
   CircuitBuilder _circuitBuilder;
 
   gero::messaging::MessageBuffer _messageToSend;
+
+  FrameProfiler _frameProfiler;
 
 public:
   WorkerConsumer() = default;
@@ -49,8 +64,8 @@ private:
 
 private:
   void _initialiseSimulation(gero::messaging::MessageView& receivedMsg);
-  void _resetSimulation(gero::messaging::MessageView& receivedMsg);
-  void _processSimulation(float elapsedTime, unsigned int totalSteps);
+  void _addNewCars(gero::messaging::MessageView& receivedMsg);
+  void _processSimulation(float elapsedTime, uint32_t totalSteps);
 
 private:
   void _resetPhysic();
