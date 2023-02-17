@@ -17,8 +17,8 @@ esac
 DIR_DEPENDENCIES=$PWD/thirdparties/dependencies
 
 declare -a all_dependencies_array=(
-  "BASIC_GENETIC_ALGORITHM;basic-genetic-algorithm;GuillaumeBouchetEpitech/basic-genetic-algorithm;v0.0.4"
-  "GERONIMO;geronimo;GuillaumeBouchetEpitech/geronimo;v0.0.7"
+  "BASIC_GENETIC_ALGORITHM;basic-genetic-algorithm;GuillaumeBouchetEpitech/basic-genetic-algorithm;v0.0.5"
+  "GERONIMO;geronimo;GuillaumeBouchetEpitech/geronimo;v0.0.8"
 )
 
 mkdir -p $DIR_DEPENDENCIES
