@@ -147,8 +147,9 @@ func_ask_build_target () {
         echo "=> loading"
         echo ""
 
-        firefox --new-window  http://127.0.0.1:9000/dist/index.html
-        firefox --new-window  http://127.0.0.1:9001/dist/index.html
+        # firefox --new-window  http://127.0.0.1:9000/dist
+        chromium --new-window http://127.0.0.1:9000/dist
+        chromium --new-window http://127.0.0.1:9001/dist
 
         echo ""
         echo "=> building completed"

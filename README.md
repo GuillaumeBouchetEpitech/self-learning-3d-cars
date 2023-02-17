@@ -12,8 +12,8 @@
 - [Dependencies](#dependencies)
   - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
   - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
-  - [Dependency: Geronimo 0.0.7](#dependency-geronimo-007)
-  - [Dependency: Basic Genetic Algorithm 0.0.4](#dependency-basic-genetic-algorithm-004)
+  - [Dependency: Geronimo 0.0.8](#dependency-geronimo-008)
+  - [Dependency: Basic Genetic Algorithm 0.0.5](#dependency-basic-genetic-algorithm-005)
 - [How to Build](#how-to-build)
   - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
 - [How to Run](#how-to-run)
@@ -240,17 +240,17 @@ libsdl2-dev
 libglesv2
 ```
 
-## Dependency: Geronimo 0.0.7
+## Dependency: Geronimo 0.0.8
 
 [Github Link](https://github.com/GuillaumeBouchetEpitech/geronimo)
 
-This dependency will be donwloaded and built with the `Build Everything` method below
+This dependency will be downloaded and built with the `Build Everything` method below
 
-## Dependency: Basic Genetic Algorithm 0.0.4
+## Dependency: Basic Genetic Algorithm 0.0.5
 
 [Github Link](https://github.com/GuillaumeBouchetEpitech/basic-genetic-algorithm)
 
-This dependency will be donwloaded and built with the `Build Everything` method below
+This dependency will be downloaded and built with the `Build Everything` method below
 
 # How to Build
 
@@ -285,7 +285,7 @@ then use **firefox/chrome browser (should support desktop and mobile)** to load 
 node dumbFileServer.js # launch the file server
 ```
 
-then use **firefox/chrome browser (desktop adviseable)** to load `http://127.0.0.1:9001/dist/index.html`
+then use **firefox/chrome browser (desktop advisable)** to load `http://127.0.0.1:9001/dist/index.html`
 
 
 # Thanks for watching!
