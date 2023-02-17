@@ -11,10 +11,10 @@ CarTailsRenderer::initialise() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::wireframes));
+  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
 
   auto geoDef = resourceManager.getGeometryDefinition(
-    gero::asValue(GeometriesAliases::wireframesLineStrip));
+    gero::asValue(GeometriesAliases::wireFramesLineStrip));
   _geometries.leaderCarTrail.initialise(*_shader, geoDef);
   _geometries.leaderCarTrail.setPrimitiveCount(0);
 

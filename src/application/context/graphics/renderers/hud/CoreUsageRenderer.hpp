@@ -24,6 +24,6 @@ public:
 
   void update(float elapsedTime);
 
-  void renderWireframe();
+  void renderWireFrame();
   void renderHudText();
 };

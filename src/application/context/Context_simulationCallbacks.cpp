@@ -7,7 +7,7 @@
 #include <sstream>
 
 void
-Context::initialiseSimulationCallbacks() {
+Context::_initialiseSimulationCallbacks() {
   logic.simulation->setOnGenerationResetCallback([this]() -> void {
     { // handle the car trails
 

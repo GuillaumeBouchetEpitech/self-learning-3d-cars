@@ -6,8 +6,10 @@
 #include <limits> // <= std::numeric_limits<T>::max()
 
 void
-Context::initialiseSimulation(
-  unsigned int totalCores, unsigned int genomesPerCore) {
+Context::_initialiseSimulation(
+  uint32_t totalGenomes,
+  uint32_t totalCores)
+{
   std::vector<glm::vec3> skeletonVertices;
   AnimatedCircuitRenderer::AnimatedVertices groundVertices;
   AnimatedCircuitRenderer::AnimatedVertices wallsVertices;
@@ -112,14 +114,13 @@ Context::initialiseSimulation(
 
   logic.annTopology.init({16, 5, 2}, /*useBiasNeuron =*/true);
 
-  logic.cores.genomesPerCore = genomesPerCore;
+  logic.cores.totalGenomes = totalGenomes;
   logic.cores.totalCores = totalCores;
-  logic.cores.totalCars = logic.cores.totalCores * logic.cores.genomesPerCore;
 
-  AbstactSimulation::Definition simulationDef;
+  AbstractSimulation::Definition simulationDef;
   simulationDef.filename = "assets/circuits/default.txt";
-  simulationDef.genomesPerCore = logic.cores.genomesPerCore;
   simulationDef.totalCores = logic.cores.totalCores;
+  simulationDef.totalGenomes = totalGenomes;
   simulationDef.neuralNetworkTopology = logic.annTopology;
   simulationDef.onSkeletonPatch = onSkeletonPatch;        // callback
   simulationDef.onNewGroundPatch = onGroundPatchCallback; // callback

@@ -1,17 +1,16 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstactSimulation.hpp"
+#include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/states/StateManager.hpp"
 
 #include "graphics/renderers/TrianglesStackRenderer.hpp"
-#include "graphics/renderers/WireframesStackRenderer.hpp"
+#include "graphics/renderers/WireFramesStackRenderer.hpp"
 
 #include "helpers/CarWheelsTrails.hpp"
 #include "helpers/FitnessStats.hpp"
 #include "helpers/LeaderCar.hpp"
 #include "helpers/ProfileData.hpp"
-#include "helpers/PerformanceProfiler.hpp"
 
 #include "graphics/renderers/hud/CoreUsageRenderer.hpp"
 #include "graphics/renderers/hud/FitnessDataRenderer.hpp"
@@ -35,6 +34,7 @@
 #include "geronimo/graphics/camera/Camera.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/NonCopyable.hpp"
+#include "geronimo/system/metrics/PerformanceProfiler.hpp"
 
 #include <array>
 #include <list>
@@ -57,14 +57,10 @@ private:
   ~Context();
 
 private:
-  void initialise(
-    unsigned int width, unsigned int height, unsigned int totalCores,
-    unsigned int genomesPerCore);
+  void _initialise(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
 
 public:
-  static void create(
-    unsigned int width, unsigned int height, unsigned int totalCores,
-    unsigned int genomesPerCore);
+  static void create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
   static void destroy();
   static Context& get();
 
@@ -73,10 +69,9 @@ public:
   //
 
 private:
-  void initialiseGraphicResource();
-  void
-  initialiseSimulation(unsigned int totalCores, unsigned int genomesPerCore);
-  void initialiseSimulationCallbacks();
+  void _initialiseGraphicResource();
+  void _initialiseSimulation(uint32_t totalGenomes, uint32_t totalCores);
+  void _initialiseSimulationCallbacks();
 
 public:
   struct Graphic {
@@ -97,7 +92,7 @@ public:
     } cameraData;
 
     struct StackRenderers {
-      WireframesStackRenderer wireframes;
+      WireFramesStackRenderer wireFrames;
       TrianglesStackRenderer triangles;
     };
 
@@ -133,20 +128,19 @@ public:
   struct Logic {
     struct Metrics {
 
-      PerformanceProfiler performanceProfiler;
+      gero::metrics::PerformanceProfiler performanceProfiler;
 
     } metrics;
 
     NeuralNetworkTopology annTopology;
 
-    std::unique_ptr<AbstactSimulation> simulation = nullptr;
+    std::unique_ptr<AbstractSimulation> simulation = nullptr;
 
     struct Cores {
       ProfileData profileData;
 
-      unsigned int genomesPerCore = 0;
-      unsigned int totalCores = 0;
-      unsigned int totalCars = 0;
+      uint32_t totalGenomes = 0;
+      uint32_t totalCores = 0;
     } cores;
 
     bool isAccelerated = false;

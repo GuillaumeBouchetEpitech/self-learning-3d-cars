@@ -109,7 +109,7 @@ FlockingManager::initialise() {
 
   gero::graphics::MakeGeometries::Vertices outVertices;
   outVertices.reserve(1024);
-  gero::graphics::MakeGeometries::makeShpere(outVertices, 0, 0.5f);
+  gero::graphics::MakeGeometries::makeSphere(outVertices, 0, 0.5f);
 
   std::vector<glm::vec3> particlesVertices;
   particlesVertices.reserve(outVertices.size());

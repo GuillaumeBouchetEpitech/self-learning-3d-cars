@@ -9,8 +9,8 @@
 
 namespace {
 
-constexpr unsigned int k_slowdownDelta = 16 * 1000;
-constexpr float k_divider = 5000.0f; // 5ms
+constexpr uint32_t k_slowdownDelta = 33;
+constexpr float k_divider = 5.0f; // 5ms
 
 constexpr float k_faceInX = +8.0f;
 constexpr float k_faceOutX = -400.0f;
@@ -22,7 +22,7 @@ constexpr float k_textHScale = k_textScale * 0.5f;
 
 CoreUsageRenderer::CoreUsageRenderer() {
   _position.x = k_faceOutX;
-  _position.y = 14.0f * k_textScale;
+  _position.y = 12.0f * k_textScale;
 
   _size = {150, 100};
 }
@@ -66,7 +66,7 @@ CoreUsageRenderer::resize() {
 }
 
 void
-CoreUsageRenderer::renderWireframe() {
+CoreUsageRenderer::renderWireFrame() {
 
   auto& context = Context::get();
   auto& graphic = context.graphic;
@@ -81,7 +81,7 @@ CoreUsageRenderer::renderWireframe() {
 
   const auto& profileData = context.logic.cores.profileData;
 
-  const unsigned int allTimeMaxDelta = profileData.getAllTimeMaxDelta();
+  const uint32_t allTimeMaxDelta = profileData.getAllTimeMaxDelta();
 
   const float verticalSize =
     (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
@@ -95,7 +95,7 @@ CoreUsageRenderer::renderWireframe() {
     stackRenderers.triangles.pushQuad(
       glm::vec3(glm::vec2(borderPos) + borderSize * 0.5f, borderPos.z),
       borderSize, bgColor, -0.2f);
-    stackRenderers.wireframes.pushRectangle(
+    stackRenderers.wireFrames.pushRectangle(
       borderPos, borderSize, whiteColor, -0.1f);
 
   } // background
@@ -109,7 +109,7 @@ CoreUsageRenderer::renderWireframe() {
          currDivider += k_divider) {
       const float ratio = currDivider / verticalSize;
 
-      stackRenderers.wireframes.pushLine(
+      stackRenderers.wireFrames.pushLine(
         borderPos + glm::vec3(0, borderSize.y * ratio, 0.0f),
         borderPos + glm::vec3(borderSize.x, borderSize.y * ratio, 0.0f),
         whiteColor);
@@ -126,7 +126,7 @@ CoreUsageRenderer::renderWireframe() {
 
     for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores();
          ++coreIndex)
-      for (unsigned int statIndex = 0;
+      for (uint32_t statIndex = 0;
            statIndex + 1 < profileData.getMaxStateHistory(); ++statIndex) {
         const float prevDelta =
           float(profileData.getCoreHistoryData(coreIndex, statIndex + 0).delta);
@@ -136,7 +136,7 @@ CoreUsageRenderer::renderWireframe() {
         const float prevHeight = borderSize.y * prevDelta / verticalSize;
         const float currHeight = borderSize.y * currDelta / verticalSize;
 
-        stackRenderers.wireframes.pushLine(
+        stackRenderers.wireFrames.pushLine(
           borderPos + glm::vec3((statIndex + 0) * widthStep, prevHeight, 0.0f),
           borderPos + glm::vec3((statIndex + 1) * widthStep, currHeight, 0.0f),
           prevDelta < k_slowdownDelta ? whiteColor : redColor,
@@ -144,7 +144,7 @@ CoreUsageRenderer::renderWireframe() {
       }
   }
 
-  stackRenderers.wireframes.flush();
+  stackRenderers.wireFrames.flush();
   stackRenderers.triangles.flush();
 }
 
@@ -166,15 +166,11 @@ CoreUsageRenderer::renderHudText() {
   {
     std::stringstream sstr;
 
-#if defined D_WEB_WEBWORKER_BUILD
-
-    sstr << "WORKERS: " << profileData.getTotalCores();
-
-#else
-
-    sstr << "THREADS: " << profileData.getTotalCores();
-
-#endif
+    const uint32_t totalCores = profileData.getTotalCores();
+    if (totalCores == 1)
+      sstr << "CORE: " << totalCores;
+    else
+      sstr << "CORES: " << totalCores;
 
     sstr << std::endl;
     sstr << "CPU time:" << std::endl;

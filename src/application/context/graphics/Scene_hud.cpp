@@ -32,15 +32,15 @@ Scene::_renderHUD_ortho() {
     graphic.hud.fitnessDataRenderer.renderHudText();
     graphic.hud.coreUsageRenderer.renderHudText();
 
-    newLeaderRndr.renderWireframe();
+    newLeaderRndr.renderWireFrame();
     graphic.hud.informationTextRenderer.render();
-    graphic.hud.coreUsageRenderer.renderWireframe();
-    graphic.hud.fitnessDataRenderer.renderWireframe();
+    graphic.hud.coreUsageRenderer.renderWireFrame();
+    graphic.hud.fitnessDataRenderer.renderWireFrame();
     graphic.hud.topologyRenderer.render();
     graphic.hud.leaderEyeRenderer.render();
     graphic.hud.screenTitles.render();
 
-  } // wireframes
+  } // wireFrames
 
   { // big titles
 
@@ -100,7 +100,7 @@ Scene::_renderHUD_ortho() {
 
   } // big titles
 
-  stackRenderers.wireframes.flush();
+  stackRenderers.wireFrames.flush();
   stackRenderers.triangles.flush();
   textRenderer.render();
 }

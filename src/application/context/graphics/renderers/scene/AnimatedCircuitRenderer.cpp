@@ -17,22 +17,22 @@ AnimatedCircuitRenderer::initialise(
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shaderWireframe =
-    resourceManager.getShader(gero::asValue(ShadersAliases::wireframes));
+  _shaderWireFrame =
+    resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
   _shaderCircuitLit =
     resourceManager.getShader(gero::asValue(ShadersAliases::animatedCircuitGround));
   _shaderCircuit =
     resourceManager.getShader(gero::asValue(ShadersAliases::animatedCircuitWalls));
 
-  { // compute circuit skeleton wireframe geometry
+  { // compute circuit skeleton wireFrame geometry
 
     auto geoDef = resourceManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireframes));
-    _geometries.skeleton.initialise(*_shaderWireframe, geoDef);
+      gero::asValue(GeometriesAliases::wireFrames));
+    _geometries.skeleton.initialise(*_shaderWireFrame, geoDef);
     _geometries.skeleton.updateBuffer(0, skeletonVertices);
     _geometries.skeleton.setPrimitiveCount(skeletonVertices.size());
 
-  } // compute circuit skeleton wireframe geometry
+  } // compute circuit skeleton wireFrame geometry
 
   { // compute circuit ground geometries
 
@@ -126,15 +126,15 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
 }
 
 void
-AnimatedCircuitRenderer::renderWireframe(const gero::graphics::Camera& inCamera) {
-  if (!_shaderWireframe)
+AnimatedCircuitRenderer::renderWireFrame(const gero::graphics::Camera& inCamera) {
+  if (!_shaderWireFrame)
     D_THROW(std::runtime_error, "shader not setup");
 
   const auto& matricesData = inCamera.getMatricesData();
 
-  _shaderWireframe->bind();
-  _shaderWireframe->setUniform("u_composedMatrix", matricesData.composed);
-  _shaderWireframe->setUniform("u_color", 0.6f, 0.6f, 0.6f, 1.0f);
+  _shaderWireFrame->bind();
+  _shaderWireFrame->setUniform("u_composedMatrix", matricesData.composed);
+  _shaderWireFrame->setUniform("u_color", 0.6f, 0.6f, 0.6f, 1.0f);
 
   _geometries.skeleton.render();
 }

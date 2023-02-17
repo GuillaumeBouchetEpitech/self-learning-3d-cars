@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-struct WireframesStackRenderer {
+struct WireFramesStackRenderer {
 public:
   struct Vertex {
     glm::vec3 position;
@@ -23,8 +23,8 @@ public:
   using Vertices = std::vector<Vertex>;
 
 public:
-  WireframesStackRenderer() = default;
-  ~WireframesStackRenderer() = default;
+  WireFramesStackRenderer() = default;
+  ~WireFramesStackRenderer() = default;
 
 public:
   void initialise(ShadersAliases shaderId, GeometriesAliases geometryId);

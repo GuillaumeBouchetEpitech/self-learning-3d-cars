@@ -7,7 +7,7 @@ void
 Scene::_renderLeadingCarSensors() {
   auto& context = Context::get();
   const auto& leaderCar = context.logic.leaderCar;
-  auto& stackRenderer = context.graphic.scene.stackRenderers.wireframes;
+  auto& stackRenderer = context.graphic.scene.stackRenderers.wireFrames;
 
   if (auto leaderCarData = leaderCar.leaderData()) {
     // leading car alive?
@@ -60,7 +60,7 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
   {
     const auto& matriceData = inCamera.getMatricesData();
 
-    scene.stackRenderers.wireframes.setMatricesData(matriceData);
+    scene.stackRenderers.wireFrames.setMatricesData(matriceData);
     scene.stackRenderers.triangles.setMatricesData(matriceData);
     scene.particleManager.setMatricesData(matriceData);
     scene.flockingManager.setMatricesData(matriceData);
@@ -74,17 +74,17 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
 
     scene.floorRenderer.render(inCamera);
 
-    scene.animatedCircuitRenderer.renderWireframe(inCamera);
+    scene.animatedCircuitRenderer.renderWireFrame(inCamera);
     scene.animatedCircuitRenderer.renderWalls(inCamera);
 
     Scene::_renderLeadingCarSensors();
 
-    scene.stackRenderers.wireframes.flush();
+    scene.stackRenderers.wireFrames.flush();
     scene.stackRenderers.triangles.flush();
 
     scene.particleManager.render();
 
-    scene.stackRenderers.wireframes.flush();
+    scene.stackRenderers.wireFrames.flush();
     scene.stackRenderers.triangles.flush();
 
     scene.modelsRenderer.render(inCamera);
@@ -92,7 +92,7 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
     scene.carTailsRenderer.render();
     scene.flockingManager.render();
 
-    scene.stackRenderers.wireframes.flush();
+    scene.stackRenderers.wireFrames.flush();
     scene.stackRenderers.triangles.flush();
   }
 }

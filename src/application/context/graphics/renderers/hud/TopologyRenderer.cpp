@@ -91,7 +91,7 @@ TopologyRenderer::render() {
   auto& stackRenderers = graphic.hud.stackRenderers;
   stackRenderers.triangles.pushQuad(
     _position + _size * 0.5f, _size, glm::vec4(0, 0, 0, 0.75f), -0.2f);
-  stackRenderers.wireframes.pushRectangle(_position, _size, whiteColor, -0.1f);
+  stackRenderers.wireFrames.pushRectangle(_position, _size, whiteColor, -0.1f);
 
   if (!logic.leaderCar.hasLeader())
     return;
@@ -100,20 +100,17 @@ TopologyRenderer::render() {
     return;
 
   std::vector<unsigned int> topologyArray;
-  topologyArray.reserve(
-    logic.annTopology.getInput() + logic.annTopology.getHiddens().size() +
-    logic.annTopology.getOutput());
-  topologyArray.push_back(logic.annTopology.getInput());
-  for (const auto& hidden : logic.annTopology.getHiddens())
+
+  topologyArray.reserve(logic.annTopology.getTotalLayers());
+  topologyArray.push_back(logic.annTopology.getInputLayerSize());
+  for (const auto& hidden : logic.annTopology.getHiddenLayers())
     topologyArray.push_back(hidden);
-  topologyArray.push_back(logic.annTopology.getOutput());
+  topologyArray.push_back(logic.annTopology.getOutputLayerSize());
 
-  const NeuralNetworks& neuralNetworks =
-    logic.simulation->getGeneticAlgorithm().getNeuralNetworks();
+  const auto& carData = logic.simulation->getCarResult(logic.leaderCar.leaderIndex());
 
-  std::vector<float> connectionsWeights;
-  const auto leaderNnPtr = neuralNetworks.at(logic.leaderCar.leaderIndex());
-  leaderNnPtr->getConnectionsWeights(connectionsWeights);
+  const auto& currGenome = logic.simulation->getGenome(logic.leaderCar.leaderIndex());
+  const auto& connectionsWeights = currGenome.getConnectionsWeights();
 
   struct NeuronData {
     glm::vec2 position;
@@ -127,9 +124,6 @@ TopologyRenderer::render() {
 
     layersData.resize(topologyArray.size());
 
-    std::vector<float> neuronsValues;
-    leaderNnPtr->getNeuronsValues(neuronsValues);
-
     int neuronIndex = 0;
     for (std::size_t ii = 0; ii < topologyArray.size(); ++ii) {
       const unsigned int actualSize = topologyArray.at(ii);
@@ -142,8 +136,7 @@ TopologyRenderer::render() {
       for (unsigned int jj = 0; jj < actualSize; ++jj) {
         currPos.x += _size.x / (actualSize + 1);
 
-        const float neuronsValue =
-          glm::clamp(neuronsValues.at(neuronIndex++), 0.0f, 1.0f);
+        const float neuronsValue = glm::clamp(carData.neuronsValues.at(neuronIndex++), 0.0f, 1.0f);
 
         layersData.at(ii).push_back({currPos, neuronsValue});
       }

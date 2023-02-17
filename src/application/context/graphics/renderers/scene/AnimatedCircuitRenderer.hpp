@@ -42,12 +42,12 @@ public:
 
 public:
   void update(float elapsedTime);
-  void renderWireframe(const gero::graphics::Camera& inCamera);
+  void renderWireFrame(const gero::graphics::Camera& inCamera);
   void renderWalls(const gero::graphics::Camera& inCamera);
   void renderGround(const gero::graphics::Camera& inCamera);
 
 private:
-  std::shared_ptr<gero::graphics::ShaderProgram> _shaderWireframe;
+  std::shared_ptr<gero::graphics::ShaderProgram> _shaderWireFrame;
   std::shared_ptr<gero::graphics::ShaderProgram> _shaderCircuitLit;
   std::shared_ptr<gero::graphics::ShaderProgram> _shaderCircuit;
 

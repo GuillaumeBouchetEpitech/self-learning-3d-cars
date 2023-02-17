@@ -4,6 +4,7 @@
 #include "application/context/Context.hpp"
 
 #include "helpers/renderTextBackground.hpp"
+#include "helpers/renderProgressBar.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/clamp.hpp"
@@ -18,13 +19,16 @@ constexpr float k_faceOutX = -400.0f;
 constexpr float k_textScale = 16.0f;
 constexpr float k_textHScale = k_textScale * 0.5f;
 
+constexpr float k_width = 150.0f;
+constexpr float k_height = 75.0f;
+
 } // namespace
 
 FitnessDataRenderer::FitnessDataRenderer() {
   _position.x = k_faceOutX;
-  _position.y = 60 + 2.0f * k_textScale + k_textHScale;
+  _position.y = 60 + 0.0f * k_textScale + k_textHScale;
 
-  _size = {150, 75};
+  _size = { k_width, k_height };
 }
 
 void
@@ -73,7 +77,7 @@ FitnessDataRenderer::resize() {
 }
 
 void
-FitnessDataRenderer::renderWireframe() {
+FitnessDataRenderer::renderWireFrame() {
 
   auto& context = Context::get();
   auto& graphic = context.graphic;
@@ -81,39 +85,146 @@ FitnessDataRenderer::renderWireframe() {
 
   auto& stackRenderers = graphic.hud.stackRenderers;
 
-  const glm::vec3 whiteColor(1.0f, 1.0f, 1.0f);
+  const glm::vec3 whiteColor(1.0f);
+  const glm::vec3 lightGrayColor(0.5f);
+  const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
+  const glm::vec3 greenColor(0.0f, 1.0f, 0.0f);
 
-  stackRenderers.triangles.pushQuad(
-    glm::vec2(_position + _size * 0.5f), _size, glm::vec4(0, 0, 0, 0.75f),
-    -0.1f);
-  stackRenderers.wireframes.pushRectangle(_position, _size, whiteColor, -0.1f);
 
-  const float maxFitness = logic.fitnessStats.max();
-  float stepWidth = _size.x / (logic.fitnessStats.size() - 1);
 
-  for (std::size_t ii = 1; ii < logic.fitnessStats.size(); ++ii) {
-    const float prevData = logic.fitnessStats.get(ii - 1);
-    const float currData = logic.fitnessStats.get(ii);
-
-    const glm::vec2 prevPos = {
-      stepWidth * (ii - 1),
-      (prevData / maxFitness) * _size.y,
-    };
-    const glm::vec2 currPos = {
-      stepWidth * ii,
-      (currData / maxFitness) * _size.y,
-    };
-
-    stackRenderers.wireframes.pushLine(
-      glm::vec3(_position + prevPos, 0.0f),
-      glm::vec3(_position + currPos, 0.0f), whiteColor);
-
-    stackRenderers.wireframes.pushLine(
-      glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
-      glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
-      //glm::vec3(_position + currPos, 0.0f),
-      whiteColor);
+  const uint32_t totalCars = logic.cores.totalGenomes;
+  float localBestFitness = 0.0f;
+  for (uint32_t ii = 0; ii < totalCars; ++ii) {
+    const auto& carData = logic.simulation->getCarResult(ii);
+    localBestFitness = std::max(localBestFitness, carData.fitness);
   }
+
+
+  const float maxFitness = std::max(logic.fitnessStats.max(), localBestFitness);
+
+  {
+    stackRenderers.triangles.pushQuad(
+      glm::vec2(_position + _size * 0.5f),
+      _size,
+      glm::vec4(0, 0, 0, 0.75f),
+      -0.5f);
+
+    stackRenderers.wireFrames.pushRectangle(_position, _size, whiteColor, 0.5f);
+  }
+
+  {
+
+    // const float stepWidth = _size.x / (logic.fitnessStats.size() - 1);
+    const float stepWidth = _size.x / (logic.fitnessStats.size());
+
+    for (std::size_t ii = 1; ii < logic.fitnessStats.size(); ++ii) {
+      const float prevData = logic.fitnessStats.get(ii - 1);
+      const float currData = logic.fitnessStats.get(ii);
+
+      const glm::vec2 prevPos = {
+        stepWidth * (ii - 1),
+        (prevData / maxFitness) * _size.y,
+      };
+      const glm::vec2 currPos = {
+        stepWidth * ii,
+        (currData / maxFitness) * _size.y,
+      };
+
+      // horizontal data curve
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(_position + prevPos, 0.0f),
+        glm::vec3(_position + currPos, 0.0f), whiteColor);
+
+      // vertical delimiter
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
+        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
+        lightGrayColor);
+    }
+
+    {
+
+      const std::size_t index = logic.fitnessStats.size() - 1;
+
+      const float prevData = logic.fitnessStats.get(index);
+      const float currData = localBestFitness;
+
+      const glm::vec2 prevPos = {
+        stepWidth * (index),
+        (prevData / maxFitness) * _size.y,
+      };
+      const glm::vec2 currPos = {
+        stepWidth * (index + 1),
+        (currData / maxFitness) * _size.y,
+      };
+
+      const glm::vec3& currColor = localBestFitness < maxFitness ? redColor : greenColor;
+
+      // horizontal data curve
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(_position + prevPos, 0.0f),
+        glm::vec3(_position + currPos, 0.0f),
+        currColor);
+
+      // vertical delimiter
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
+        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
+        lightGrayColor);
+    }
+
+  }
+
+  //
+  //
+  //
+
+  struct Dividers
+  {
+    float step;
+    float limit;
+    glm::vec3 color;
+    float zValue;
+  };
+
+  const std::array<Dividers, 4> allDividers =
+  {{
+    { 1.0f, 10.0f, glm::vec3(0.4f, 0.4f, 0.4f), -0.4f },
+    { 2.5f, 40.0f, glm::vec3(0.5f, 0.5f, 0.0f), -0.3f },
+    { 5.0f, 100.0f, glm::vec3(0.75f, 0.25f, 0.25f), -0.2f },
+    { 10.0f, 999999.0f, glm::vec3(0.25f, 0.75f, 0.25f), -0.1f },
+  }};
+
+  for (const auto& values : allDividers)
+  {
+
+    if (maxFitness < values.step || maxFitness > values.limit)
+      continue;
+
+    const uint32_t totalSteps = uint32_t(maxFitness / values.step);
+
+    const float stepHeight = _size.y / maxFitness * values.step;
+
+    // D_MYLOG("stepHeight " << stepHeight);
+
+    const float x1 = _position.x;
+    const float x2 = x1 + _size.x;
+
+    for (uint32_t ii = 0; ii < totalSteps; ++ii)
+    {
+      const float mainY = _position.y + float(ii + 1) * stepHeight;
+
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(x1, mainY, values.zValue),
+        glm::vec3(x2, mainY, values.zValue),
+        values.color
+      );
+    }
+
+  }
+
+
+
 }
 
 void
@@ -124,31 +235,28 @@ FitnessDataRenderer::renderHudText() {
   auto& logic = context.logic;
   auto& simulation = *logic.simulation;
   auto& textRenderer = graphic.hud.textRenderer;
-  // auto& stackRenderers = graphic.hud.stackRenderers;
 
-  const unsigned int totalCars = logic.cores.totalCars;
-  unsigned int carsLeft = 0;
+  const uint32_t totalCars = logic.cores.totalGenomes;
   float localBestFitness = 0.0f;
-
-  for (unsigned int ii = 0; ii < totalCars; ++ii) {
+  for (uint32_t ii = 0; ii < totalCars; ++ii) {
     const auto& carData = simulation.getCarResult(ii);
-
-    if (carData.isAlive)
-      ++carsLeft;
-
-    if (localBestFitness < carData.fitness)
-      localBestFitness = carData.fitness;
+    localBestFitness = std::max(localBestFitness, carData.fitness);
   }
+
+  const uint32_t liveAgents = simulation.getLiveGenomes();
+  const uint32_t agentsLeft = simulation.getWaitingGenomes() + liveAgents;
+
 
   const float bestFitness = simulation.getBestGenome().getFitness();
 
-  const glm::vec4 color = glm::vec4(glm::vec3(0.8f), _alpha);
-  const glm::vec4 outlineColor = glm::vec4(glm::vec3(0.4f), _alpha);
+  const glm::vec4 textColor = glm::vec4(glm::vec3(0.8f), _alpha);
+  const glm::vec4 textOutlineColor = glm::vec4(glm::vec3(0.4f), _alpha);
   const glm::vec4 colorRed = glm::vec4(0.5f, 0.0f, 0.0f, _alpha);
   const glm::vec4 colorGreen = glm::vec4(0.0f, 0.5f, 0.0f, _alpha);
-  const float textDepth = 0.25f;
+  constexpr float k_textDepth = 0.25f;
 
-  const glm::vec2 basePos = { k_textHScale, k_textHScale + 4.0f * k_textScale};
+  const glm::vec2 basePos = { _position.x, _position.y - 1.5f * k_textScale};
+
   glm::vec2 currPos = basePos;
 
   {
@@ -163,17 +271,6 @@ FitnessDataRenderer::renderHudText() {
     sstr << std::fixed << std::setprecision(1);
     sstr << "Fitness:" << std::endl;
     sstr << "${1}" << localBestFitness << "${0}/" << bestFitness;
-    if (bestFitness > 0)
-      sstr << " (${1}" << int32_t((localBestFitness / bestFitness) * 100.0f) << "%${0})";
-    else
-      sstr << " (${1}" << int32_t(localBestFitness * 100.0f) << "%${0})";
-
-    sstr << std::endl;
-
-    sstr << "Cars:" << std::endl;
-    sstr << std::fixed << std::setprecision(1);
-    sstr << "${2}" << carsLeft << "${0}/" << totalCars;
-    sstr << " (${2}" << int32_t((float(carsLeft) / totalCars) * 100) << "%${0})";
 
     const std::string str = sstr.str();
 
@@ -186,26 +283,26 @@ FitnessDataRenderer::renderHudText() {
 
     const glm::vec4 bestFitnessColor = glm::mix(colorRed, colorGreen, bestFitnessCoef);
 
-    const float carLeftCoef = 1.0f - gero::math::clamp(float(carsLeft) / totalCars, 0.0f, 1.0f);
+    const float carLeftCoef = 1.0f - gero::math::clamp(float(agentsLeft) / totalCars, 0.0f, 1.0f);
 
     const glm::vec4 carLeftColor = glm::mix(colorGreen, colorRed, carLeftCoef);
 
     textRenderer.pushText(
       textPos,
       str,
-      color,
+      textColor,
       k_textScale,
-      textDepth,
-      outlineColor,
+      k_textDepth,
+      textOutlineColor,
       TextRenderer::TextAlign::left,
       //
-      TextRenderer::State(color, outlineColor),
-      TextRenderer::State(color, bestFitnessColor),
-      TextRenderer::State(color, carLeftColor)
+      TextRenderer::State(textColor, textOutlineColor),
+      TextRenderer::State(textColor, bestFitnessColor),
+      TextRenderer::State(textColor, carLeftColor)
       );
 
     helpers::renderTextBackground(
-      textDepth,
+      k_textDepth,
       glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
       glm::vec4(0.3f, 0.3f, 0.3f, _alpha),
       3.0f,

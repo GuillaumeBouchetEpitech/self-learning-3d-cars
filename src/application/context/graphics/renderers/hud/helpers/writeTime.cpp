@@ -4,7 +4,7 @@
 #include <string>
 
 void
-writeTime(std::stringstream& stream, unsigned int time, int32_t leftPadValue /*= 5*/) {
+writeTime(std::stringstream& stream, uint32_t time, int32_t leftPadValue /*= 5*/) {
 
   stream << std::setw(std::max(0, leftPadValue));
   stream << std::fixed;
@@ -15,9 +15,9 @@ writeTime(std::stringstream& stream, unsigned int time, int32_t leftPadValue /*=
   //     stream << time << "us";
   // }
   // else
-  if (time < 1000000) {
-    stream << (float(time) / 1000) << "ms";
+  if (time < 1000) {
+    stream << float(time) << "ms";
   } else {
-    stream << (float(time) / 1000000) << "s";
+    stream << (float(time) / 1000) << "s";
   }
 }

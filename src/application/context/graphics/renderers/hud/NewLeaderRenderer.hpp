@@ -10,6 +10,6 @@ private:
 
 public:
   void compute();
-  void renderWireframe();
+  void renderWireFrame();
   void renderHudText();
 };

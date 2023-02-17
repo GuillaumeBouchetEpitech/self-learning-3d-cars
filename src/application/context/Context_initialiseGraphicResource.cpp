@@ -10,8 +10,8 @@
 
 namespace {
 
-void
-initialiseSceneStructures(gero::graphics::ResourceManager& rManager) {
+void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
+{
   const std::string basePath = "./assets/graphics/shaders/scene/";
 
   gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
@@ -37,7 +37,7 @@ initialiseSceneStructures(gero::graphics::ResourceManager& rManager) {
       .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::stackRendererWireframesScene),
+      gero::asValue(GeometriesAliases::stackRendererWireFramesScene),
       geometryBuilder.getDefinition(), true);
 
     geometryBuilder.setPrimitiveType(
@@ -163,14 +163,14 @@ initialiseSceneStructures(gero::graphics::ResourceManager& rManager) {
 
   {
     shaderProgramBuilder.reset()
-      .setVertexFilename(basePath + "wireframes.glsl.vert")
-      .setFragmentFilename(basePath + "wireframes.glsl.frag")
+      .setVertexFilename(basePath + "wireFrames.glsl.vert")
+      .setFragmentFilename(basePath + "wireFrames.glsl.frag")
       .addAttribute("a_vertex_position")
       .addUniform("u_composedMatrix")
       .addUniform("u_color");
 
     auto shader = rManager.createShader(
-      gero::asValue(ShadersAliases::wireframes),
+      gero::asValue(ShadersAliases::wireFrames),
       shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
@@ -180,14 +180,14 @@ initialiseSceneStructures(gero::graphics::ResourceManager& rManager) {
       .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireframes), geometryBuilder.getDefinition(),
+      gero::asValue(GeometriesAliases::wireFrames), geometryBuilder.getDefinition(),
       true);
 
     geometryBuilder.setPrimitiveType(
       gero::graphics::Geometry::PrimitiveType::line_strip);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireframesLineStrip),
+      gero::asValue(GeometriesAliases::wireFramesLineStrip),
       geometryBuilder.getDefinition(), true);
   }
 
@@ -348,7 +348,7 @@ initialiseSceneStructures(gero::graphics::ResourceManager& rManager) {
 }
 
 void
-initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
+_initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
   const std::string basePath = "./assets/graphics/shaders/hud/";
 
   gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
@@ -374,7 +374,7 @@ initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
       .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::stackRendererWireframesHud),
+      gero::asValue(GeometriesAliases::stackRendererWireFramesHud),
       geometryBuilder.getDefinition(), true);
 
     geometryBuilder.setPrimitiveType(
@@ -461,14 +461,14 @@ initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
 } // namespace
 
 void
-Context::initialiseGraphicResource() {
+Context::_initialiseGraphicResource() {
   gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
   gero::graphics::GeometryBuilder geometryBuilder;
 
   auto& rManager = graphic.resourceManager;
 
-  initialiseSceneStructures(rManager);
-  initialiseHudStructures(rManager);
+  _initialiseSceneStructures(rManager);
+  _initialiseHudStructures(rManager);
 
   { // font
 

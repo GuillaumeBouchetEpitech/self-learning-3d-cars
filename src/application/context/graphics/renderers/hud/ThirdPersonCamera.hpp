@@ -7,6 +7,7 @@
 #include "geronimo/system/Timer.hpp"
 #include "geronimo/system/easing/GenericEasing.hpp"
 
+// TODO: smoother camera movements
 class ThirdPersonCamera {
 private:
   glm::vec2 _position;

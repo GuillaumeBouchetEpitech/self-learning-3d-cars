@@ -24,9 +24,8 @@ Context* Context::_instance = nullptr;
 Context::~Context() {}
 
 void
-Context::initialise(
-  unsigned int width, unsigned int height, unsigned int totalCores,
-  unsigned int genomesPerCore) {
+Context::_initialise(
+  uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
   {
     graphic.cameraData.viewportSize = {width, height};
 
@@ -39,7 +38,7 @@ Context::initialise(
     graphic.cameraData.hud.computeMatrices();
   }
 
-  initialiseGraphicResource();
+  _initialiseGraphicResource();
 
   //
   //
@@ -55,8 +54,8 @@ Context::initialise(
 
 #endif
 
-  initialiseSimulationCallbacks();
-  initialiseSimulation(totalCores, genomesPerCore);
+  _initialiseSimulationCallbacks();
+  _initialiseSimulation(totalGenomes, totalCores);
 
   { // compute the top left HUD text
 
@@ -94,8 +93,8 @@ Context::initialise(
 
   {
 
-    graphic.scene.stackRenderers.wireframes.initialise(
-      ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererWireframesScene);
+    graphic.scene.stackRenderers.wireFrames.initialise(
+      ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererWireFramesScene);
     graphic.scene.stackRenderers.triangles.initialise(
       ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererTrianglesScene);
     graphic.scene.particleManager.initialise();
@@ -107,8 +106,8 @@ Context::initialise(
     graphic.scene.floorRenderer.initialise(dimension.center, boundariesSize);
     graphic.scene.backGroundTorusRenderer.initialise();
 
-    graphic.hud.stackRenderers.wireframes.initialise(
-      ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererWireframesHud);
+    graphic.hud.stackRenderers.wireFrames.initialise(
+      ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererWireFramesHud);
     graphic.hud.stackRenderers.triangles.initialise(
       ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererTrianglesHud);
     graphic.hud.topologyRenderer.initialise();
@@ -125,14 +124,13 @@ Context::initialise(
 //
 
 void
-Context::create(
-  unsigned int width, unsigned int height, unsigned int totalCores,
-  unsigned int genomesPerCore) {
+Context::create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores)
+{
   if (_instance)
     D_THROW(std::runtime_error, "Context singleton already initialised");
 
   _instance = new Context();
-  _instance->initialise(width, height, totalCores, genomesPerCore);
+  _instance->_initialise(width, height, totalGenomes, totalCores);
 }
 
 void

@@ -16,7 +16,7 @@ Scene::initialise() {
   gero::graphics::GlContext::enable(gero::graphics::GlContext::States::blend);
   gero::graphics::GlContext::setBlendFunc(
     gero::graphics::GlContext::BlendFuncs::srcAlpha,
-    gero::graphics::GlContext::BlendFuncs::oneMinuxSrcAlpha);
+    gero::graphics::GlContext::BlendFuncs::oneMinusSrcAlpha);
 
   gero::graphics::GlContext::disable(gero::graphics::GlContext::States::cullFace);
 }
@@ -51,7 +51,7 @@ Scene::renderSimple() {
 
     const auto& matricesData = graphic.cameraData.hud.getMatricesData();
     graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.wireframes.setMatricesData(matricesData);
+    graphic.hud.stackRenderers.wireFrames.setMatricesData(matricesData);
     graphic.hud.stackRenderers.triangles.setMatricesData(matricesData);
     graphic.hud.textRenderer.setMatricesData(matricesData);
 
@@ -89,7 +89,7 @@ Scene::renderAll() {
     const auto& matricesData = cameraData.hud.getMatricesData();
 
     graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.wireframes.setMatricesData(matricesData);
+    graphic.hud.stackRenderers.wireFrames.setMatricesData(matricesData);
     graphic.hud.stackRenderers.triangles.setMatricesData(matricesData);
     graphic.hud.textRenderer.setMatricesData(matricesData);
 

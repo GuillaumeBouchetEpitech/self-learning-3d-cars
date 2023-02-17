@@ -113,7 +113,7 @@ LeaderEyeRenderer::render() {
   //
   //
 
-  const unsigned int totalInputs = context.logic.annTopology.getInput();
+  const unsigned int totalInputs = context.logic.annTopology.getInputLayerSize();
   const unsigned int layerSize = 5; // <= hardcoded :(
   const unsigned int layerCount = totalInputs / layerSize;
 
@@ -146,9 +146,9 @@ LeaderEyeRenderer::render() {
   }
 
   for (const auto& position : allPositions) {
-    stackRenderers.wireframes.pushRectangle(
+    stackRenderers.wireFrames.pushRectangle(
       position - eyeSize * 0.5f, eyeSize, whiteColor, 0.5f);
   }
 
-  stackRenderers.wireframes.pushRectangle(position, size, whiteColor, 0.5f);
+  stackRenderers.wireFrames.pushRectangle(position, size, whiteColor, 0.5f);
 }

@@ -64,7 +64,7 @@ ParticleManager::initialise() {
   //
   //
 
-  gero::graphics::MakeGeometries::makeShpere(outVertices, 0, 0.5f);
+  gero::graphics::MakeGeometries::makeSphere(outVertices, 0, 0.5f);
   for (const auto& vertex : outVertices)
     particlesVertices.push_back(vertex.position);
   _geometrySmallSphere.initialise(*_shader, geoDef);
@@ -74,7 +74,7 @@ ParticleManager::initialise() {
   //
   //
 
-  gero::graphics::MakeGeometries::makeShpere(outVertices, 1, 0.5f);
+  gero::graphics::MakeGeometries::makeSphere(outVertices, 1, 0.5f);
   for (const auto& vertex : outVertices)
     particlesVertices.push_back(vertex.position);
 

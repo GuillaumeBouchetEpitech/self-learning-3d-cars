@@ -164,7 +164,7 @@ ThirdPersonCamera::render() {
     auto& stackRenderers = graphic.hud.stackRenderers;
     stackRenderers.triangles.pushQuad(
       _position + _size * 0.5f, _size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
-    stackRenderers.wireframes.pushRectangle(
+    stackRenderers.wireFrames.pushRectangle(
       _position, _size, glm::vec4(0.8f, 0.8f, 0.8f, 1), -0.1f);
   }
 }
