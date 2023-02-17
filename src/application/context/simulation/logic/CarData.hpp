@@ -36,10 +36,7 @@ struct CarData {
   std::array<SensorData, 15> eyeSensors;
   SensorData groundSensor;
 
-  struct NeuralNetworkOutput {
-    float steer = 0.0f;
-    float speed = 0.0f;
-  } neuralNetworkOutput;
+  std::vector<float> neuronsValues;
 };
 
-using CarDatas = std::vector<CarData>;
+using AllCarsData = std::vector<CarData>;

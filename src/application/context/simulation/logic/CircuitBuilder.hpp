@@ -43,7 +43,7 @@ public:
   void load(const StartTransform& startTransform, const Knots& knots);
 
 public:
-  void generateWireframeSkeleton(CallbackNoNormals onSkeletonPatch);
+  void generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch);
   void generateCircuitGeometry(
     CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch);
 

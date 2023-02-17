@@ -210,7 +210,7 @@ CircuitBuilder::load(
 //
 
 void
-CircuitBuilder::generateWireframeSkeleton(CallbackNoNormals onSkeletonPatch) {
+CircuitBuilder::generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch) {
   if (!onSkeletonPatch)
     D_THROW(std::invalid_argument, "no callback provided");
 

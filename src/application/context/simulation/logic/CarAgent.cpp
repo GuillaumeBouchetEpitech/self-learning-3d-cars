@@ -40,8 +40,8 @@ constexpr float groundHeight = 1.0f;
 
 void
 CarAgent::update(
-  float elapsedTime, const std::shared_ptr<NeuralNetwork> neuralNetwork) {
-  if (!_isAlive)
+  float elapsedTime, NeuralNetwork& neuralNetwork) {
+  if (_health <= 0.0f)
     return;
 
   _updateSensors();
@@ -52,11 +52,9 @@ CarAgent::update(
   // reduce the health over time
   // => reduce more if the car does not touch the ground
   // => faster discard of a most probably dying genome
-  _health -= (hasHitGround ? 1 : 2) * elapsedTime;
+  _health -= (hasHitGround ? 1.0f : 2.0f) * elapsedTime;
 
-  if (_health <= 0) {
-    _isAlive = false;
-    // _physicWorld->removeVehicle(_physicVehicle);
+  if (_health <= 0.0f) {
     _physicWorld->getPhysicVehicleManager().removeVehicle(_physicVehicle);
     return;
   }
@@ -74,7 +72,7 @@ CarAgent::update(
 
   std::vector<float> output;
 
-  neuralNetwork->compute(input, output);
+  neuralNetwork.compute(input, output);
 
   // ensure output range is [0..1]
   output.at(0) = glm::clamp(output.at(0), 0.0f, 1.0f);
@@ -239,8 +237,8 @@ CarAgent::_createVehicle() {
     vehicleDef.allWheelStats.push_back(wheelStats);
   }
 
-  _physicVehicle =
-    _physicWorld->getPhysicVehicleManager().createAndAddVehicle(vehicleDef);
+  auto& vehicleManager = _physicWorld->getPhysicVehicleManager();
+  _physicVehicle = vehicleManager.createAndAddVehicle(vehicleDef);
 }
 
 void
@@ -359,7 +357,6 @@ void
 CarAgent::reset(
   gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position,
   const glm::vec4& quaternion) {
-  _isAlive = true;
   _fitness = 0;
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;
@@ -381,6 +378,12 @@ CarAgent::reset(
   _physicVehicle->reset();
 }
 
+bool
+CarAgent::isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const
+{
+  return _physicWorld == inPhysicWorld;
+}
+
 const CarAgent::Sensors&
 CarAgent::getEyeSensors() const {
   return _eyeSensors;
@@ -398,7 +401,7 @@ CarAgent::getFitness() const {
 
 bool
 CarAgent::isAlive() const {
-  return _isAlive;
+  return _health > 0.0f;
 }
 
 int
