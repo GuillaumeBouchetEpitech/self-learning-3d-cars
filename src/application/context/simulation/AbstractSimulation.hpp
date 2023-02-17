@@ -12,16 +12,16 @@
 
 #include <functional>
 
-class AbstactSimulation : public gero::NonCopyable {
+class AbstractSimulation : public gero::NonCopyable {
 public:
   using SimpleCallback = std::function<void()>;
-  using GenomeDieCallback = std::function<void(unsigned int)>;
+  using GenomeDieCallback = std::function<void(uint32_t)>;
   using GenerationEndCallback = std::function<void(bool)>;
 
   struct Definition {
     std::string filename;
-    unsigned int genomesPerCore = 0;
-    unsigned int totalCores = 0;
+    uint32_t totalGenomes = 0;
+    uint32_t totalCores = 0;
     NeuralNetworkTopology neuralNetworkTopology;
     CircuitBuilder::CallbackNoNormals onSkeletonPatch = nullptr;
     CircuitBuilder::CallbackNormals onNewGroundPatch = nullptr;
@@ -31,26 +31,26 @@ public:
   };
 
   struct CoreState {
-    unsigned int delta = 0;
-    unsigned int genomesAlive = 0;
+    uint32_t delta = 0;
+    uint32_t genomesAlive = 0;
   };
 
 public:
-  virtual ~AbstactSimulation() = default;
+  virtual ~AbstractSimulation() = default;
 
 public:
   virtual void initialise(const Definition& def) = 0;
 
 public:
-  virtual void update(float elapsedTime, unsigned int totalSteps) = 0;
+  virtual void update(float elapsedTime, uint32_t totalSteps) = 0;
   virtual void breed() = 0;
   virtual bool isGenerationComplete() const = 0;
 
 public:
-  virtual unsigned int getTotalCores() const = 0;
-  virtual const CoreState& getCoreState(unsigned int index) const = 0;
-  virtual const CarData& getCarResult(unsigned int index) const = 0;
-  virtual unsigned int getTotalCars() const = 0;
+  virtual uint32_t getTotalCores() const = 0;
+  virtual const CoreState& getCoreState(uint32_t index) const = 0;
+  virtual const CarData& getCarResult(uint32_t index) const = 0;
+  virtual uint32_t getTotalCars() const = 0;
 
 public:
 #if defined D_WEB_WEBWORKER_BUILD
@@ -63,13 +63,15 @@ public:
   virtual void setOnGenerationEndCallback(GenerationEndCallback callback) = 0;
 
 public:
+  virtual std::size_t getWaitingGenomes() const = 0;
+  virtual std::size_t getLiveGenomes() const = 0;
   virtual std::size_t getTotalGenomes() const = 0;
   virtual AbstractGenome& getGenome(std::size_t inIndex) = 0;
   virtual const AbstractGenome& getGenome(std::size_t inIndex) const = 0;
   virtual const AbstractGenome& getBestGenome() const = 0;
 
 public:
-  virtual unsigned int getGenerationNumber() const = 0;
+  virtual uint32_t getGenerationNumber() const = 0;
   virtual const glm::vec3& getStartPosition() const = 0;
   virtual const GeneticAlgorithm& getGeneticAlgorithm() const = 0;
 };
