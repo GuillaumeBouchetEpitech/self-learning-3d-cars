@@ -23,7 +23,7 @@ Application::Application(const Definition& def)
   : gero::graphics::SDLWindowWrapper(
       "Self Learning 3d Cars", def.width, def.height, 30,
       SDLWindowWrapper::OpenGlEsVersion::v3, k_canResize) {
-  Context::create(def.width, def.height, def.totalCores, def.genomesPerCore);
+  Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();
   Scene::initialise();
 }

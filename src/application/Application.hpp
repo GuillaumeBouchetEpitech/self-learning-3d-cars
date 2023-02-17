@@ -9,7 +9,7 @@ class Application : public gero::graphics::SDLWindowWrapper {
 public:
   struct Definition {
     uint32_t totalCores = 0;
-    uint32_t genomesPerCore = 0;
+    uint32_t totalGenomes = 0;
     uint32_t width = 0;
     uint32_t height = 0;
   };

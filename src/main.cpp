@@ -5,6 +5,7 @@
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/math/validation-helpers.hpp"
+#include "geronimo/system/parser-utils/ValuesParsers.hpp"
 
 #include <array>
 #include <sstream>
@@ -20,24 +21,19 @@ namespace {
 
 void
 validateInputs(
-  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalCores,
-  uint32_t inGenomesPerCore) {
-
-  if (gero::math::isInvalidInteger(inWidth))
-    D_THROW(std::runtime_error, "argument 0 (width) is not a valid number");
-  if (gero::math::isInvalidInteger(inHeight))
-    D_THROW(std::runtime_error, "argument 1 (height) is not a valid number");
-  if (gero::math::isInvalidInteger(inTotalCores))
-    D_THROW(
-      std::runtime_error, "argument 2 (totalCores) is not a valid number");
-  if (gero::math::isInvalidInteger(inGenomesPerCore))
-    D_THROW(
-      std::runtime_error, "argument 3 (genomesPerCore) is not a valid number");
-
-  if (inWidth < 100)
-    D_THROW(std::runtime_error, "argument 0 (width) cannot be < 100");
-  if (inHeight < 100)
-    D_THROW(std::runtime_error, "argument 1 (height) cannot be < 100");
+  uint32_t inWidth,
+  uint32_t inHeight,
+  uint32_t inTotalGenomes,
+  uint32_t inTotalCores
+) {
+  if (inWidth < 800)
+    D_THROW(std::runtime_error, "argument 0 (width) cannot be < 800");
+  if (inHeight < 600)
+    D_THROW(std::runtime_error, "argument 1 (height) cannot be < 600");
+  if (inTotalGenomes < 100)
+    D_THROW(std::runtime_error, "argument 2 (total genomes) cannot be < 100");
+  if (inTotalCores < 1)
+    D_THROW(std::runtime_error, "argument 3 (total cores) cannot be < 1");
 }
 
 } // namespace
@@ -47,30 +43,43 @@ validateInputs(
 namespace {
 
 void
-processCommandLineArgs(Application::Definition& def, int argc, char** argv) {
-  // array of pointers toward the application definition arguments
-  std::array<uint32_t*, 4> arguments{{
-    &def.width,
-    &def.height,
-    &def.totalCores,
-    &def.genomesPerCore,
-  }};
+processCommandLineArgs(Application::Definition& def, int argc, char** argv)
+{
 
-  std::vector<std::string_view> safeArgs;
-  safeArgs.reserve(argc - 1);
-  for (int ii = 1; ii < argc; ++ii)
-    safeArgs.push_back(argv[ii]);
+  gero::valuesParsers::IntValueParser intValueParser;
 
-  const std::size_t safeSize = std::min(safeArgs.size(), arguments.size());
-  for (std::size_t ii = 0; ii < safeSize; ++ii) {
-    std::stringstream sstr;
-    sstr << safeArgs.at(ii);
-
-    uint32_t argValue;
-    sstr >> argValue;
-
-    *arguments.at(ii) = argValue;
+  if (argc >= 2)
+  {
+    auto value = intValueParser.validate(argv[1]);
+    if (!value)
+      D_THROW(std::runtime_error, "argument 0 (width) is not a valid number");
+    def.width = *value;
   }
+
+  if (argc >= 3)
+  {
+    auto value = intValueParser.validate(argv[2]);
+    if (!value)
+      D_THROW(std::runtime_error, "argument 1 (height) is not a valid number");
+    def.height = *value;
+  }
+
+  if (argc >= 4)
+  {
+    auto value = intValueParser.validate(argv[3]);
+    if (!value)
+      D_THROW(std::runtime_error, "argument 2 (total genomes) is not a valid number");
+    def.totalGenomes = *value;
+  }
+
+  if (argc >= 5)
+  {
+    auto value = intValueParser.validate(argv[4]);
+    if (!value)
+      D_THROW(std::runtime_error, "argument 3 (total cores) is not a valid number");
+    def.totalCores = *value;
+  }
+
 }
 
 } // namespace
@@ -80,12 +89,12 @@ main(int argc, char** argv) {
   Application::Definition def;
   def.width = 800;
   def.height = 600;
+  def.totalGenomes = 1000;
   def.totalCores = 3;
-  def.genomesPerCore = 90;
 
   processCommandLineArgs(def, argc, argv);
 
-  validateInputs(def.width, def.height, def.totalCores, def.genomesPerCore);
+  validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
 
   Application myApplication(def);
   myApplication.run();
@@ -105,18 +114,21 @@ extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void
 startApplication(
-  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalCores,
-  uint32_t inGenomesPerCore) {
+  uint32_t inWidth,
+  uint32_t inHeight,
+  uint32_t inTotalGenomes,
+  uint32_t inTotalCores)
+{
   if (myApplication)
     return;
 
   Application::Definition def;
   def.width = inWidth;
   def.height = inHeight;
+  def.totalGenomes = inTotalGenomes;
   def.totalCores = inTotalCores;
-  def.genomesPerCore = inGenomesPerCore;
 
-  validateInputs(def.width, def.height, def.totalCores, def.genomesPerCore);
+  validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
 
   myApplication = new Application(def);
 }

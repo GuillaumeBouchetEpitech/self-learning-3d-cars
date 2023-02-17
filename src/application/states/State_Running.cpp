@@ -14,22 +14,22 @@
 
 void
 State_Running::enter() {
-  auto& graphic = Context::get().graphic;
-  graphic.hud.topologyRenderer.fadeIn(0.5f, 0.5f);
-  graphic.hud.thirdPersonCamera.fadeIn(0.6f, 0.5f);
-  graphic.hud.coreUsageRenderer.fadeIn(0.7f, 0.5f);
-  graphic.hud.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
-  graphic.hud.informationTextRenderer.fadeIn(0.9f, 0.5f);
+  auto& hud = Context::get().graphic.hud;
+  hud.topologyRenderer.fadeIn(0.5f, 0.5f);
+  hud.thirdPersonCamera.fadeIn(0.6f, 0.5f);
+  hud.coreUsageRenderer.fadeIn(0.7f, 0.5f);
+  hud.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
+  hud.informationTextRenderer.fadeIn(0.9f, 0.5f);
 }
 
 void
 State_Running::leave() {
-  auto& graphic = Context::get().graphic;
-  graphic.hud.topologyRenderer.fadeOut(0.0f, 0.5f);
-  graphic.hud.thirdPersonCamera.fadeOut(0.1f, 0.5f);
-  graphic.hud.coreUsageRenderer.fadeOut(0.2f, 0.5f);
-  graphic.hud.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
-  graphic.hud.informationTextRenderer.fadeOut(0.3f, 0.5f);
+  auto& hud = Context::get().graphic.hud;
+  hud.topologyRenderer.fadeOut(0.0f, 0.5f);
+  hud.thirdPersonCamera.fadeOut(0.1f, 0.5f);
+  hud.coreUsageRenderer.fadeOut(0.2f, 0.5f);
+  hud.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
+  hud.informationTextRenderer.fadeOut(0.3f, 0.5f);
 }
 
 void
@@ -43,7 +43,7 @@ State_Running::update(float elapsedTime) {
 
   { // simulation update
 
-    if (!simulation.isGenerationComplete()) {
+    if (simulation.isGenerationComplete() == false) {
       constexpr float fakeElapsedTime = 1.0f / 30.0f; // TODO: hardcoded
       const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
 
