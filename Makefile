@@ -131,6 +131,7 @@ SRC+=	\
 		$(DIR_SRC)/application/context/graphics/renderers/scene/*.cpp \
 		$(DIR_SRC)/application/context/simulation/*.cpp \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/context/simulation/utilities/*.cpp \
 		)
 
 ifneq ($(build_platform),web-wasm-webworker)
@@ -151,6 +152,7 @@ SRC+=	\
 SRC_WEB_WASM_WORKER+=	\
 	$(wildcard \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/context/simulation/utilities/*.cpp \
 		$(DIR_SRC)/application/context/simulation/webworker/consumer/*.cpp \
 		)
 
@@ -218,7 +220,6 @@ CXXFLAGS += -s USE_SDL=2
 LDFLAGS_COMMON_WEB_WASM += -s USE_SDL=2
 LDFLAGS_COMMON_WEB_WASM += -s USE_WEBGL2=1
 LDFLAGS_COMMON_WEB_WASM += -s FULL_ES3=1
-LDFLAGS_COMMON_WEB_WASM += -s TOTAL_MEMORY=128Mb # 16Kb, 256Mb, etc.
 LDFLAGS_COMMON_WEB_WASM +=	-s WASM=1
 LDFLAGS_COMMON_WEB_WASM +=	-s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
 LDFLAGS_COMMON_WEB_WASM += -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0
@@ -229,7 +230,7 @@ ifeq ($(build_mode),debug)
 # LDFLAGS_COMMON_WEB_WASM += -s DEMANGLE_SUPPORT=1
 # LDFLAGS_COMMON_WEB_WASM += -s GL_ASSERTIONS=1
 # LDFLAGS_COMMON_WEB_WASM += -s GL_DEBUG=1
-# LDFLAGS_COMMON_WEB_WASM += -s DISABLE_EXCEPTION_CATCHING=2
+LDFLAGS_COMMON_WEB_WASM += -s NO_DISABLE_EXCEPTION_CATCHING
 LDFLAGS_COMMON_WEB_WASM += -s ASSERTIONS
 
 endif
@@ -252,6 +253,9 @@ LDFLAGS += --preload-file ./assets/
 LDFLAGS += -Wl,--shared-memory,--no-check-features
 LDFLAGS += -s PTHREAD_POOL_SIZE=17
 
+# pthread build: the application need more memory
+LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
+
 else
 
 LDFLAGS += $(BUILD_FLAG)
@@ -261,6 +265,9 @@ LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
 
+# webworker build: main script need more memory
+LDFLAGS += -s TOTAL_MEMORY=128Mb # 16Kb, 256Mb, etc.
+
 LDFLAGS_WEB_WASM_WORKER += $(BUILD_FLAG)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_SYSTEM)
@@ -268,6 +275,9 @@ LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS_WEB_WASM_WORKER += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS_WEB_WASM_WORKER += -s BUILD_AS_WORKER=1
+
+# webworker build: worker script need less memory
+LDFLAGS_WEB_WASM_WORKER += -s TOTAL_MEMORY=128Mb # 16Kb, 256Mb, etc.
 
 endif
 
@@ -284,12 +294,10 @@ RM=			rm -rf
 
 ifneq ($(build_platform),web-wasm-webworker)
 
-# all:	machine_learning application
 all:	application
 
 else ifeq ($(build_platform),web-wasm-webworker)
 
-# all:	machine_learning application web_wasm_worker
 all:	application web_wasm_worker
 
 endif

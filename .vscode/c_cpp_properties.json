@@ -10,7 +10,12 @@
                 "${EMSDK}/upstream/emscripten/system/include/**",
                 "/usr/include/SDL2/"
             ],
-            "defines": [],
+            "defines": [
+                "__GNUC__=3",
+                "Py_BUILD_CORE",
+                // "__EMSCRIPTEN__",
+                // , "__EMSCRIPTEN_PTHREADS__",
+            ],
             "compilerPath": "/usr/bin/clang++",
             "cStandard": "c17",
             "cppStandard": "c++17",
