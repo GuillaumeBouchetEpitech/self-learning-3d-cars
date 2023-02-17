@@ -7,6 +7,7 @@
 
 #include <optional>
 
+// TODO: refactor -> use callbacks
 class LeaderCar {
 private:
   float _countdownUntilNewLeader = 0;

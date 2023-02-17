@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-class AbstactSimulation;
+class AbstractSimulation;
 
 class CarWheelsTrails {
 public:
@@ -18,18 +18,24 @@ public:
   };
 
 private:
-  std::unordered_map<unsigned int, unsigned int> _genomeIndexMap;
+  std::unordered_map<uint64_t, uint32_t> _genomeIndexMap;
 
   std::vector<WheelsTrail> _allWheelsTrails;
 
-  // unsigned int _currentTrailIndex = 0;
+public:
+  CarWheelsTrails() = default;
+  CarWheelsTrails(const CarWheelsTrails& other) = delete;
+  CarWheelsTrails(CarWheelsTrails&& other) = delete;
+  CarWheelsTrails& operator=(const CarWheelsTrails& other) = delete;
+  CarWheelsTrails& operator=(CarWheelsTrails&& other) = delete;
+  ~CarWheelsTrails() = default;
 
 public:
-  void reset(const AbstactSimulation& simulation);
-  void push(unsigned int carIndex, int wheelIndex, const glm::vec3& value);
+  void reset(const AbstractSimulation& simulation);
+  void push(uint32_t carIndex, uint32_t wheelIndex, const glm::vec3& value);
 
 public:
   bool isEmpty() const;
-  const WheelsTrail& getTrailByIndex(int index) const;
-  const WheelsTrail& getTrailById(int id) const;
+  const WheelsTrail& getTrailByIndex(uint32_t index) const;
+  const WheelsTrail& getTrailById(uint64_t id) const;
 };
