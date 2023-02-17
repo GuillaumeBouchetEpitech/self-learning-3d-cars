@@ -15,20 +15,20 @@ const async_sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // maps file extention to MIME typere
 const formatsMap = new Map([
-    [ '.ico',   'image/x-icon'          ],
-    [ '.html',  'text/html'             ],
-    [ '.js',    'text/javascript'       ],
-    [ '.json',  'application/json'      ],
-    [ '.css',   'text/css'              ],
-    [ '.png',   'image/png'             ],
-    [ '.jpg',   'image/jpeg'            ],
-    [ '.wav',   'audio/wav'             ],
-    [ '.mp3',   'audio/mpeg'            ],
-    [ '.wav',   'audio/wav'             ],
-    [ '.svg',   'image/svg+xml'         ],
-    [ '.pdf',   'application/pdf'       ],
-    [ '.doc',   'application/msword'    ],
-    [ '.wasm',  'application/wasm'      ],
+  [ '.ico',   'image/x-icon'          ],
+  [ '.html',  'text/html'             ],
+  [ '.js',    'text/javascript'       ],
+  [ '.json',  'application/json'      ],
+  [ '.css',   'text/css'              ],
+  [ '.png',   'image/png'             ],
+  [ '.jpg',   'image/jpeg'            ],
+  [ '.wav',   'audio/wav'             ],
+  [ '.mp3',   'audio/mpeg'            ],
+  [ '.wav',   'audio/wav'             ],
+  [ '.svg',   'image/svg+xml'         ],
+  [ '.pdf',   'application/pdf'       ],
+  [ '.doc',   'application/msword'    ],
+  [ '.wasm',  'application/wasm'      ],
 ]);
 
 const build_folder_page = (req, parsedUrl, pathname) => {
@@ -127,106 +127,123 @@ const build_folder_page = (req, parsedUrl, pathname) => {
 
 const on_file_request = async (threading_headers, req, res) => {
 
-    // parse URL
-    const parsedUrl = url.parse(req.url);
-    // extract URL path
-    let pathname = `.${parsedUrl.pathname}`;
-    // based on the URL path, extract the file extention. e.g. .js, .doc, ...
-    const ext = path.parse(pathname).ext;
+  // parse URL
+  const parsedUrl = url.parse(req.url);
+  // extract URL path
+  let pathname = `.${parsedUrl.pathname}`;
+  // based on the URL path, extract the file extention. e.g. .js, .doc, ...
+  const ext = path.parse(pathname).ext;
 
-    if (!fs.existsSync(pathname)) {
-        // if the file is not found, return 404
-        res.statusCode = 404;
-        res.end(`File "${pathname}" not found!`);
-        return;
-    }
+  if (!fs.existsSync(pathname)) {
+    // if the file is not found, return 404
+    res.statusCode = 404;
+    res.end(`File "${pathname}" not found!`);
+    return;
+  }
 
-    let data;
+  let data;
 
-    // if it is a directory: list it's content
-    const fileStats = fs.statSync(pathname);
-    if (fileStats.isDirectory()) {
-      data = build_folder_page(req, parsedUrl, pathname);
-      res.setHeader('Content-type', "text/html");
-      res.setHeader('Last-Modified', (new Date()).toString());
-    }
-    else {
-      // read file from file system
-      data = fs.readFileSync(pathname);
-      res.setHeader('Content-type', formatsMap.get(ext) || "text/plain");
-      res.setHeader('Last-Modified', fileStats.mtime.toString());
-    }
+  // if it is a directory: list it's content
+  const fileStats = fs.statSync(pathname);
+  if (fileStats.isDirectory()) {
+    data = build_folder_page(req, parsedUrl, pathname);
+    res.setHeader('Content-type', "text/html");
+    res.setHeader('Last-Modified', (new Date()).toString());
+  }
+  else {
+    // read file from file system
+    data = fs.readFileSync(pathname);
+    res.setHeader('Content-type', formatsMap.get(ext) || "text/plain");
+    res.setHeader('Last-Modified', fileStats.mtime.toString());
+  }
 
-    const originalSize = data.length;
-    let sizeToSend = originalSize;
+  const originalSize = data.length;
+  let sizeToSend = originalSize;
 
-    if (
-        req.headers['accept-encoding'] &&
-        req.headers['accept-encoding'].indexOf("gzip") >= 0
-    ) {
-        res.setHeader('Content-Encoding', "gzip" );
-        data = zlib.gzipSync(data);
-    }
+  if (
+    req.headers['accept-encoding'] &&
+    req.headers['accept-encoding'].indexOf("gzip") >= 0
+  ) {
+    res.setHeader('Content-Encoding', "gzip" );
+    data = zlib.gzipSync(data);
+  }
 
-    sizeToSend = data.length;
-
-    // // attempt at preventing browser caching (for debug)
-    // res.setHeader('Last-Modified', (new Date()).toString());
+  sizeToSend = data.length;
 
 
-    if (threading_headers === true) {
-        res.setHeader('Cross-Origin-Opener-Policy', "same-origin");
-        res.setHeader('Cross-Origin-Embedder-Policy', "require-corp");
-    }
+  // // attempt at preventing browser caching (for debug)
+  // res.setHeader('Last-Modified', (new Date()).toString());
 
-    // await async_sleep(500);
 
-    let logMsg = `${req.method} ${req.url} ${sizeToSend / 1000}Kb`;
-    if (sizeToSend < originalSize)
-        logMsg += ` (${originalSize / 1000}Kb, ${(originalSize / sizeToSend).toFixed(1)}x)`;
-    console.log(logMsg);
+  if (threading_headers === true) {
+    res.setHeader('Cross-Origin-Opener-Policy', "same-origin");
+    res.setHeader('Cross-Origin-Embedder-Policy', "require-corp");
+  }
 
-    res.end(data);
+  // await async_sleep(500);
+
+  let logMsg = `${req.method} ${req.url} ${sizeToSend / 1000}Kb`;
+  if (sizeToSend < originalSize)
+      logMsg += ` (${originalSize / 1000}Kb, ${(originalSize / sizeToSend).toFixed(1)}x)`;
+  console.log(logMsg);
+
+  res.end(data);
 }
 
 // useful to test on local WiFi with a smartphone
 const list_WiFi_IpAddresses = (inPort) => {
 
-    const allInterfaces = [];
+  // const allInterfaces = [];
+  const allInterfaces = new Map();
 
-    const ifaces = os.networkInterfaces();
+  const interfaces = os.networkInterfaces();
 
-    Object.keys(ifaces).forEach((ifname) => {
+  Object.keys(interfaces).forEach((networkName) => {
 
-        let alias = 0;
+    interfaces[networkName].forEach((iface) => {
 
-        ifaces[ifname].forEach((iface) => {
+      const family = iface.family.toLowerCase() || '{unknown}';
 
-            // skip over internal (i.e. 127.0.0.1)
-            if (iface.internal !== false)
-                return;
+      // family -> network name
+      let currNetwork = allInterfaces.get(family);
+      if (currNetwork == undefined) {
+        currNetwork = new Map();
+        allInterfaces.set(family, currNetwork);
+      }
 
-            // skip over non-ipv4 addresses
-            if (iface.family.toLowerCase() !== 'ipv4')
-                return;
+      // network name -> url
+      let currUrls = currNetwork.get(networkName);
+      if (currUrls == undefined) {
+        currUrls = [];
+        currNetwork.set(networkName, currUrls);
+      }
 
-            if (alias >= 1) {
-                // this single interface has multiple ipv4 addresses
-                allInterfaces.push(`ifname:${alias} http://${iface.address}:${inPort}/`);
-            }
-            else {
-                // this interface has only one ipv4 adress
-                allInterfaces.push(`ifname: http://${iface.address}:${inPort}/`);
-            }
-
-            ++alias;
-        });
+      currUrls.push(`http://${iface.address}:${inPort}/`);
     });
+  });
 
-    const uniqueInterfaces = Array.from(new Set(allInterfaces));
-    for (const interface of uniqueInterfaces)
-        console.log(` => ${interface}`);
-}
+  allInterfaces.forEach((currNetwork, family) => {
+
+    console.log();
+
+    const separator = "".padStart(family.length, '#');
+
+    console.log(` ##${separator}##`);
+    console.log(` # ${family} #`);
+    console.log(` ##${separator}##`);
+
+    currNetwork.forEach((currUrls, networkName) => {
+
+      console.log();
+      console.log(`   => network: ${networkName}`);
+      currUrls.forEach((url) => {
+        console.log(`       ---> ${url}`);
+      });
+    });
+  });
+
+  console.log();
+};
 
 const make_server = (inPort, threading_headers) => {
     http.createServer((req, res) => on_file_request(threading_headers, req, res))
