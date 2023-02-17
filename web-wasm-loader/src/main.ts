@@ -29,8 +29,8 @@ const onGlobalPageLoad = async () => {
   const renderArea = findOrFailHtmlElement<HTMLDivElement>("#renderArea")!;
   const mainCanvas = findOrFailHtmlElement<HTMLCanvasElement>("#canvas")!;
   const buttons = {
-    switchTo90cars: findOrFailHtmlElement<HTMLButtonElement>("#try_with_90_cars")!,
-    switchTo270cars: findOrFailHtmlElement<HTMLButtonElement>("#try_with_270_cars")!,
+    switchTo3cpuCores: findOrFailHtmlElement<HTMLButtonElement>("#try_with_3_cpu_cores")!,
+    switchTo6cpuCores: findOrFailHtmlElement<HTMLButtonElement>("#try_with_6_cpu_cores")!,
   };
 
   const hide = (htmlElem: HTMLElement) => {
@@ -76,13 +76,13 @@ const onGlobalPageLoad = async () => {
   const config: {
     width: number;
     height: number;
+    totalGenomes: number;
     totalCores: number;
-    genomesPerCore: number;
   } = {
     width: getInteger(urlVars.width, 800),
     height: getInteger(urlVars.height, 600),
+    totalGenomes: getInteger(urlVars.totalGenomes, 1000),
     totalCores: getInteger(urlVars.totalCores, 3),
-    genomesPerCore: getInteger(urlVars.genomesPerCore, 30), // <= default to 3 * 30 => 90 cars
     // initialMemory: getInteger(urlVars.initialMemory, 128),
   };
 
@@ -92,7 +92,7 @@ const onGlobalPageLoad = async () => {
   //
   // buttons' logic
 
-  const setupActiveButton = (currButton: HTMLButtonElement, className: string, genomesPerCore: number) => {
+  const setupActiveButton = (currButton: HTMLButtonElement, className: string, totalCores: number) => {
 
     currButton.disabled = false;
 
@@ -107,23 +107,22 @@ const onGlobalPageLoad = async () => {
     // handle events
     currButton.addEventListener("click", () => {
       // simple reload
-      window.location.href = window.location.pathname + `?genomesPerCore=${genomesPerCore}`;
+      window.location.href = window.location.pathname + `?totalCores=${totalCores}`;
     });
   }
 
-  if (config.genomesPerCore != 30) {
-    buttons.switchTo270cars.disabled = true;
-    setupActiveButton(buttons.switchTo90cars, 'blueButton', 30);
+  if (config.totalCores != 3) {
+    buttons.switchTo6cpuCores.disabled = true;
+    setupActiveButton(buttons.switchTo3cpuCores, 'blueButton', 3);
   }
   else {
-    buttons.switchTo90cars.disabled = true;
-    setupActiveButton(buttons.switchTo270cars, 'redButton', 90);
+    buttons.switchTo3cpuCores.disabled = true;
+    setupActiveButton(buttons.switchTo6cpuCores, 'redButton', 6);
   }
 
   //
   //
   //
-
 
   const onProgress = (percent: number) => {
     const statusMsg = `Loading wasm [${percent}%]`;
@@ -140,11 +139,11 @@ const onGlobalPageLoad = async () => {
 
   try {
 
-    await myApplication.initialise(
+    await myApplication.initialize(
       config.width,
       config.height,
+      config.totalGenomes,
       config.totalCores,
-      config.genomesPerCore,
       logger,
     );
 

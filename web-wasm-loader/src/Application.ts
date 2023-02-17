@@ -19,7 +19,7 @@ export class Application {
   private _width: number = 800;
   private _height: number = 600;
 
-  private _isInitialised: boolean = false;
+  private _isInitialized: boolean = false;
   private _isAborted: boolean = false;
   private _wasmApplicationUpdateFunc: (deltaTime: number) => void;
   private _onProgress: (precent: number) => void;
@@ -35,11 +35,11 @@ export class Application {
     this._onError = onError;
   }
 
-  async initialise(
+  async initialize(
     width: number,
     height: number,
+    totalGenomes: number,
     totalCores: number,
-    genomesPerCore: number,
     inLogger: Logger,
   ): Promise<void> {
 
@@ -111,7 +111,7 @@ export class Application {
     this._canvas.addEventListener("contextmenu", onContextMenu, false);
 
     this._webglCtx = getWebGl2Context(this._canvas);
-    inLogger.log("[JS] WebGL2 context initialised");
+    inLogger.log("[JS] WebGL2 context initialized");
 
     //
     //
@@ -165,11 +165,11 @@ export class Application {
 
           this._wasmApplicationUpdateFunc = wasmFunctions.updateApplication;
 
-          wasmFunctions.startApplication(this._width, this._height, totalCores, genomesPerCore);
+          wasmFunctions.startApplication(this._width, this._height, totalGenomes, totalCores);
 
-          this._isInitialised = true;
+          this._isInitialized = true;
 
-          inLogger.log("[JS][wasm] initialised");
+          inLogger.log("[JS][wasm] initialized");
 
           resolve();
         },
@@ -188,7 +188,7 @@ export class Application {
   }
 
   update(deltaTime: number) {
-    if (!this._isInitialised || this._isAborted)
+    if (!this._isInitialized || this._isAborted)
       return;
 
     if (this._wasmApplicationUpdateFunc)
@@ -197,7 +197,7 @@ export class Application {
 
   abort(): void {
 
-    if (!this._isInitialised || this._isAborted)
+    if (!this._isInitialized || this._isAborted)
       return;
 
     this._isAborted = true;
