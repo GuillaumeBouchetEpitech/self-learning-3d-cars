@@ -20,7 +20,7 @@ public:
     glm::quat orientation;
     glm::vec3 scale;
     glm::vec4 color;
-    glm::vec3 outlineColor;
+    float outlineValue;
   };
   using InstanceVertices = std::vector<GeometryInstance>;
 
@@ -42,7 +42,7 @@ public:
   ~GeometriesStackRenderer() = default;
 
 public:
-  void initialise();
+  void initialize();
   void setMatricesData(const gero::graphics::Camera:: MatricesData& matricesData);
 
 public:
@@ -53,6 +53,7 @@ public:
 
 public:
   void clearAll();
-  void renderAll(const glm::vec3& inLightPos);
+  // void renderAll(const glm::vec3& inLightPos);
+  void renderAll();
 
 };

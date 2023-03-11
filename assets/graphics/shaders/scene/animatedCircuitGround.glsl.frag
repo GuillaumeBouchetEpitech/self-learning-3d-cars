@@ -13,7 +13,7 @@ in vec3 v_worldSpacePosition;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {

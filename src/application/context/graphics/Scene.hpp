@@ -8,7 +8,7 @@
 
 class Scene {
 public:
-  static void initialise();
+  static void initialize();
   static void renderSimple();
   static void renderAll();
 

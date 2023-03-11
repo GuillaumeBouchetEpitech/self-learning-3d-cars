@@ -18,7 +18,7 @@ public:
   ~ChessBoardFloorRenderer() = default;
 
 public:
-  void initialise(const glm::vec3& center, const glm::vec3& size);
+  void initialize(const glm::vec3& center, const glm::vec3& size);
 
 public:
   void render(const gero::graphics::Camera& inCamera);

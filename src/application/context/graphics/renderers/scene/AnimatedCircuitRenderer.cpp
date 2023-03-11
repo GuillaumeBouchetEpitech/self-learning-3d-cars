@@ -11,7 +11,7 @@
 using namespace gero::graphics;
 
 void
-AnimatedCircuitRenderer::initialise(
+AnimatedCircuitRenderer::initialize(
   const std::vector<glm::vec3>& skeletonVertices,
   const AnimatedVertices& groundVertices, const AnimatedVertices& wallsVertices,
   float maxUpperValue) {
@@ -30,7 +30,7 @@ AnimatedCircuitRenderer::initialise(
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::wireFrames));
-    _geometries.skeleton.initialise(*_shaderWireFrame, geoDef);
+    _geometries.skeleton.initialize(*_shaderWireFrame, geoDef);
     _geometries.skeleton.updateBuffer(0, skeletonVertices);
     _geometries.skeleton.setPrimitiveCount(skeletonVertices.size());
 
@@ -40,7 +40,7 @@ AnimatedCircuitRenderer::initialise(
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitGround));
-    _geometries.grounds.initialise(*_shaderCircuitLit, geoDef);
+    _geometries.grounds.initialize(*_shaderCircuitLit, geoDef);
     _geometries.grounds.updateBuffer(0, groundVertices);
     _geometries.grounds.setPrimitiveCount(groundVertices.size());
 
@@ -50,7 +50,7 @@ AnimatedCircuitRenderer::initialise(
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitWalls));
-    _geometries.walls.initialise(*_shaderCircuit, geoDef);
+    _geometries.walls.initialize(*_shaderCircuit, geoDef);
     _geometries.walls.updateBuffer(0, wallsVertices);
     _geometries.walls.setPrimitiveCount(wallsVertices.size());
 

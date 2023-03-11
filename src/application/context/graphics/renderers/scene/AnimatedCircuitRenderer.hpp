@@ -35,7 +35,7 @@ public:
   ~AnimatedCircuitRenderer() = default;
 
 public:
-  void initialise(
+  void initialize(
     const std::vector<glm::vec3>& skeletonVertices,
     const AnimatedVertices& groundVertices,
     const AnimatedVertices& wallsVertices, float maxUpperValue);

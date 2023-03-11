@@ -19,7 +19,7 @@ constexpr float k_faceOutX = +500.0f;
 } // namespace
 
 void
-ThirdPersonCamera::initialise() {
+ThirdPersonCamera::initialize() {
   auto& context = Context::get();
   const auto& vSize = context.graphic.cameraData.viewportSize;
 
@@ -28,7 +28,7 @@ ThirdPersonCamera::initialise() {
   _layout.position.x = vSize.x - _layout.size.x + k_faceOutX;
   _layout.position.y = 10;
 
-  _postProcess.initialise({_layout.size.x, _layout.size.y});
+  _postProcess.initialize({_layout.size.x, _layout.size.y});
 }
 
 bool
@@ -162,9 +162,9 @@ ThirdPersonCamera::render() {
     _postProcess.render();
 
     auto& stackRenderers = graphic.hud.stackRenderers;
-    stackRenderers.triangles.pushQuad(
+    stackRenderers.getTrianglesStack().pushQuad(
       _layout.position + _layout.size * 0.5f, _layout.size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
-    stackRenderers.wireFrames.pushRectangle(
+    stackRenderers.getWireFramesStack().pushRectangle(
       _layout.position, _layout.size, glm::vec4(0.8f, 0.8f, 0.8f, 1), -0.1f);
   }
 }

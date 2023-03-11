@@ -17,7 +17,7 @@ PostProcess::setMatricesData(
 }
 
 void
-PostProcess::initialise(const glm::uvec2& frameSize) {
+PostProcess::initialize(const glm::uvec2& frameSize) {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -27,7 +27,7 @@ PostProcess::initialise(const glm::uvec2& frameSize) {
     // resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::postProcess));
     resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::simpleTexture));
-  _screenQuad.initialise(*_shader, geoDef);
+  _screenQuad.initialize(*_shader, geoDef);
   _screenQuad.setPrimitiveCount(0);
 
   resize(frameSize);
@@ -91,7 +91,7 @@ PostProcess::resize(const glm::uvec2& inFrameSize) {
     def.colorTextures.push_back({0, &_colorTexture});
     def.colorTextures.push_back({1, &_outlineTexture});
     def.renderBuffer = &_depthRenderBuffer;
-    _frameBuffer.initialise(def);
+    _frameBuffer.initialize(def);
   }
 }
 

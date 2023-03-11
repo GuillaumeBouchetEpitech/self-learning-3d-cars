@@ -26,19 +26,17 @@ private:
     glm::quat orientation;
     glm::vec3 scale;
     glm::vec4 color;
-    glm::vec4 outlineColor;
+    float outlineValue = 1.0f;
 
     Attributes(
       const glm::vec3& position,
       const glm::quat& orientation,
       const glm::vec3& scale,
-      const glm::vec4& color,
-      const glm::vec4& outlineColor)
+      const glm::vec4& color)
       : position(position)
       , orientation(orientation)
       , scale(scale)
       , color(color)
-      , outlineColor(outlineColor)
     {}
   };
 
@@ -53,7 +51,7 @@ public:
   ModelsRenderer() = default;
 
 public:
-  void initialise();
+  void initialize();
 
 public:
   void fadeIn(float delay, float duration);

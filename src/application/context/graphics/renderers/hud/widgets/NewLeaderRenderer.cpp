@@ -49,7 +49,7 @@ NewLeaderRenderer::renderWireFrame() {
   const glm::vec3 carPos = {_screenCoord.x, _screenCoord.y, 0.0f};
   const glm::vec3 textPos = carPos + glm::vec3(0, 50, 0);
 
-  stackRenderers.wireFrames.pushLine(carPos, textPos, {1, 1, 1});
+  stackRenderers.getWireFramesStack().pushLine(carPos, textPos, {1, 1, 1});
 }
 
 void

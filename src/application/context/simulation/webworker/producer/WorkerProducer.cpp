@@ -29,7 +29,7 @@ WorkerProducer::WorkerProducer(const Definition& def)
   { // send initialisation message to worker consumer
 
     _message.clear();
-    _message << char(Messages::FromProducer::LoadWorker);
+    _message << int8_t(Messages::FromProducer::LoadWorker);
 
     //
     // circuit data
@@ -49,7 +49,7 @@ WorkerProducer::WorkerProducer(const Definition& def)
     _message << topology.isUsingBias();
     _message << topology.getInputLayerSize();
     _message << int(hiddenLayers.size());
-    for (unsigned int layerValue : hiddenLayers)
+    for (uint32_t layerValue : hiddenLayers)
       _message << layerValue;
     _message << topology.getOutputLayerSize();
 
@@ -73,7 +73,7 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
   gero::messaging::MessageView receivedMsg(dataPointer, dataSize);
 
-  char messageType = 0;
+  int8_t messageType = 0;
   receivedMsg >> messageType;
 
   switch (Messages::FromConsumer(messageType)) {
@@ -221,7 +221,7 @@ WorkerProducer::_sendToConsumer() {
   _flags[gero::asValue(Status::Processing)] = true;
 
   char* dataPointer = const_cast<char*>(_message.getData());
-  unsigned int dataSize = _message.getSize();
+  uint32_t dataSize = _message.getSize();
 
   em_worker_callback_func callback = WorkerProducer::_onMessageCallback;
 
@@ -232,12 +232,12 @@ WorkerProducer::_sendToConsumer() {
 
 void
 WorkerProducer::resetAndProcessSimulation(
-  float elapsedTime, unsigned int totalSteps
+  float elapsedTime, uint32_t totalSteps
   // ,
   // const NeuralNetworks& neuralNetworks
 ) {
   _message.clear();
-  _message << char(Messages::FromProducer::ResetAndProcessSimulation);
+  _message << int8_t(Messages::FromProducer::ResetAndProcessSimulation);
   _message << elapsedTime;
   _message << totalSteps;
 
@@ -247,9 +247,9 @@ WorkerProducer::resetAndProcessSimulation(
 }
 
 void
-WorkerProducer::processSimulation(float elapsedTime, unsigned int totalSteps) {
+WorkerProducer::processSimulation(float elapsedTime, uint32_t totalSteps) {
   _message.clear();
-  _message << char(Messages::FromProducer::ProcessSimulation);
+  _message << int8_t(Messages::FromProducer::ProcessSimulation);
   _message << elapsedTime;
   _message << totalSteps;
 

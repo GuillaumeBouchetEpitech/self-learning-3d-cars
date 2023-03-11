@@ -215,7 +215,7 @@ CircuitBuilder::generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch) {
     D_THROW(std::invalid_argument, "no callback provided");
 
   if (_knots.empty())
-    D_THROW(std::runtime_error, "not initialised");
+    D_THROW(std::runtime_error, "not initialized");
 
   Vec3Array vertices;
   Indices indices;
@@ -295,13 +295,18 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
     count,
   };
 
-  constexpr unsigned int dimension = gero::asValue(SplineType::count);
-  const float* knotsData = &_knots.front().left.x;
-  const std::size_t knotsLength = _knots.size() * dimension;
-  constexpr unsigned int splineDegree = 3;
+  gero::math::BSpline::Definition smootherDef;
+  smootherDef.dimensions = gero::asValue(SplineType::count);
+  smootherDef.degree = 3;
+  smootherDef.knotsLength = _knots.size() * smootherDef.dimensions;
+  smootherDef.getDataCallback = [this](uint32_t index)
+  {
+    const float* dataPtr = &_knots.front().left.x;
+    return dataPtr[index];
+  };
 
   gero::math::BSpline bsplineSmoother;
-  bsplineSmoother.initialise({knotsData, knotsLength, dimension, splineDegree});
+  bsplineSmoother.initialize(smootherDef);
 
   CircuitBuilder::CircuitVertex vertex;
 
@@ -357,7 +362,7 @@ void
 CircuitBuilder::generateCircuitGeometry(
   CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch) {
   if (_knots.empty())
-    D_THROW(std::runtime_error, "not initialised");
+    D_THROW(std::runtime_error, "not initialized");
 
   if (!onNewGroundPatch && !onNewWallPatch)
     D_THROW(std::invalid_argument, "no callbacks provided");

@@ -7,26 +7,17 @@
 #include "geronimo/system/math/constants.hpp"
 
 void
-WireFramesStackRenderer::initialise(
-  ShadersAliases shaderId, GeometriesAliases geometryId) {
+WireFramesStackRenderer::initialize(
+  gero::graphics::ShaderProgram& shader, GeometriesAliases geometryId) {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader = resourceManager.getShader(gero::asValue(shaderId));
-
-  auto geoDef =
-    resourceManager.getGeometryDefinition(gero::asValue(geometryId));
-  _geometry.initialise(*_shader, geoDef);
+  auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(geometryId));
+  _geometry.initialize(shader, geoDef);
   _geometry.setPrimitiveCount(0);
 
   constexpr std::size_t preAllocatedSize = 1024 * 32; // 32Ko
   _vertices.reserve(preAllocatedSize);
-}
-
-void
-WireFramesStackRenderer::setMatricesData(
-  const gero::graphics::Camera::MatricesData& matricesData) {
-  _matricesData = matricesData;
 }
 
 //
@@ -101,14 +92,8 @@ WireFramesStackRenderer::pushRectangle(
 
 void
 WireFramesStackRenderer::flush() {
-  if (_vertices.empty())
+  if (!canRender())
     return;
-
-  if (!_shader)
-    D_THROW(std::runtime_error, "shader not setup");
-
-  _shader->bind();
-  _shader->setUniform("u_composedMatrix", _matricesData.composed);
 
   _geometry.updateBuffer(0, _vertices, true);
   _geometry.setPrimitiveCount(uint32_t(_vertices.size()));
@@ -117,7 +102,8 @@ WireFramesStackRenderer::flush() {
   _vertices.clear();
 }
 
-std::size_t
-WireFramesStackRenderer::getLinesCount() const {
-  return _vertices.size();
+bool WireFramesStackRenderer::canRender() const
+{
+  return !_vertices.empty();
 }
+

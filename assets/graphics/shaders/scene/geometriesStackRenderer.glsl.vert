@@ -18,7 +18,7 @@ in float a_offset_outlineValue;
 flat out vec4 v_color;
 flat out float v_outlineValue;
 
-#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
 void main(void)
 {

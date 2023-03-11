@@ -24,7 +24,7 @@ Context* Context::_instance = nullptr;
 Context::~Context() {}
 
 void
-Context::_initialise(
+Context::_initialize(
   uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
   {
     graphic.cameraData.viewportSize = {width, height};
@@ -38,7 +38,7 @@ Context::_initialise(
     graphic.cameraData.hud.computeMatrices();
   }
 
-  _initialiseGraphicResource();
+  _initializeGraphicResource();
 
   //
   //
@@ -54,8 +54,8 @@ Context::_initialise(
 
 #endif
 
-  _initialiseSimulationCallbacks();
-  _initialiseSimulation(totalGenomes, totalCores);
+  _initializeSimulationCallbacks();
+  _initializeSimulation(totalGenomes, totalCores);
 
   { // compute the top left HUD text
 
@@ -93,31 +93,33 @@ Context::_initialise(
 
   {
 
-    graphic.scene.stackRenderers.wireFrames.initialise(
-      ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererWireFramesScene);
-    graphic.scene.stackRenderers.triangles.initialise(
-      ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererTrianglesScene);
-    graphic.scene.modelsRenderer.initialise();
-    graphic.scene.carTailsRenderer.initialise();
+    graphic.scene.stackRenderers.initialize(
+      ShadersAliases::stackRendererScene,
+      GeometriesAliases::stackRendererTrianglesScene,
+      GeometriesAliases::stackRendererWireFramesScene);
+
+    graphic.scene.modelsRenderer.initialize();
+    graphic.scene.carTailsRenderer.initialize();
     const auto& dimension = logic.circuitDimension;
     const glm::vec3 boundariesSize = dimension.max - dimension.min;
-    graphic.scene.chessBoardFloorRenderer.initialise(dimension.center, boundariesSize);
-    graphic.scene.backGroundTorusRenderer.initialise();
-    graphic.scene.geometriesStackRenderer.initialise();
+    graphic.scene.chessBoardFloorRenderer.initialize(dimension.center, boundariesSize);
+    graphic.scene.backGroundTorusRenderer.initialize();
+    graphic.scene.geometriesStackRenderer.initialize();
 
-    graphic.hud.stackRenderers.wireFrames.initialise(
-      ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererWireFramesHud);
-    graphic.hud.stackRenderers.triangles.initialise(
-      ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererTrianglesHud);
-    graphic.hud.textRenderer.initialise();
+    graphic.hud.stackRenderers.initialize(
+      ShadersAliases::stackRendererScene,
+      GeometriesAliases::stackRendererTrianglesHud,
+      GeometriesAliases::stackRendererWireFramesHud);
 
-    graphic.hud.postProcess.initialise({width, height});
+    graphic.hud.textRenderer.initialize();
+
+    graphic.hud.postProcess.initialize({width, height});
     graphic.hud.postProcess.setGeometry(
       glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
 
-    graphic.hud.widgets.topologyRenderer.initialise();
-    graphic.hud.widgets.thirdPersonCamera.initialise();
-    graphic.hud.widgets.leaderEyeRenderer.initialise();
+    graphic.hud.widgets.topologyRenderer.initialize();
+    graphic.hud.widgets.thirdPersonCamera.initialize();
+    graphic.hud.widgets.leaderEyeRenderer.initialize();
   }
 
   {
@@ -148,10 +150,10 @@ void
 Context::create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores)
 {
   if (_instance)
-    D_THROW(std::runtime_error, "Context singleton already initialised");
+    D_THROW(std::runtime_error, "Context singleton already initialized");
 
   _instance = new Context();
-  _instance->_initialise(width, height, totalGenomes, totalCores);
+  _instance->_initialize(width, height, totalGenomes, totalCores);
 }
 
 void
@@ -165,7 +167,7 @@ Context::destroy() {
 Context&
 Context::get() {
   if (!_instance)
-    D_THROW(std::runtime_error, "Context singleton not initialised");
+    D_THROW(std::runtime_error, "Context singleton not initialized");
 
   return *_instance;
 }

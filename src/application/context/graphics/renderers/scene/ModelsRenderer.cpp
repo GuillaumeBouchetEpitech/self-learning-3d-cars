@@ -31,7 +31,7 @@ _updateVerticesNormals(gero::graphics::loader::ModelVertices& vertices) {
 } // namespace
 
 void
-ModelsRenderer::initialise() {
+ModelsRenderer::initialize() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -50,7 +50,7 @@ ModelsRenderer::initialise() {
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarChassis));
-    _chassis.geometry.initialise(*_chassis.shader, geoDef);
+    _chassis.geometry.initialize(*_chassis.shader, geoDef);
     _chassis.geometry.updateBuffer(0, modelVertices);
     _chassis.geometry.setPrimitiveCount(modelVertices.size());
   }
@@ -68,7 +68,7 @@ ModelsRenderer::initialise() {
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarWheels));
-    _wheels.geometry.initialise(*_wheels.shader, geoDef);
+    _wheels.geometry.initialize(*_wheels.shader, geoDef);
     _wheels.geometry.updateBuffer(0, modelVertices);
     _wheels.geometry.setPrimitiveCount(modelVertices.size());
   }
@@ -110,8 +110,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
   if (totalCars == 0)
     return;
 
-  const gero::graphics::IFrustumCulling& frustumCulling =
-    inCamera.getFrustumCulling();
+  const auto& frustumCulling = inCamera.getFrustumCulling();
 
   const auto& matricesData = inCamera.getMatricesData();
 
@@ -164,16 +163,14 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
       chassis.position,
       chassis.orientation,
       k_scale,
-      color,
-      k_outlineColor);
+      color);
 
     for (const auto& wheelTransform : carData.liveTransforms.wheels)
       _modelsCarWheelsMatrices.emplace_back(
         wheelTransform.position,
         wheelTransform.orientation,
         k_scale,
-        k_whiteColor,
-        k_outlineColor);
+        k_whiteColor);
   }
 
   if (!_modelsCarChassisMatrices.empty()) {

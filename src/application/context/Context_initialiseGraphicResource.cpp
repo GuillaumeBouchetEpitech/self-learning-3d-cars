@@ -12,7 +12,7 @@ using namespace gero::graphics;
 
 namespace {
 
-void _initialiseSceneStructures(ResourceManager& rManager)
+void _initializeSceneStructures(ResourceManager& rManager)
 {
   const std::string basePath = "./assets/graphics/shaders/scene/";
 
@@ -351,7 +351,7 @@ void _initialiseSceneStructures(ResourceManager& rManager)
 }
 
 void
-_initialiseHudStructures(ResourceManager& rManager) {
+_initializeHudStructures(ResourceManager& rManager) {
   const std::string basePath = "./assets/graphics/shaders/hud/";
 
   ShaderProgramBuilder shaderProgramBuilder;
@@ -458,14 +458,14 @@ _initialiseHudStructures(ResourceManager& rManager) {
 } // namespace
 
 void
-Context::_initialiseGraphicResource() {
+Context::_initializeGraphicResource() {
   ShaderProgramBuilder shaderProgramBuilder;
   GeometryBuilder geometryBuilder;
 
   auto& rManager = graphic.resourceManager;
 
-  _initialiseSceneStructures(rManager);
-  _initialiseHudStructures(rManager);
+  _initializeSceneStructures(rManager);
+  _initializeHudStructures(rManager);
 
   { // font
 

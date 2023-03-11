@@ -12,7 +12,7 @@ private:
   gero::easing::GenericEasing<2> _moveEasing;
 
 public:
-  void initialise();
+  void initialize();
 
 public:
   void fadeIn(float delay, float duration);

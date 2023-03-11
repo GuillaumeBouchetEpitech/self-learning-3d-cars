@@ -103,8 +103,7 @@ Scene::_renderHUD_ortho() {
 
   } // big titles
 
-  stackRenderers.wireFrames.flush();
-  stackRenderers.triangles.flush();
+  stackRenderers.flush();
   textRenderer.render();
 }
 

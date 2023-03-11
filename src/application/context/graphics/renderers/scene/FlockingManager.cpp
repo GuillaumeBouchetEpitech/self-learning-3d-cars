@@ -152,7 +152,7 @@ FlockingManager::render() {
     instance.orientation = glm::quat(0.0f, glm::vec3(0,0,1));
     instance.scale = glm::vec3(0.4f);
     instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
-    instance.outlineColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    instance.outlineValue = 1.0f;
 
     for (Boid& boid : _boids)
     {
@@ -163,7 +163,7 @@ FlockingManager::render() {
   }
 
   {
-    auto& stackRenderer = scene.stackRenderers.triangles;
+    auto& stackRenderer = scene.stackRenderers.getTrianglesStack();
 
     // const glm::vec4 color = glm::vec4(0.6f, 0.6f, 0.0f, 0.2f);
     const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -173,7 +173,7 @@ FlockingManager::render() {
         stackRenderer.pushThickTriangle3dLine(
           boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
 
-    stackRenderer.flush();
+    scene.stackRenderers.flush();
   }
 
 }

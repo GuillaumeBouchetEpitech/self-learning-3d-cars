@@ -18,7 +18,7 @@ constexpr float k_sizeX = 100.0f;
 } // namespace
 
 void
-LeaderEyeRenderer::initialise() {
+LeaderEyeRenderer::initialize() {
   auto& context = Context::get();
   const auto& vSize = context.graphic.cameraData.viewportSize;
 
@@ -142,13 +142,13 @@ LeaderEyeRenderer::render() {
 
     const glm::vec4 color = glm::mix(redColor, greenColor, val);
 
-    stackRenderers.triangles.pushQuad(position, eyeSize, color, 0.4f);
+    stackRenderers.getTrianglesStack().pushQuad(position, eyeSize, color, 0.4f);
   }
 
   for (const auto& position : allPositions) {
-    stackRenderers.wireFrames.pushRectangle(
+    stackRenderers.getWireFramesStack().pushRectangle(
       position - eyeSize * 0.5f, eyeSize, whiteColor, 0.5f);
   }
 
-  stackRenderers.wireFrames.pushRectangle(position, size, whiteColor, 0.5f);
+  stackRenderers.getWireFramesStack().pushRectangle(position, size, whiteColor, 0.5f);
 }

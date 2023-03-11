@@ -16,7 +16,7 @@ public:
   ~BackGroundTorusRenderer() = default;
 
 public:
-  void initialise();
+  void initialize();
 
 public:
   void update(float elapsedTime);

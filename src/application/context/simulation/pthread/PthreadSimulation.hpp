@@ -81,7 +81,7 @@ public:
   virtual ~PthreadSimulation();
 
 public:
-  virtual void initialise(const Definition& def) override;
+  virtual void initialize(const Definition& def) override;
 
 private:
   void _resetPhysic();

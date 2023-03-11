@@ -161,7 +161,7 @@ ScreenTitles::render() {
 
   if (_backgroundAlpha > 0.0f) {
 
-    graphic.hud.stackRenderers.triangles.pushQuad(
+    graphic.hud.stackRenderers.getTrianglesStack().pushQuad(
       glm::vec2(vSize * 0.5f), vSize,
       glm::vec4(0, 0, 0, _backgroundAlpha * 0.5f), 0.4f);
   }

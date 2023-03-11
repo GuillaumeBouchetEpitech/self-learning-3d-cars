@@ -19,7 +19,7 @@ flat out float v_outlineValue;
 out vec3 v_worldSpacePosition;
 out vec3 v_worldSpaceNormal;
 
-#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
 void main(void)
 {

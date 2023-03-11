@@ -8,7 +8,7 @@
 #include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 void
-WebWorkersSimulation::initialise(const Definition& def) {
+WebWorkersSimulation::initialize(const Definition& def) {
   if (def.totalGenomes == 0)
     D_THROW(
       std::invalid_argument, "received invalid number of total genomes"
@@ -48,7 +48,7 @@ WebWorkersSimulation::initialise(const Definition& def) {
     return gero::rng::RNG::getNormalisedValue();
   };
 
-  _geneticAlgorithm.initialise(genAlgoDef);
+  _geneticAlgorithm.initialize(genAlgoDef);
 
   //
 
@@ -69,7 +69,7 @@ WebWorkersSimulation::initialise(const Definition& def) {
 void
 WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
   // do nothing if the worker(s) are:
-  // => not initialised
+  // => not initialized
   // => not finished working
   for (const auto& workerProducer : _workerProducers)
     if (!workerProducer->isLoaded() || workerProducer->isProcessing())

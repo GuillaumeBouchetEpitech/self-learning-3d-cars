@@ -63,7 +63,7 @@ private:
   void _sendBackToProducer();
 
 private:
-  void _initialiseSimulation(gero::messaging::MessageView& receivedMsg);
+  void _initializeSimulation(gero::messaging::MessageView& receivedMsg);
   void _addNewCars(gero::messaging::MessageView& receivedMsg);
   void _processSimulation(float elapsedTime, uint32_t totalSteps);
 

@@ -138,7 +138,16 @@ updateApplication(uint32_t inDelta) {
   if (!myApplication)
     return;
 
-  myApplication->process(inDelta);
+  myApplication->update(inDelta);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void
+renderApplication() {
+  if (!myApplication)
+    return;
+
+  myApplication->render();
 }
 }
 

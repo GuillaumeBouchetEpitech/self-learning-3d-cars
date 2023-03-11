@@ -10,7 +10,7 @@ void
 Scene::_renderLeadingCarSensors() {
   auto& context = Context::get();
   const auto& leaderCar = context.logic.leaderCar;
-  auto& stackRenderer = context.graphic.scene.stackRenderers.wireFrames;
+  auto& stackRenderer = context.graphic.scene.stackRenderers.getWireFramesStack();
 
   if (auto leaderCarData = leaderCar.leaderData()) {
     // leading car alive?
@@ -61,40 +61,37 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
   auto& scene = graphic.scene;
 
   {
-    const auto& matriceData = inCamera.getMatricesData();
+    const auto& matricesData = inCamera.getMatricesData();
 
-    scene.stackRenderers.wireFrames.setMatricesData(matriceData);
-    scene.stackRenderers.triangles.setMatricesData(matriceData);
-    scene.particleManager.setMatricesData(matriceData);
-    scene.flockingManager.setMatricesData(matriceData);
-    scene.carTailsRenderer.setMatricesData(matriceData);
+    scene.stackRenderers.setMatricesData(matricesData);
+    scene.carTailsRenderer.setMatricesData(matricesData);
+    scene.geometriesStackRenderer.setMatricesData(matricesData);
   }
 
   {
     scene.backGroundTorusRenderer.render(inCamera);
     GlContext::clears(Buffers::depth);
 
-    scene.floorRenderer.render(inCamera);
+    scene.chessBoardFloorRenderer.render(inCamera);
 
     scene.animatedCircuitRenderer.renderWireFrame(inCamera);
     scene.animatedCircuitRenderer.renderWalls(inCamera);
 
     Scene::_renderLeadingCarSensors();
 
-    scene.stackRenderers.wireFrames.flush();
-    scene.stackRenderers.triangles.flush();
+    scene.stackRenderers.flush();
 
-    scene.particleManager.render();
+    scene.particleManager.render(inCamera);
 
-    scene.stackRenderers.wireFrames.flush();
-    scene.stackRenderers.triangles.flush();
+    scene.stackRenderers.flush();
 
     scene.modelsRenderer.render(inCamera);
     scene.animatedCircuitRenderer.renderGround(inCamera);
     scene.carTailsRenderer.render();
     scene.flockingManager.render();
 
-    scene.stackRenderers.wireFrames.flush();
-    scene.stackRenderers.triangles.flush();
+    scene.stackRenderers.flush();
+
+    scene.geometriesStackRenderer.renderAll();
   }
 }

@@ -34,12 +34,12 @@ void
 WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
   gero::messaging::MessageView receivedMsg(dataPointer, dataSize);
 
-  char messageType = 0;
+  int8_t messageType = 0;
   receivedMsg >> messageType;
 
   switch (Messages::FromProducer(messageType)) {
   case Messages::FromProducer::LoadWorker: {
-    _initialiseSimulation(receivedMsg);
+    _initializeSimulation(receivedMsg);
     break;
   }
 
@@ -77,7 +77,7 @@ WorkerConsumer::_sendBackToProducer() {
 }
 
 void
-WorkerConsumer::_initialiseSimulation(
+WorkerConsumer::_initializeSimulation(
   gero::messaging::MessageView& receivedMsg
 ) {
 
@@ -93,12 +93,12 @@ WorkerConsumer::_initialiseSimulation(
     //
     // circuit data
 
-    int knotsLength = 0;
+    int32_t knotsLength = 0;
     receivedMsg >> _startTransform.position;
     receivedMsg >> _startTransform.quaternion;
     receivedMsg >> knotsLength;
     circuitKnots.reserve(knotsLength); // <= pre-allocate
-    for (int ii = 0; ii < knotsLength; ++ii) {
+    for (int32_t ii = 0; ii < knotsLength; ++ii) {
       CircuitBuilder::Knot knot;
       receivedMsg >> knot.left >> knot.right >> knot.size >> knot.color;
       circuitKnots.emplace_back(knot);
@@ -140,7 +140,7 @@ WorkerConsumer::_initialiseSimulation(
   { // send reply
 
     _messageToSend.clear();
-    _messageToSend << char(Messages::FromConsumer::WebWorkerLoaded);
+    _messageToSend << int8_t(Messages::FromConsumer::WebWorkerLoaded);
 
     _sendBackToProducer();
 
@@ -248,7 +248,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   //
 
   _messageToSend.clear();
-  _messageToSend << char(Messages::FromConsumer::SimulationResult);
+  _messageToSend << int8_t(Messages::FromConsumer::SimulationResult);
   _messageToSend << delta;
 
   const auto& deltasMap = _frameProfiler.getDeltasMap();

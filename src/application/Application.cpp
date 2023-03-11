@@ -26,7 +26,7 @@ Application::Application(const Definition& def)
 {
   Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();
-  Scene::initialise();
+  Scene::initialize();
 }
 
 Application::~Application() {

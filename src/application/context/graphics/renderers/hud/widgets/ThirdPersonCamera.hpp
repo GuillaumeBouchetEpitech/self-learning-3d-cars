@@ -33,7 +33,7 @@ public:
   ~ThirdPersonCamera() = default;
 
 public:
-  void initialise();
+  void initialize();
 
 public:
   bool canActivate() const;

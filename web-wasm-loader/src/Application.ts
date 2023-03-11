@@ -22,6 +22,7 @@ export class Application {
   private _isInitialized: boolean = false;
   private _isAborted: boolean = false;
   private _wasmApplicationUpdateFunc: (deltaTime: number) => void;
+  private _wasmApplicationRenderFunc: () => void;
   private _onProgress: (precent: number) => void;
   private _onError: (text: string) => void;
 
@@ -161,9 +162,11 @@ export class Application {
           const wasmFunctions = {
             startApplication: (window as any).Module.cwrap('startApplication', undefined, ['number', 'number', 'number', 'number']),
             updateApplication: (window as any).Module.cwrap('updateApplication', undefined, ['number']),
+            renderApplication: (window as any).Module.cwrap('renderApplication', undefined, []),
           };
 
           this._wasmApplicationUpdateFunc = wasmFunctions.updateApplication;
+          this._wasmApplicationRenderFunc = wasmFunctions.renderApplication;
 
           wasmFunctions.startApplication(this._width, this._height, totalGenomes, totalCores);
 
@@ -193,6 +196,14 @@ export class Application {
 
     if (this._wasmApplicationUpdateFunc)
       this._wasmApplicationUpdateFunc(deltaTime);
+  }
+
+  render() {
+    if (!this._isInitialized || this._isAborted)
+      return;
+
+    if (this._wasmApplicationRenderFunc)
+      this._wasmApplicationRenderFunc();
   }
 
   abort(): void {

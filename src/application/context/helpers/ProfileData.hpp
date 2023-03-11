@@ -20,7 +20,7 @@ public:
   ProfileData() = default;
 
 public:
-  void initialise(uint32_t totalCores, uint32_t maxStateHistory);
+  void initialize(uint32_t totalCores, uint32_t maxStateHistory);
 
 public:
   void clearLatest();

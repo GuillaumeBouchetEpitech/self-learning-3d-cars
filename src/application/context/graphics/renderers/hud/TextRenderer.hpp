@@ -78,7 +78,7 @@ public:
   ~TextRenderer() = default;
 
 public:
-  void initialise();
+  void initialize();
   void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
 public:

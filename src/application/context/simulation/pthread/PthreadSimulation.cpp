@@ -33,7 +33,7 @@ PthreadSimulation::~PthreadSimulation() {
 }
 
 void
-PthreadSimulation::initialise(const Definition& def) {
+PthreadSimulation::initialize(const Definition& def) {
 
   if (def.totalGenomes == 0)
     D_THROW(
@@ -64,7 +64,7 @@ PthreadSimulation::initialise(const Definition& def) {
     return gero::rng::RNG::getNormalisedValue();
   };
 
-  _geneticAlgorithm.initialise(genAlgoDef);
+  _geneticAlgorithm.initialize(genAlgoDef);
 
 #if defined D_WEB_BUILD
   // blocking on the main thread of the browser is not advised...
@@ -73,7 +73,7 @@ PthreadSimulation::initialise(const Definition& def) {
   constexpr bool k_avoidBlocking = false;
 #endif
 
-  _multithreadProducer.initialise(_def.totalCores, k_avoidBlocking);
+  _multithreadProducer.initialize(_def.totalCores, k_avoidBlocking);
 
   _coreStates.resize(_def.totalCores);
 

@@ -164,6 +164,7 @@ const onGlobalPageLoad = async () => {
       setTimeout(onFrame, deltaTime);
 
     myApplication.update(deltaTime);
+    myApplication.render();
   };
   onFrame();
 };

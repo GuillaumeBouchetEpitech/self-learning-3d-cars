@@ -27,7 +27,7 @@ glm::vec3 apply_quat_to_vec3(const glm::vec3& position, const glm::quat& q)
 
 }
 
-void GeometriesStackRenderer::initialise()
+void GeometriesStackRenderer::initialize()
 {
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -46,7 +46,7 @@ void GeometriesStackRenderer::createAlias(int32_t alias, const gero::graphics::M
   auto newAlias = std::make_shared<AliasedGeometry>();
 
   auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::geometriesStackRenderer));
-  newAlias->geometry.initialise(*_shader, geoDef);
+  newAlias->geometry.initialize(*_shader, geoDef);
   newAlias->geometry.updateBuffer(0, vertices, false);
   newAlias->geometry.setPrimitiveStart(0);
   newAlias->geometry.setPrimitiveCount(uint32_t(vertices.size()));
@@ -96,18 +96,19 @@ void GeometriesStackRenderer::clearAll()
   _aliasedGeometriesMap.clear();
 }
 
-void GeometriesStackRenderer::renderAll(const glm::vec3& inLightPos)
+// void GeometriesStackRenderer::renderAll(const glm::vec3& inLightPos)
+void GeometriesStackRenderer::renderAll()
 {
   if (!_shader)
-    D_THROW(std::runtime_error, "not initialised");
+    D_THROW(std::runtime_error, "not initialized");
 
   if (_aliasedGeometriesMap.empty())
     return;
 
   _shader->bind();
   _shader->setUniform("u_composedMatrix", _matricesData.composed);
-  _shader->setUniform("u_ambiantCoef", 0.2f);
-  _shader->setUniform("u_lightPos", inLightPos.x, inLightPos.y, inLightPos.z);
+  // _shader->setUniform("u_ambiantCoef", 0.2f);
+  // _shader->setUniform("u_lightPos", inLightPos.x, inLightPos.y, inLightPos.z);
 
   for (const auto& pair : _aliasedGeometriesMap)
   {

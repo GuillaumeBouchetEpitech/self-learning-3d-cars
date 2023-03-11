@@ -20,7 +20,7 @@ public:
   TopologyRenderer() = default;
 
 public:
-  void initialise();
+  void initialize();
 
   void fadeIn(float delay, float duration);
   void fadeOut(float delay, float duration);

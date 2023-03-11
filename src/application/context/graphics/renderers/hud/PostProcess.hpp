@@ -39,7 +39,7 @@ public:
 public:
   void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
-  void initialise(const glm::uvec2& frameSize);
+  void initialize(const glm::uvec2& frameSize);
   void dispose();
   void startRecording();
   void stopRecording();

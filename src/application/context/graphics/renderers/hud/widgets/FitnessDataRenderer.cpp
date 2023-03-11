@@ -104,13 +104,13 @@ FitnessDataRenderer::renderWireFrame() {
   const float maxFitness = std::max(logic.fitnessStats.max(), localBestFitness);
 
   {
-    stackRenderers.triangles.pushQuad(
+    stackRenderers.getTrianglesStack().pushQuad(
       glm::vec2(_position + _size * 0.5f),
       _size,
       glm::vec4(0, 0, 0, 0.75f),
       -0.5f);
 
-    stackRenderers.wireFrames.pushRectangle(_position, _size, whiteColor, 0.5f);
+    stackRenderers.getWireFramesStack().pushRectangle(_position, _size, whiteColor, 0.5f);
   }
 
   {
@@ -132,12 +132,12 @@ FitnessDataRenderer::renderWireFrame() {
       };
 
       // horizontal data curve
-      stackRenderers.wireFrames.pushLine(
+      stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position + prevPos, 0.0f),
         glm::vec3(_position + currPos, 0.0f), whiteColor * 0.6f);
 
       // vertical delimiter
-      stackRenderers.wireFrames.pushLine(
+      stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
         glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
         lightGrayColor);
@@ -162,13 +162,13 @@ FitnessDataRenderer::renderWireFrame() {
       const glm::vec3& currColor = localBestFitness < maxFitness ? redColor : greenColor;
 
       // horizontal data curve
-      stackRenderers.wireFrames.pushLine(
+      stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position + prevPos, 0.0f),
         glm::vec3(_position + currPos, 0.0f),
         currColor);
 
       // vertical delimiter
-      stackRenderers.wireFrames.pushLine(
+      stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
         glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
         lightGrayColor);
@@ -217,7 +217,7 @@ FitnessDataRenderer::renderWireFrame() {
       {
         const float mainY = _position.y + float(ii + 1) * stepHeight;
 
-        stackRenderers.wireFrames.pushLine(
+        stackRenderers.getWireFramesStack().pushLine(
           glm::vec3(x1, mainY, values.zValue),
           glm::vec3(x2, mainY, values.zValue),
           values.color
@@ -232,76 +232,43 @@ FitnessDataRenderer::renderWireFrame() {
   //
   //
 
-  {
+  // {
 
-    gero::math::BSpline bsplineSmoother;
+  //   gero::math::BSpline bsplineSmoother;
 
-    gero::math::BSpline::Definition smootherDef;
-    smootherDef.degree = 2;
-    smootherDef.dimensions = 1;
-    smootherDef.knotsLength = logic.fitnessStats.size() * smootherDef.dimensions;
-    smootherDef.getDataCallback = [&logic](uint32_t index)
-    {
-      return logic.fitnessStats.get(index);
-    };
-    bsplineSmoother.initialise(smootherDef);
+  //   gero::math::BSpline::Definition smootherDef;
+  //   smootherDef.degree = 4;
+  //   smootherDef.dimensions = 1;
+  //   smootherDef.knotsLength = logic.fitnessStats.size() * smootherDef.dimensions;
+  //   smootherDef.getDataCallback = [&logic](uint32_t index)
+  //   {
+  //     return logic.fitnessStats.get(index);
+  //   };
+  //   bsplineSmoother.initialize(smootherDef);
 
+  //   constexpr unsigned int maxIterations = 100;
+  //   constexpr float k_step = 1.0f / maxIterations; // tiny steps
 
+  //   float prevCoef = k_step * 1.0f;
+  //   float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
 
-    // // const float stepWidth = _size.x / (logic.fitnessStats.size() - 1);
-    // const float stepWidth = _size.x / (logic.fitnessStats.size());
+  //   for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
 
-    // for (std::size_t ii = 1; ii < logic.fitnessStats.size(); ++ii) {
-    //   const float prevData = logic.fitnessStats.get(ii - 1);
-    //   const float currData = logic.fitnessStats.get(ii);
+  //     const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
 
-    //   const glm::vec2 prevPos = {
-    //     stepWidth * (ii - 1),
-    //     (prevData / maxFitness) * _size.y,
-    //   };
-    //   const glm::vec2 currPos = {
-    //     stepWidth * ii,
-    //     (currData / maxFitness) * _size.y,
-    //   };
+  //     const float prevHeight = _size.y * prevDelta / maxFitness;
+  //     const float currHeight = _size.y * currDelta / maxFitness;
 
-    //   // horizontal data curve
-    //   stackRenderers.wireFrames.pushLine(
-    //     glm::vec3(_position + prevPos, 0.0f),
-    //     glm::vec3(_position + currPos, 0.0f), whiteColor);
+  //     stackRenderers.getWireFramesStack().pushLine(
+  //       glm::vec3(_position, 0.0f) + glm::vec3(prevCoef * _size.x, prevHeight, 0.1f),
+  //       glm::vec3(_position, 0.0f) + glm::vec3(currCoef * _size.x, currHeight, 0.1f),
+  //       whiteColor);
 
-    //   // vertical delimiter
-    //   stackRenderers.wireFrames.pushLine(
-    //     glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
-    //     glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
-    //     lightGrayColor);
-    // }
+  //     prevCoef = currCoef;
+  //     prevDelta = currDelta;
+  //   }
 
-
-
-
-    constexpr unsigned int maxIterations = 100;
-    constexpr float k_step = 1.0f / maxIterations; // tiny steps
-
-    float prevCoef = k_step * 1.0f;
-    float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
-
-    for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
-
-      const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
-
-      const float prevHeight = _size.y * prevDelta / maxFitness;
-      const float currHeight = _size.y * currDelta / maxFitness;
-
-      stackRenderers.wireFrames.pushLine(
-        glm::vec3(_position, 0.0f) + glm::vec3(prevCoef * _size.x, prevHeight, 0.1f),
-        glm::vec3(_position, 0.0f) + glm::vec3(currCoef * _size.x, currHeight, 0.1f),
-        whiteColor);
-
-      prevCoef = currCoef;
-      prevDelta = currDelta;
-    }
-
-  }
+  // }
 
 
 

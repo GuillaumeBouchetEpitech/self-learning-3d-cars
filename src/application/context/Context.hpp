@@ -4,8 +4,7 @@
 #include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/states/StateManager.hpp"
 
-#include "graphics/renderers/TrianglesStackRenderer.hpp"
-#include "graphics/renderers/WireFramesStackRenderer.hpp"
+#include "graphics/renderers/common/StackRenderers.hpp"
 
 #include "helpers/CarWheelsTrails.hpp"
 #include "helpers/FitnessStats.hpp"
@@ -29,7 +28,7 @@
 #include "graphics/renderers/scene/FlockingManager.hpp"
 #include "graphics/renderers/scene/GeometriesStackRenderer.hpp"
 #include "graphics/renderers/scene/ModelsRenderer.hpp"
-#include "graphics/renderers/scene/ParticleManager.hpp"
+#include "graphics/renderers/scene/particles/ParticleManager.hpp"
 
 #include "geronimo/graphics/ResourceManager.hpp"
 #include "geronimo/graphics/camera/Camera.hpp"
@@ -58,7 +57,7 @@ private:
   ~Context();
 
 private:
-  void _initialise(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
+  void _initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
 
 public:
   static void create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
@@ -70,9 +69,9 @@ public:
   //
 
 private:
-  void _initialiseGraphicResource();
-  void _initialiseSimulation(uint32_t totalGenomes, uint32_t totalCores);
-  void _initialiseSimulationCallbacks();
+  void _initializeGraphicResource();
+  void _initializeSimulation(uint32_t totalGenomes, uint32_t totalCores);
+  void _initializeSimulationCallbacks();
 
 public:
   struct Graphic {
@@ -91,11 +90,6 @@ public:
       gero::graphics::Camera scene;
       gero::graphics::Camera hud;
     } cameraData;
-
-    struct StackRenderers {
-      WireFramesStackRenderer wireFrames;
-      TrianglesStackRenderer triangles;
-    };
 
     struct Hud {
       StackRenderers stackRenderers;

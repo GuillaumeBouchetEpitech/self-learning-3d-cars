@@ -56,7 +56,7 @@ namespace string_view_regexp {
 
 
 void
-TextRenderer::initialise() {
+TextRenderer::initialize() {
 
   _logic.allLinesWidth.reserve(64);
   _logic.latestMessageRectangles.reserve(64);
@@ -100,7 +100,7 @@ TextRenderer::initialise() {
       letterVertices.push_back(vertices.at(index));
 
     auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::textRenderer));
-    _graphic.geometry.initialise(*_graphic.shader, geoDef);
+    _graphic.geometry.initialize(*_graphic.shader, geoDef);
     _graphic.geometry.updateBuffer(0, letterVertices);
     _graphic.geometry.setPrimitiveCount(letterVertices.size());
   }

@@ -7,7 +7,7 @@
 #include "geronimo/system/asValue.hpp"
 
 void
-CarTailsRenderer::initialise() {
+CarTailsRenderer::initialize() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -15,12 +15,12 @@ CarTailsRenderer::initialise() {
 
   auto geoDef = resourceManager.getGeometryDefinition(
     gero::asValue(GeometriesAliases::wireFramesLineStrip));
-  _geometries.leaderCarTrail.initialise(*_shader, geoDef);
+  _geometries.leaderCarTrail.initialize(*_shader, geoDef);
   _geometries.leaderCarTrail.setPrimitiveCount(0);
 
   for (auto& wheelsTrail : _geometries.bestNewCarsTrails)
     for (auto& wheel : wheelsTrail.wheels) {
-      wheel.initialise(*_shader, geoDef);
+      wheel.initialize(*_shader, geoDef);
       wheel.setPrimitiveCount(0);
     }
 }

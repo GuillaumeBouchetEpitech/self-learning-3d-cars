@@ -39,7 +39,7 @@ public:
   virtual ~AbstractSimulation() = default;
 
 public:
-  virtual void initialise(const Definition& def) = 0;
+  virtual void initialize(const Definition& def) = 0;
 
 public:
   virtual void update(float elapsedTime, uint32_t totalSteps) = 0;

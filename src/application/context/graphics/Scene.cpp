@@ -11,7 +11,7 @@ using namespace gero::graphics;
 using namespace gero::graphics::GlContext;
 
 void
-Scene::initialise() {
+Scene::initialize() {
   GlContext::enable(States::depthTest);
   GlContext::setDepthFunc(DepthFuncs::less);
 
@@ -49,8 +49,7 @@ Scene::renderSimple() {
 
     const auto& matricesData = graphic.cameraData.hud.getMatricesData();
     graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.wireFrames.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.triangles.setMatricesData(matricesData);
+    graphic.hud.stackRenderers.setMatricesData(matricesData);
     graphic.hud.textRenderer.setMatricesData(matricesData);
 
     Scene::_renderHUD();
@@ -87,8 +86,7 @@ Scene::renderAll() {
     const auto& matricesData = cameraData.hud.getMatricesData();
 
     graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.wireFrames.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.triangles.setMatricesData(matricesData);
+    graphic.hud.stackRenderers.setMatricesData(matricesData);
     graphic.hud.textRenderer.setMatricesData(matricesData);
 
     Scene::_renderHUD();

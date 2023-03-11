@@ -2,7 +2,7 @@
 #include "ProfileData.hpp"
 
 void
-ProfileData::initialise(uint32_t totalCores, uint32_t maxStateHistory) {
+ProfileData::initialize(uint32_t totalCores, uint32_t maxStateHistory) {
   _maxStateHistory = maxStateHistory;
   _totalCores = totalCores;
 

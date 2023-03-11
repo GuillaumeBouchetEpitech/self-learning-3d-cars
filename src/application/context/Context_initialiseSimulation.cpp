@@ -6,7 +6,7 @@
 #include <limits> // <= std::numeric_limits<T>::max()
 
 void
-Context::_initialiseSimulation(
+Context::_initializeSimulation(
   uint32_t totalGenomes,
   uint32_t totalCores)
 {
@@ -126,12 +126,12 @@ Context::_initialiseSimulation(
   simulationDef.onNewGroundPatch = onGroundPatchCallback; // callback
   simulationDef.onNewWallPatch = onWallPatchCallback;     // callback
 
-  logic.simulation->initialise(simulationDef);
+  logic.simulation->initialize(simulationDef);
 
   //
   // the callbacks have now been called
 
-  logic.cores.profileData.initialise(simulationDef.totalCores, 60);
+  logic.cores.profileData.initialize(simulationDef.totalCores, 60);
 
   circuitDimension.center =
     circuitDimension.min + (circuitDimension.max - circuitDimension.min) * 0.5f;
@@ -140,6 +140,6 @@ Context::_initialiseSimulation(
   graphic.cameraData.center = {0, 0, 0};
   graphic.cameraData.distance = 200.0f;
 
-  graphic.scene.animatedCircuitRenderer.initialise(
+  graphic.scene.animatedCircuitRenderer.initialize(
     skeletonVertices, groundVertices, wallsVertices, maxUpperValue);
 }

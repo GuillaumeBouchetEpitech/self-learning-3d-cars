@@ -7,7 +7,7 @@
 #include <sstream>
 
 void
-Context::_initialiseSimulationCallbacks() {
+Context::_initializeSimulationCallbacks() {
   logic.simulation->setOnGenerationResetCallback([this]() -> void {
     { // handle the car trails
 
@@ -19,7 +19,7 @@ Context::_initialiseSimulationCallbacks() {
       for (unsigned int ii = 0; ii < totalCars; ++ii) {
         const auto& carData = simulation.getCarResult(ii);
 
-        // initialise the new data
+        // initialize the new data
 
         for (auto& transforms : carData.latestTransformsHistory) {
           for (std::size_t jj = 0; jj < transforms.wheels.size(); ++jj) {

@@ -71,7 +71,7 @@ generateTorusVertices(
 } // namespace
 
 void
-BackGroundTorusRenderer::initialise() {
+BackGroundTorusRenderer::initialize() {
 
   auto& rManager = Context::get().graphic.resourceManager;
 
@@ -122,7 +122,7 @@ BackGroundTorusRenderer::initialise() {
     auto geoDef = rManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::backGroundTorus));
 
-    _geometry.initialise(*_shader, geoDef);
+    _geometry.initialize(*_shader, geoDef);
     _geometry.updateBuffer(0, vertices);
     _geometry.setPrimitiveCount(vertices.size());
   }

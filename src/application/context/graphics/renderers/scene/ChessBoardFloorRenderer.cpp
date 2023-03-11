@@ -1,5 +1,5 @@
 
-#include "FloorRenderer.hpp"
+#include "ChessBoardFloorRenderer.hpp"
 
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
@@ -12,7 +12,7 @@ using namespace gero::graphics;
 using namespace gero::graphics::GlContext;
 
 void
-FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
+ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& size) {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -21,7 +21,7 @@ FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
 
   auto geoDef = resourceManager.getGeometryDefinition(
     gero::asValue(GeometriesAliases::chessboardFloor));
-  _geometry.initialise(*_shader, geoDef);
+  _geometry.initialize(*_shader, geoDef);
   _geometry.setPrimitiveCount(0);
 
   {
@@ -96,7 +96,7 @@ FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
 }
 
 void
-FloorRenderer::render(const gero::graphics::Camera& inCamera) {
+ChessBoardFloorRenderer::render(const gero::graphics::Camera& inCamera) {
   if (!_shader)
     D_THROW(std::runtime_error, "shader not setup");
 
@@ -107,6 +107,10 @@ FloorRenderer::render(const gero::graphics::Camera& inCamera) {
   GlContext::disable(States::depthTest);
 
   _shader->bind();
+
+  // const glm::vec3 lightPos = inCamera.getEye();
+
+  // D_MYLOG("lightPos " << lightPos);
 
   const auto& matricesData = inCamera.getMatricesData();
   _shader->setUniform("u_composedMatrix", matricesData.composed);

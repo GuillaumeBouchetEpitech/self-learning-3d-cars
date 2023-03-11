@@ -45,7 +45,7 @@ void renderProgressBar(
 
   const glm::vec2 progressBarCenter = { inCenter.x, inCenter.y + textHScale};
 
-  stackRenderers.triangles.pushQuad(
+  stackRenderers.getTrianglesStack().pushQuad(
     progressBarCenter,
     inSize + inBorderSize,
     inBorderColor,
@@ -55,7 +55,7 @@ void renderProgressBar(
   //
   //
 
-  stackRenderers.triangles.pushQuad(
+  stackRenderers.getTrianglesStack().pushQuad(
     progressBarCenter,
     inSize,
     inBackgroundColor,
@@ -73,7 +73,7 @@ void renderProgressBar(
   progressBarValCenter.x -= progressBarValSize.x * 0.5f;
   progressBarValCenter.x += inSize.x * progressValue;
 
-  stackRenderers.triangles.pushQuad(
+  stackRenderers.getTrianglesStack().pushQuad(
     progressBarValCenter,
     progressBarValSize,
     inProgressColor,
