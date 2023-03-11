@@ -149,17 +149,18 @@ void
 State_AbstractSimulation::resize(int width, int height) {
   auto& graphic = Context::get().graphic;
 
-  graphic.cameraData.viewportSize = {width, height};
+  const glm::vec2 newSize(width, height);
+
+  graphic.cameraData.viewportSize = newSize;
 
   graphic.hud.postProcess.resize({width, height});
-  graphic.hud.postProcess.setGeometry(
-    glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
+  graphic.hud.postProcess.setGeometry(glm::vec2(0, 0), newSize, -2.0f);
 
-  graphic.hud.topologyRenderer.resize();
-  graphic.hud.thirdPersonCamera.resize();
-  graphic.hud.coreUsageRenderer.resize();
-  graphic.hud.fitnessDataRenderer.resize();
-  graphic.hud.leaderEyeRenderer.resize();
+  graphic.hud.widgets.topologyRenderer.resize();
+  graphic.hud.widgets.thirdPersonCamera.resize();
+  graphic.hud.widgets.coreUsageRenderer.resize();
+  graphic.hud.widgets.fitnessDataRenderer.resize();
+  graphic.hud.widgets.leaderEyeRenderer.resize();
 }
 
 void
@@ -183,13 +184,13 @@ State_AbstractSimulation::_updateCommonLogic(float elapsedTime) {
   graphic.scene.backGroundTorusRenderer.update(elapsedTime);
   graphic.scene.flockingManager.update();
 
-  graphic.hud.screenTitles.update(elapsedTime);
-  graphic.hud.topologyRenderer.update(elapsedTime);
-  graphic.hud.thirdPersonCamera.update(elapsedTime);
-  graphic.hud.coreUsageRenderer.update(elapsedTime);
-  graphic.hud.fitnessDataRenderer.update(elapsedTime);
-  graphic.hud.informationTextRenderer.update(elapsedTime);
-  graphic.hud.leaderEyeRenderer.update(elapsedTime);
+  graphic.hud.widgets.screenTitles.update(elapsedTime);
+  graphic.hud.widgets.topologyRenderer.update(elapsedTime);
+  graphic.hud.widgets.thirdPersonCamera.update(elapsedTime);
+  graphic.hud.widgets.coreUsageRenderer.update(elapsedTime);
+  graphic.hud.widgets.fitnessDataRenderer.update(elapsedTime);
+  graphic.hud.widgets.informationTextRenderer.update(elapsedTime);
+  graphic.hud.widgets.leaderEyeRenderer.update(elapsedTime);
 }
 
 void

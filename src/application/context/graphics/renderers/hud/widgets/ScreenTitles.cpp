@@ -50,7 +50,7 @@ namespace
 
 void
 ScreenTitles::fadeIn(float delay, float duration) {
-  _timer.start(delay, duration);
+  _alphaFadingTimer.start(delay, duration);
 
   constexpr float step1 = 0.25f;
   constexpr float step2 = 0.50f;
@@ -107,7 +107,7 @@ ScreenTitles::fadeIn(float delay, float duration) {
 
 void
 ScreenTitles::fadeOut(float delay, float duration) {
-  _timer.start(delay, duration);
+  _alphaFadingTimer.start(delay, duration);
 
   constexpr float step1 = 0.2f;
   constexpr float step2 = 0.4f;
@@ -135,10 +135,10 @@ ScreenTitles::fadeOut(float delay, float duration) {
 
 void
 ScreenTitles::update(float elapsedTime) {
-  if (!_timer.isDone()) {
-    _timer.update(elapsedTime);
+  if (!_alphaFadingTimer.isDone()) {
+    _alphaFadingTimer.update(elapsedTime);
 
-    const float val = _timer.getCoefElapsed();
+    const float val = _alphaFadingTimer.getCoefElapsed();
 
     _backgroundAlpha = _backgroundEasing.get(val);
     _mainTitleAlpha = _mainTitleAlphaEasing.get(val);

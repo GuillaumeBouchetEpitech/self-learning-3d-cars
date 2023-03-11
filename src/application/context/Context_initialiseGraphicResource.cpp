@@ -8,14 +8,16 @@
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/ShaderProgramBuilder.hpp"
 
+using namespace gero::graphics;
+
 namespace {
 
-void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
+void _initialiseSceneStructures(ResourceManager& rManager)
 {
   const std::string basePath = "./assets/graphics/shaders/scene/";
 
-  gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
-  gero::graphics::GeometryBuilder geometryBuilder;
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
 
   {
     shaderProgramBuilder.reset()
@@ -31,54 +33,21 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::lines)
+      .setPrimitiveType(Geometry::PrimitiveType::lines)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec4f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererWireFramesScene),
       geometryBuilder.getDefinition(), true);
 
     geometryBuilder.setPrimitiveType(
-      gero::graphics::Geometry::PrimitiveType::triangles);
+      Geometry::PrimitiveType::triangles);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererTrianglesScene),
       geometryBuilder.getDefinition(), true);
-  }
-
-  {
-    shaderProgramBuilder.reset()
-      .setVertexFilename(basePath + "particles.glsl.vert")
-      .setFragmentFilename(basePath + "particles.glsl.frag")
-      .addAttribute("a_vertex_position")
-      .addAttribute("a_offset_position")
-      .addAttribute("a_offset_scale")
-      .addAttribute("a_offset_color")
-      .addUniform("u_composedMatrix");
-
-    auto shader = rManager.createShader(
-      gero::asValue(ShadersAliases::particles),
-      shaderProgramBuilder.getDefinition());
-
-    geometryBuilder.reset()
-      .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
-      .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVbo()
-      .setVboAsInstanced()
-      .addVboAttribute(
-        "a_offset_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_offset_scale", gero::graphics::Geometry::AttrType::Float)
-      .addVboAttribute(
-        "a_offset_color", gero::graphics::Geometry::AttrType::Vec3f);
-
-    rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::particles), geometryBuilder.getDefinition(),
-      true);
   }
 
   {
@@ -97,10 +66,10 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_texCoord", gero::graphics::Geometry::AttrType::Vec2f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::backGroundTorus),
@@ -122,10 +91,10 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_texCoord", gero::graphics::Geometry::AttrType::Vec2f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::simpleTexture),
@@ -150,11 +119,11 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_normal", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_texCoord", gero::graphics::Geometry::AttrType::Vec2f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::chessboardFloor),
@@ -175,16 +144,16 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::lines)
+      .setPrimitiveType(Geometry::PrimitiveType::lines)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::wireFrames), geometryBuilder.getDefinition(),
       true);
 
     geometryBuilder.setPrimitiveType(
-      gero::graphics::Geometry::PrimitiveType::line_strip);
+      Geometry::PrimitiveType::line_strip);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::wireFramesLineStrip),
@@ -210,18 +179,13 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute(
-        "a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_color", gero::graphics::Geometry::AttrType::Vec3f)
-      .addIgnoredVboAttribute(
-        "a_vertex_normal", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_animatedNormal", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_index", gero::graphics::Geometry::AttrType::Float);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addIgnoredVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitWalls),
@@ -249,18 +213,13 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute(
-        "a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_color", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_normal", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_animatedNormal", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_vertex_index", gero::graphics::Geometry::AttrType::Float);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitGround),
@@ -278,7 +237,7 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
       .addAttribute("a_offset_orientation")
       .addAttribute("a_offset_scale")
       .addAttribute("a_offset_color")
-      .addAttribute("a_offset_outlineColor")
+      .addAttribute("a_offset_outlineValue")
       .addUniform("u_composedMatrix");
 
     auto shader = rManager.createShader(
@@ -287,18 +246,18 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec3f)
-      .addIgnoredVboAttribute("a_vertex_normal", gero::graphics::Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addIgnoredVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
       .addVbo()
       .setVboAsInstanced()
-      .addVboAttribute("a_offset_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_orientation", gero::graphics::Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_scale", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_color", gero::graphics::Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_outlineColor", gero::graphics::Geometry::AttrType::Vec4f);
+      .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarWheels),
@@ -317,7 +276,7 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
       .addAttribute("a_offset_orientation")
       .addAttribute("a_offset_scale")
       .addAttribute("a_offset_color")
-      .addAttribute("a_offset_outlineColor")
+      .addAttribute("a_offset_outlineValue")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
       ;
@@ -328,31 +287,75 @@ void _initialiseSceneStructures(gero::graphics::ResourceManager& rManager)
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_normal", gero::graphics::Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
       .addVbo()
       .setVboAsInstanced()
-      .addVboAttribute("a_offset_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_orientation", gero::graphics::Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_scale", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_color", gero::graphics::Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_outlineColor", gero::graphics::Geometry::AttrType::Vec4f);
+      .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarChassis),
       geometryBuilder.getDefinition(), true);
   }
+
+  {
+
+    shaderProgramBuilder.reset()
+      .setVertexFilename(basePath + "geometriesStackRenderer.glsl.vert")
+      .setFragmentFilename(basePath + "geometriesStackRenderer.glsl.frag")
+
+      .addAttribute("a_vertex_position")
+      // .addAttribute("a_vertex_normal")
+
+      .addAttribute("a_offset_position")
+      .addAttribute("a_offset_orientation")
+      .addAttribute("a_offset_scale")
+      .addAttribute("a_offset_color")
+      .addAttribute("a_offset_outlineValue")
+
+      .addUniform("u_composedMatrix")
+      // .addUniform("u_ambiantCoef")
+      // .addUniform("u_lightPos")
+      ;
+
+    auto shader = rManager.createShader(
+      gero::asValue(ShadersAliases::geometriesStackRenderer), shaderProgramBuilder.getDefinition());
+
+    geometryBuilder.reset()
+      .setShader(*shader)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
+      .addVbo()
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      // .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addIgnoredVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVbo()
+      .setVboAsInstanced()
+      .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float)
+      ;
+
+    rManager.createGeometryDefinition(
+      gero::asValue(GeometriesAliases::geometriesStackRenderer), geometryBuilder.getDefinition(), true);
+  }
+
 }
 
 void
-_initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
+_initialiseHudStructures(ResourceManager& rManager) {
   const std::string basePath = "./assets/graphics/shaders/hud/";
 
-  gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
-  gero::graphics::GeometryBuilder geometryBuilder;
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
 
   {
     shaderProgramBuilder.reset()
@@ -368,17 +371,17 @@ _initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::lines)
+      .setPrimitiveType(Geometry::PrimitiveType::lines)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec4f);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererWireFramesHud),
       geometryBuilder.getDefinition(), true);
 
     geometryBuilder.setPrimitiveType(
-      gero::graphics::Geometry::PrimitiveType::triangles);
+      Geometry::PrimitiveType::triangles);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererTrianglesHud),
@@ -404,20 +407,16 @@ _initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
 
     geometryBuilder.reset()
       .setShader(*shader)
-      .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
       .addVbo()
-      .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec2f)
-      .addVboAttribute("a_vertex_texCoord", gero::graphics::Geometry::AttrType::Vec2f)
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec2f)
+      .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f)
       .addVbo()
       .setVboAsInstanced()
-      .addVboAttribute(
-        "a_offset_position", gero::graphics::Geometry::AttrType::Vec3f)
-      .addVboAttribute(
-        "a_offset_texCoord", gero::graphics::Geometry::AttrType::Vec2f)
-      .addVboAttribute(
-        "a_offset_color", gero::graphics::Geometry::AttrType::Vec4f)
-      .addVboAttribute(
-        "a_offset_scale", gero::graphics::Geometry::AttrType::Float);
+      .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_texCoord", Geometry::AttrType::Vec2f)
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
+      .addVboAttribute("a_offset_scale", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::textRenderer), geometryBuilder.getDefinition(),
@@ -446,12 +445,10 @@ _initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
 
     // geometryBuilder.reset()
     //   .setShader(*shader)
-    //   .setPrimitiveType(gero::graphics::Geometry::PrimitiveType::triangles)
+    //   .setPrimitiveType(Geometry::PrimitiveType::triangles)
     //   .addVbo()
-    //   .addVboAttribute("a_vertex_position",
-    //   gero::graphics::Geometry::AttrType::Vec3f)
-    //   .addVboAttribute("a_vertex_texCoord",
-    //   gero::graphics::Geometry::AttrType::Vec2f);
+    //   .addVboAttribute("a_vertex_position",Geometry::AttrType::Vec3f)
+    //   .addVboAttribute("a_vertex_texCoord",Geometry::AttrType::Vec2f);
 
     // rManager.createGeometryDefinition(gero::asValue(GeometriesAliases::postProcess),
     //                                   geometryBuilder.getDefinition(), true);
@@ -462,8 +459,8 @@ _initialiseHudStructures(gero::graphics::ResourceManager& rManager) {
 
 void
 Context::_initialiseGraphicResource() {
-  gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
-  gero::graphics::GeometryBuilder geometryBuilder;
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
 
   auto& rManager = graphic.resourceManager;
 
@@ -474,8 +471,8 @@ Context::_initialiseGraphicResource() {
 
     rManager.createTexture(
       0, "assets/graphics/textures/ascii_font.png",
-      gero::graphics::Texture::Quality::pixelated,
-      gero::graphics::Texture::Pattern::clamped);
+      Texture::Quality::pixelated,
+      Texture::Pattern::clamped);
 
   } // font
 }

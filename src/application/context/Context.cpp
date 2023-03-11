@@ -97,27 +97,48 @@ Context::_initialise(
       ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererWireFramesScene);
     graphic.scene.stackRenderers.triangles.initialise(
       ShadersAliases::stackRendererScene, GeometriesAliases::stackRendererTrianglesScene);
-    graphic.scene.particleManager.initialise();
     graphic.scene.modelsRenderer.initialise();
-    graphic.scene.flockingManager.initialise();
     graphic.scene.carTailsRenderer.initialise();
     const auto& dimension = logic.circuitDimension;
     const glm::vec3 boundariesSize = dimension.max - dimension.min;
-    graphic.scene.floorRenderer.initialise(dimension.center, boundariesSize);
+    graphic.scene.chessBoardFloorRenderer.initialise(dimension.center, boundariesSize);
     graphic.scene.backGroundTorusRenderer.initialise();
+    graphic.scene.geometriesStackRenderer.initialise();
 
     graphic.hud.stackRenderers.wireFrames.initialise(
       ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererWireFramesHud);
     graphic.hud.stackRenderers.triangles.initialise(
       ShadersAliases::stackRendererHud, GeometriesAliases::stackRendererTrianglesHud);
-    graphic.hud.topologyRenderer.initialise();
     graphic.hud.textRenderer.initialise();
-    graphic.hud.thirdPersonCamera.initialise();
-    graphic.hud.leaderEyeRenderer.initialise();
 
     graphic.hud.postProcess.initialise({width, height});
     graphic.hud.postProcess.setGeometry(
       glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
+
+    graphic.hud.widgets.topologyRenderer.initialise();
+    graphic.hud.widgets.thirdPersonCamera.initialise();
+    graphic.hud.widgets.leaderEyeRenderer.initialise();
+  }
+
+  {
+
+    {
+      //
+      // sphere geometry
+      //
+
+      gero::graphics::MakeGeometries::Vertices vertices;
+
+      gero::graphics::MakeGeometries::makeSphere(vertices, 0, 0.5f);
+      // gero::graphics::MakeGeometries::convertToPerFacesNormals(vertices);
+      graphic.scene.geometriesStackRenderer.createAlias(1111, vertices);
+
+      gero::graphics::MakeGeometries::makeSphere(vertices, 1, 0.5f);
+      // gero::graphics::MakeGeometries::convertToPerFacesNormals(vertices);
+      graphic.scene.geometriesStackRenderer.createAlias(2222, vertices);
+
+    }
+
   }
 }
 

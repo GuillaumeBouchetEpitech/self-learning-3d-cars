@@ -4,7 +4,6 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
-#include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/math/clamp.hpp"
@@ -93,37 +92,6 @@ FlockingManager::Boid::operator==(const Boid& other) const {
 FlockingManager::FlockingManager() {
   constexpr std::size_t totalEntities = 16;
   _boids.resize(totalEntities);
-  _particlesInstances.reserve(totalEntities);
-}
-
-void
-FlockingManager::initialise() {
-
-  auto& resourceManager = Context::get().graphic.resourceManager;
-
-  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::particles));
-
-  auto geoDef = resourceManager.getGeometryDefinition(
-    gero::asValue(GeometriesAliases::particles));
-  _geometry.initialise(*_shader, geoDef);
-
-  gero::graphics::MakeGeometries::Vertices outVertices;
-  outVertices.reserve(1024);
-  gero::graphics::MakeGeometries::makeSphere(outVertices, 0, 0.5f);
-
-  std::vector<glm::vec3> particlesVertices;
-  particlesVertices.reserve(outVertices.size());
-  for (const auto& vertex : outVertices)
-    particlesVertices.push_back(vertex.position);
-
-  _geometry.updateBuffer(0, particlesVertices);
-  _geometry.setPrimitiveCount(particlesVertices.size());
-}
-
-void
-FlockingManager::setMatricesData(
-  const gero::graphics::Camera::MatricesData& matricesData) {
-  _matricesData = matricesData;
 }
 
 void
@@ -171,39 +139,41 @@ FlockingManager::update() {
 
 void
 FlockingManager::render() {
-  if (!_shader)
-    D_THROW(std::runtime_error, "shader not setup");
 
   if (_boids.empty())
     return;
 
-  _particlesInstances.clear();
-  for (Boid& boid : _boids)
-    _particlesInstances.emplace_back(
-      boid.position, 0.4f, glm::vec3(0.6f, 0.6f, 0.0f));
+  auto& scene = Context::get().graphic.scene;
 
-  if (!_particlesInstances.empty()) {
-    _shader->bind();
-    _shader->setUniform("u_composedMatrix", _matricesData.composed);
+  {
 
-    _geometry.updateBuffer(1, _particlesInstances);
-    _geometry.setInstancedCount(uint32_t(_particlesInstances.size()));
-    _geometry.render();
+    GeometriesStackRenderer::GeometryInstance instance;
+    instance.position = glm::vec3(0.0f),
+    instance.orientation = glm::quat(0.0f, glm::vec3(0,0,1));
+    instance.scale = glm::vec3(0.4f);
+    instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
+    instance.outlineColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    for (Boid& boid : _boids)
+    {
+      instance.position = boid.position;
+      scene.geometriesStackRenderer.pushAlias(1111, instance);
+    }
+
   }
 
-  // gero::graphics::GlContext::disable(gero::graphics::GlContext::States::depthTest);
+  {
+    auto& stackRenderer = scene.stackRenderers.triangles;
 
-  auto& stackRenderer = Context::get().graphic.scene.stackRenderers.triangles;
+    // const glm::vec4 color = glm::vec4(0.6f, 0.6f, 0.0f, 0.2f);
+    const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
 
-  // const glm::vec4 color = glm::vec4(0.6f, 0.6f, 0.0f, 0.2f);
-  const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
+    for (Boid& boid : _boids)
+      for (std::size_t kk = 0; kk + 1 < boid.trail.size(); ++kk)
+        stackRenderer.pushThickTriangle3dLine(
+          boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
 
-  for (Boid& boid : _boids)
-    for (std::size_t kk = 0; kk + 1 < boid.trail.size(); ++kk)
-      stackRenderer.pushThickTriangle3dLine(
-        boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
+    stackRenderer.flush();
+  }
 
-  stackRenderer.flush();
-
-  // gero::graphics::GlContext::enable(gero::graphics::GlContext::States::depthTest);
 }

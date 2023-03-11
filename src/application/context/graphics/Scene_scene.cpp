@@ -3,6 +3,9 @@
 
 #include "geronimo/graphics/GlContext.hpp"
 
+using namespace gero::graphics;
+using namespace gero::graphics::GlContext;
+
 void
 Scene::_renderLeadingCarSensors() {
   auto& context = Context::get();
@@ -69,8 +72,7 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
 
   {
     scene.backGroundTorusRenderer.render(inCamera);
-    gero::graphics::GlContext::clear(
-      gero::asValue(gero::graphics::GlContext::Buffers::depth));
+    GlContext::clears(Buffers::depth);
 
     scene.floorRenderer.render(inCamera);
 

@@ -11,19 +11,23 @@ in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
 in vec4 a_offset_color;
-in vec4 a_offset_outlineColor;
+in float a_offset_outlineValue;
 
 out vec4 v_color;
-out vec4 v_outlineColor;
+flat out float v_outlineValue;
 
 #include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
 
 void main(void)
 {
-	vec3 worldSpacePosition = a_offset_position + apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+	float angle = a_offset_orientation.w;
+	vec3 axis = a_offset_orientation.xyz;
+
+	vec3 worldSpacePosition = a_offset_position;
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
 	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineColor = a_offset_outlineColor;
+	v_outlineValue = a_offset_outlineValue;
 }

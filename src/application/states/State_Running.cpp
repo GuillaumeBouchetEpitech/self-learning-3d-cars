@@ -15,21 +15,21 @@
 void
 State_Running::enter() {
   auto& hud = Context::get().graphic.hud;
-  hud.topologyRenderer.fadeIn(0.5f, 0.5f);
-  hud.thirdPersonCamera.fadeIn(0.6f, 0.5f);
-  hud.coreUsageRenderer.fadeIn(0.7f, 0.5f);
-  hud.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
-  hud.informationTextRenderer.fadeIn(0.9f, 0.5f);
+  hud.widgets.topologyRenderer.fadeIn(0.5f, 0.5f);
+  hud.widgets.thirdPersonCamera.fadeIn(0.6f, 0.5f);
+  hud.widgets.coreUsageRenderer.fadeIn(0.7f, 0.5f);
+  hud.widgets.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
+  hud.widgets.informationTextRenderer.fadeIn(0.9f, 0.5f);
 }
 
 void
 State_Running::leave() {
   auto& hud = Context::get().graphic.hud;
-  hud.topologyRenderer.fadeOut(0.0f, 0.5f);
-  hud.thirdPersonCamera.fadeOut(0.1f, 0.5f);
-  hud.coreUsageRenderer.fadeOut(0.2f, 0.5f);
-  hud.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
-  hud.informationTextRenderer.fadeOut(0.3f, 0.5f);
+  hud.widgets.topologyRenderer.fadeOut(0.0f, 0.5f);
+  hud.widgets.thirdPersonCamera.fadeOut(0.1f, 0.5f);
+  hud.widgets.coreUsageRenderer.fadeOut(0.2f, 0.5f);
+  hud.widgets.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
+  hud.widgets.informationTextRenderer.fadeOut(0.3f, 0.5f);
 }
 
 void

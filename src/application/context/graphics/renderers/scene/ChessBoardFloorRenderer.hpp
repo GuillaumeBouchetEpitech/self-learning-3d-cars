@@ -12,10 +12,10 @@
 #include <memory>
 #include <vector>
 
-class FloorRenderer {
+class ChessBoardFloorRenderer {
 public:
-  FloorRenderer() = default;
-  ~FloorRenderer() = default;
+  ChessBoardFloorRenderer() = default;
+  ~ChessBoardFloorRenderer() = default;
 
 public:
   void initialise(const glm::vec3& center, const glm::vec3& size);

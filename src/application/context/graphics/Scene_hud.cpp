@@ -3,7 +3,7 @@
 
 #include "application/states/StateManager.hpp"
 
-#include "renderers/hud/NewLeaderRenderer.hpp"
+#include "renderers/hud/widgets/NewLeaderRenderer.hpp"
 #include "renderers/hud/helpers/renderTextBackground.hpp"
 
 #include "geronimo/graphics/GlContext.hpp"
@@ -13,6 +13,9 @@
 
 #include <iomanip>
 #include <sstream>
+
+using namespace gero::graphics;
+using namespace gero::graphics::GlContext;
 
 void
 Scene::_renderHUD_ortho() {
@@ -29,16 +32,16 @@ Scene::_renderHUD_ortho() {
     newLeaderRndr.compute();
 
     newLeaderRndr.renderHudText();
-    graphic.hud.fitnessDataRenderer.renderHudText();
-    graphic.hud.coreUsageRenderer.renderHudText();
+    graphic.hud.widgets.fitnessDataRenderer.renderHudText();
+    graphic.hud.widgets.coreUsageRenderer.renderHudText();
 
     newLeaderRndr.renderWireFrame();
-    graphic.hud.informationTextRenderer.render();
-    graphic.hud.coreUsageRenderer.renderWireFrame();
-    graphic.hud.fitnessDataRenderer.renderWireFrame();
-    graphic.hud.topologyRenderer.render();
-    graphic.hud.leaderEyeRenderer.render();
-    graphic.hud.screenTitles.render();
+    graphic.hud.widgets.informationTextRenderer.render();
+    graphic.hud.widgets.coreUsageRenderer.renderWireFrame();
+    graphic.hud.widgets.fitnessDataRenderer.renderWireFrame();
+    graphic.hud.widgets.topologyRenderer.render();
+    graphic.hud.widgets.leaderEyeRenderer.render();
+    graphic.hud.widgets.screenTitles.render();
 
   } // wireFrames
 
@@ -110,11 +113,11 @@ Scene::_renderHUD() {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::depthTest);
-  gero::graphics::GlContext::disable(gero::graphics::GlContext::States::cullFace);
+  GlContext::enable(States::depthTest);
+  GlContext::disable(States::cullFace);
 
   graphic.hud.postProcess.render();
 
   Scene::_renderHUD_ortho();
-  graphic.hud.thirdPersonCamera.render();
+  graphic.hud.widgets.thirdPersonCamera.render();
 }

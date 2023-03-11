@@ -8,6 +8,8 @@
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
 
+using namespace gero::graphics;
+
 void
 AnimatedCircuitRenderer::initialise(
   const std::vector<glm::vec3>& skeletonVertices,
@@ -144,8 +146,7 @@ AnimatedCircuitRenderer::renderWalls(const gero::graphics::Camera& inCamera) {
   if (!_shaderCircuit)
     D_THROW(std::runtime_error, "shader not setup");
 
-  gero::graphics::GlContext::disable(
-    gero::graphics::GlContext::States::depthTest);
+  GlContext::disable(GlContext::States::depthTest);
 
   const auto& matricesData = inCamera.getMatricesData();
 
@@ -157,7 +158,7 @@ AnimatedCircuitRenderer::renderWalls(const gero::graphics::Camera& inCamera) {
 
   _geometries.walls.render();
 
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::depthTest);
+  GlContext::enable(GlContext::States::depthTest);
 }
 
 void

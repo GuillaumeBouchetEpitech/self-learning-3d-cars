@@ -15,10 +15,10 @@ Context::_initialiseSimulation(
   AnimatedCircuitRenderer::AnimatedVertices wallsVertices;
 
   // pre-allocattions
-  skeletonVertices.reserve(1024);
-  groundVertices.reserve(4 * 1024);
-  wallsVertices.reserve(
-    groundVertices.capacity() * 2); // walls twice bigger that ground geometry
+  constexpr std::size_t k_preallocSize = 1024;
+  skeletonVertices.reserve(k_preallocSize);
+  groundVertices.reserve(k_preallocSize * 4);
+  wallsVertices.reserve(k_preallocSize * 8);
 
   const glm::vec3 greyColor = {0.7f, 0.7f, 0.7f};
   const glm::vec3 whiteColor = {1.0f, 1.0f, 1.0f};

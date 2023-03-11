@@ -17,6 +17,12 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-    out_color = applyLighting(u_lightPos, v_color, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
+    out_color = applyLighting(
+        u_lightPos,
+        v_color,
+        v_worldSpaceNormal,
+        v_worldSpacePosition,
+        k_ambiantCoef
+    );
     out_outline = vec4(0.0);
 }

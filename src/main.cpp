@@ -20,7 +20,7 @@
 namespace {
 
 void
-validateInputs(
+_validateInputs(
   uint32_t inWidth,
   uint32_t inHeight,
   uint32_t inTotalGenomes,
@@ -43,9 +43,8 @@ validateInputs(
 namespace {
 
 void
-processCommandLineArgs(Application::Definition& def, int argc, char** argv)
+_processCommandLineArgs(Application::Definition& def, int argc, char** argv)
 {
-
   gero::valuesParsers::IntValueParser intValueParser;
 
   if (argc >= 2)
@@ -92,9 +91,9 @@ main(int argc, char** argv) {
   def.totalGenomes = 1000;
   def.totalCores = 3;
 
-  processCommandLineArgs(def, argc, argv);
+  _processCommandLineArgs(def, argc, argv);
 
-  validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
+  _validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
 
   Application myApplication(def);
   myApplication.run();
@@ -128,7 +127,7 @@ startApplication(
   def.totalGenomes = inTotalGenomes;
   def.totalCores = inTotalCores;
 
-  validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
+  _validateInputs(def.width, def.height, def.totalGenomes, def.totalCores);
 
   myApplication = new Application(def);
 }

@@ -126,9 +126,14 @@ SRC+=	\
 		$(DIR_SRC)/application/context/graphics/*.cpp \
 		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/common/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/common/internals/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/helpers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/hud/widgets/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/internals/*.cpp \
 		$(DIR_SRC)/application/context/simulation/*.cpp \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
 		$(DIR_SRC)/application/context/simulation/utilities/*.cpp \
@@ -376,12 +381,12 @@ endif
 re:			fclean all
 
 .PHONY: \
-			all \
-			application \
-			web_wasm_worker \
-			clean \
-			fclean \
-			re
+	all \
+	application \
+	web_wasm_worker \
+	clean \
+	fclean \
+	re
 
 ## RULE(S)
 #

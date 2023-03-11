@@ -3,9 +3,9 @@
 
 #include "application/context/Context.hpp"
 
-#include "helpers/writeTime.hpp"
-#include "helpers/renderTextBackground.hpp"
-#include "helpers/renderProgressBar.hpp"
+#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 

@@ -10707,7 +10707,7 @@ precision lowp float;
 uniform sampler2D u_texture;
 
 in vec2 v_texCoord;
-in vec4 v_color;
+flat in vec4 v_color;
 
 out vec4 out_color;
 
@@ -10737,7 +10737,7 @@ in vec4 a_offset_color;
 in float a_offset_scale;
 
 out vec2 v_texCoord;
-out vec4 v_color;
+flat out vec4 v_color;
 
 void main(void)
 {
@@ -10779,56 +10779,49 @@ vec4 applyLighting(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos,
   return vec4(ambiantColor + diffuseColor + specularColor, currentColor.a);
 }
 
+vec4 applyLighting_no_specular(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  float diffuseCoef = max(dot(lightDir, normal.xyz), 0.0);
+  float specularCoef = 0.0;
+
+  // if (diffuseCoef > 0.0)
+  // {
+  //   // lighting specular
+
+  //   vec3 reflectDir = reflect(-lightDir, normal);
+  //   vec3 viewDir = normalize(-worldPos);
+
+  //   float specAngle = max(dot(reflectDir, viewDir), 0.0);
+  //   specularCoef = pow(specAngle, 64.0);
+  // }
+
+  // lighting output
+
+  vec3 ambiantColor = currentColor.xyz * ambiantCoef;
+  vec3 diffuseColor = currentColor.xyz * diffuseCoef;
+  vec3 specularColor = k_specColor * specularCoef;
+
+  return vec4(ambiantColor + diffuseColor + specularColor, currentColor.a);
+}
+
 vec4 quat_from_axis_angle(vec3 axis, float angle)
 {
   vec4 qr;
-  // float half_angle = (angle * 0.5) * 3.14159 / 180.0;
   float half_angle = (angle * 0.5);
-  qr.x = axis.x * sin(half_angle);
-  qr.y = axis.y * sin(half_angle);
-  qr.z = axis.z * sin(half_angle);
+  float sin_val = sin(half_angle);
+  qr.x = axis.x * sin_val;
+  qr.y = axis.y * sin_val;
+  qr.z = axis.z * sin_val;
   qr.w = cos(half_angle);
   return qr;
 }
 
-// vec4 quat_conj(vec4 q)
-// {
-//   return vec4(-q.x, -q.y, -q.z, q.w);
-// }
-
-// vec4 quat_mult(vec4 q1, vec4 q2)
-// {
-//   vec4 qr;
-//   qr.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
-//   qr.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
-//   qr.z = (q1.w * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
-//   qr.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
-//   return qr;
-// }
-
-// vec3 rotate_vec3(vec3 position, vec3 axis, float angle)
-// {
-//   vec4 qr = quat_from_axis_angle(axis, angle);
-//   vec4 qr_conj = quat_conj(qr);
-//   vec4 q_pos = vec4(position.x, position.y, position.z, 0);
-
-//   vec4 q_tmp = quat_mult(qr, q_pos);
-//   qr = quat_mult(q_tmp, qr_conj);
-
-//   return vec3(qr.x, qr.y, qr.z);
-// }
-
-// vec3 rotate_vec3(vec3 position, vec3 axis, float angle)
-// {
-//   vec4 q = quat_from_axis_angle(axis, angle);
-//   vec3 v = position.xyz;
-//   return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-// }
-
-vec3 apply_quat_to_vec3(vec3 position, vec4 q)
+vec3 apply_quat_to_vec3(vec3 pos, float angle, vec3 axis)
 {
-  vec3 v = position.xyz;
-  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+  return pos + 2.0 * cross(axis, cross(axis, pos) + angle * pos);
 }
 #version 300 es
 
@@ -10849,7 +10842,13 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-    out_color = applyLighting(u_lightPos, v_color, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
+    out_color = applyLighting(
+        u_lightPos,
+        v_color,
+        v_worldSpaceNormal,
+        v_worldSpacePosition,
+        k_ambiantCoef
+    );
     out_outline = vec4(0.0);
 }
 #version 300 es
@@ -11038,7 +11037,7 @@ void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
 
-  out_color = applyLighting(
+  out_color = applyLighting_no_specular(
     u_lightPos,
     texColor,
     v_worldSpaceNormal,
@@ -11074,12 +11073,80 @@ void main(void)
 
 precision lowp float;
 
+// uniform float u_ambiantCoef;
+// uniform vec3 u_lightPos;
+
+// in vec3 v_worldSpacePosition;
+// in vec3 v_worldSpaceNormal;
+flat in vec4 v_color;
+flat in float v_outlineValue;
+
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_outline;
+
+// #include "./assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+
+void main(void)
+{
+	out_color = v_color;
+	// out_color = applyLighting(
+	// 	u_lightPos,
+	// 	v_color,
+	// 	v_worldSpaceNormal,
+	// 	v_worldSpacePosition,
+	// 	u_ambiantCoef
+	// );
+
+    out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
+}
+#version 300 es
+
+precision highp float;
+
+uniform mat4 u_composedMatrix;
+
+in vec3 a_vertex_position;
+// in vec3 a_vertex_normal;
+
+in vec3 a_offset_position;
+in vec4 a_offset_orientation; // quaternion
+in vec3 a_offset_scale;
+in vec4 a_offset_color;
+in float a_offset_outlineValue;
+
+// out vec3 v_worldSpacePosition;
+// out vec3 v_worldSpaceNormal;
+flat out vec4 v_color;
+flat out float v_outlineValue;
+
+#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+
+void main(void)
+{
+	float angle = a_offset_orientation.w;
+	vec3 axis = vec3(a_offset_orientation.x, a_offset_orientation.y, a_offset_orientation.z);
+
+	vec3 worldSpacePosition = a_offset_position;
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
+	// vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, angle, axis);
+
+	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
+
+	// v_worldSpacePosition = worldSpacePosition;
+	// v_worldSpaceNormal = worldSpaceNormal;
+	v_color = a_offset_color;
+	v_outlineValue = a_offset_outlineValue;
+}
+#version 300 es
+
+precision lowp float;
+
 uniform vec3 u_lightPos;
 
 const float k_ambiantCoef = 0.2;
 
 in vec4 v_color;
-in vec4 v_outlineColor;
+flat in float v_outlineValue;
 in vec3 v_worldSpacePosition;
 in vec3 v_worldSpaceNormal;
 
@@ -11090,8 +11157,14 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-  out_color = applyLighting(u_lightPos, v_color, v_worldSpaceNormal, v_worldSpacePosition, k_ambiantCoef);
-  out_outline = v_outlineColor;
+  out_color = applyLighting(
+    u_lightPos,
+    v_color,
+    v_worldSpaceNormal,
+    v_worldSpacePosition,
+    k_ambiantCoef
+  );
+  out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
 }
 #version 300 es
 
@@ -11107,10 +11180,10 @@ in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
 in vec4 a_offset_color;
-in vec4 a_offset_outlineColor;
+in float a_offset_outlineValue;
 
 out vec4 v_color;
-out vec4 v_outlineColor;
+flat out float v_outlineValue;
 out vec3 v_worldSpacePosition;
 out vec3 v_worldSpaceNormal;
 
@@ -11118,13 +11191,17 @@ out vec3 v_worldSpaceNormal;
 
 void main(void)
 {
-	vec3 worldSpacePosition = a_offset_position + apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
-	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, a_offset_orientation);
+	float angle = a_offset_orientation.w;
+	vec3 axis = vec3(a_offset_orientation.xyz);
+
+	vec3 worldSpacePosition = a_offset_position;
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
+	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, angle, axis);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
 	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineColor = a_offset_outlineColor;
+	v_outlineValue = a_offset_outlineValue;
 	v_worldSpacePosition = worldSpacePosition;
 	v_worldSpaceNormal = worldSpaceNormal;
 }
@@ -11133,7 +11210,7 @@ void main(void)
 precision lowp float;
 
 in vec4 v_color;
-in vec4 v_outlineColor;
+flat in float v_outlineValue;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
@@ -11141,7 +11218,7 @@ layout(location = 1) out vec4 out_outline;
 void main(void)
 {
   out_color = v_color;
-  out_outline = v_outlineColor;
+  out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
 }
 #version 300 es
 
@@ -11156,57 +11233,25 @@ in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
 in vec4 a_offset_color;
-in vec4 a_offset_outlineColor;
+in float a_offset_outlineValue;
 
 out vec4 v_color;
-out vec4 v_outlineColor;
+flat out float v_outlineValue;
 
 #include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
 
 void main(void)
 {
-	vec3 worldSpacePosition = a_offset_position + apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+	float angle = a_offset_orientation.w;
+	vec3 axis = a_offset_orientation.xyz;
+
+	vec3 worldSpacePosition = a_offset_position;
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
 	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineColor = a_offset_outlineColor;
-}
-#version 300 es
-
-precision lowp float;
-
-in vec4 v_color;
-
-layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_outline;
-
-void main(void)
-{
-	out_color = v_color;
-	out_outline = vec4(1.0);
-}
-#version 300 es
-
-precision highp float;
-
-uniform mat4 u_composedMatrix;
-
-in vec3  a_vertex_position;
-
-in vec3  a_offset_position;
-in float a_offset_scale;
-in vec3  a_offset_color;
-
-out vec4 v_color;
-
-void main(void)
-{
-	vec3 position = a_vertex_position * a_offset_scale + a_offset_position;
-
-	gl_Position = u_composedMatrix * vec4(position, 1.0);
-
-	v_color = vec4(a_offset_color, 1.0);
+	v_outlineValue = a_offset_outlineValue;
 }
 #version 300 es
 

@@ -3,11 +3,12 @@
 
 #include "application/context/Context.hpp"
 
-#include "helpers/renderTextBackground.hpp"
-#include "helpers/renderProgressBar.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/clamp.hpp"
+#include "geronimo/system/math/BSpline.hpp"
 
 #include <iomanip>
 
@@ -133,7 +134,7 @@ FitnessDataRenderer::renderWireFrame() {
       // horizontal data curve
       stackRenderers.wireFrames.pushLine(
         glm::vec3(_position + prevPos, 0.0f),
-        glm::vec3(_position + currPos, 0.0f), whiteColor);
+        glm::vec3(_position + currPos, 0.0f), whiteColor * 0.6f);
 
       // vertical delimiter
       stackRenderers.wireFrames.pushLine(
@@ -179,49 +180,129 @@ FitnessDataRenderer::renderWireFrame() {
   //
   //
 
-  struct Dividers
-  {
-    float step;
-    float limit;
-    glm::vec3 color;
-    float zValue;
-  };
-
-  const std::array<Dividers, 4> allDividers =
-  {{
-    { 1.0f, 10.0f, glm::vec3(0.4f, 0.4f, 0.4f), -0.4f },
-    { 2.5f, 40.0f, glm::vec3(0.5f, 0.5f, 0.0f), -0.3f },
-    { 5.0f, 100.0f, glm::vec3(0.75f, 0.25f, 0.25f), -0.2f },
-    { 10.0f, 999999.0f, glm::vec3(0.25f, 0.75f, 0.25f), -0.1f },
-  }};
-
-  for (const auto& values : allDividers)
   {
 
-    if (maxFitness < values.step || maxFitness > values.limit)
-      continue;
-
-    const uint32_t totalSteps = uint32_t(maxFitness / values.step);
-
-    const float stepHeight = _size.y / maxFitness * values.step;
-
-    // D_MYLOG("stepHeight " << stepHeight);
-
-    const float x1 = _position.x;
-    const float x2 = x1 + _size.x;
-
-    for (uint32_t ii = 0; ii < totalSteps; ++ii)
+    struct Dividers
     {
-      const float mainY = _position.y + float(ii + 1) * stepHeight;
+      float step;
+      float limit;
+      glm::vec3 color;
+      float zValue;
+    };
 
-      stackRenderers.wireFrames.pushLine(
-        glm::vec3(x1, mainY, values.zValue),
-        glm::vec3(x2, mainY, values.zValue),
-        values.color
-      );
+    const std::array<Dividers, 4> allDividers =
+    {{
+      { 1.0f, 10.0f, glm::vec3(0.4f, 0.4f, 0.4f), -0.4f },
+      { 2.5f, 40.0f, glm::vec3(0.5f, 0.5f, 0.0f), -0.3f },
+      { 5.0f, 100.0f, glm::vec3(0.75f, 0.25f, 0.25f), -0.2f },
+      { 10.0f, 999999.0f, glm::vec3(0.25f, 0.75f, 0.25f), -0.1f },
+    }};
+
+    for (const auto& values : allDividers)
+    {
+
+      if (maxFitness < values.step || maxFitness > values.limit)
+        continue;
+
+      const uint32_t totalSteps = uint32_t(maxFitness / values.step);
+
+      const float stepHeight = _size.y / maxFitness * values.step;
+
+      // D_MYLOG("stepHeight " << stepHeight);
+
+      const float x1 = _position.x;
+      const float x2 = x1 + _size.x;
+
+      for (uint32_t ii = 0; ii < totalSteps; ++ii)
+      {
+        const float mainY = _position.y + float(ii + 1) * stepHeight;
+
+        stackRenderers.wireFrames.pushLine(
+          glm::vec3(x1, mainY, values.zValue),
+          glm::vec3(x2, mainY, values.zValue),
+          values.color
+        );
+      }
+
     }
 
   }
+
+  //
+  //
+  //
+
+  {
+
+    gero::math::BSpline bsplineSmoother;
+
+    gero::math::BSpline::Definition smootherDef;
+    smootherDef.degree = 2;
+    smootherDef.dimensions = 1;
+    smootherDef.knotsLength = logic.fitnessStats.size() * smootherDef.dimensions;
+    smootherDef.getDataCallback = [&logic](uint32_t index)
+    {
+      return logic.fitnessStats.get(index);
+    };
+    bsplineSmoother.initialise(smootherDef);
+
+
+
+    // // const float stepWidth = _size.x / (logic.fitnessStats.size() - 1);
+    // const float stepWidth = _size.x / (logic.fitnessStats.size());
+
+    // for (std::size_t ii = 1; ii < logic.fitnessStats.size(); ++ii) {
+    //   const float prevData = logic.fitnessStats.get(ii - 1);
+    //   const float currData = logic.fitnessStats.get(ii);
+
+    //   const glm::vec2 prevPos = {
+    //     stepWidth * (ii - 1),
+    //     (prevData / maxFitness) * _size.y,
+    //   };
+    //   const glm::vec2 currPos = {
+    //     stepWidth * ii,
+    //     (currData / maxFitness) * _size.y,
+    //   };
+
+    //   // horizontal data curve
+    //   stackRenderers.wireFrames.pushLine(
+    //     glm::vec3(_position + prevPos, 0.0f),
+    //     glm::vec3(_position + currPos, 0.0f), whiteColor);
+
+    //   // vertical delimiter
+    //   stackRenderers.wireFrames.pushLine(
+    //     glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
+    //     glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
+    //     lightGrayColor);
+    // }
+
+
+
+
+    constexpr unsigned int maxIterations = 100;
+    constexpr float k_step = 1.0f / maxIterations; // tiny steps
+
+    float prevCoef = k_step * 1.0f;
+    float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
+
+    for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
+
+      const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
+
+      const float prevHeight = _size.y * prevDelta / maxFitness;
+      const float currHeight = _size.y * currDelta / maxFitness;
+
+      stackRenderers.wireFrames.pushLine(
+        glm::vec3(_position, 0.0f) + glm::vec3(prevCoef * _size.x, prevHeight, 0.1f),
+        glm::vec3(_position, 0.0f) + glm::vec3(currCoef * _size.x, currHeight, 0.1f),
+        whiteColor);
+
+      prevCoef = currCoef;
+      prevDelta = currDelta;
+    }
+
+  }
+
 
 
 

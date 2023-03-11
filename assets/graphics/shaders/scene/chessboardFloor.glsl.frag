@@ -20,7 +20,7 @@ void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
 
-  out_color = applyLighting(
+  out_color = applyLighting_no_specular(
     u_lightPos,
     texColor,
     v_worldSpaceNormal,

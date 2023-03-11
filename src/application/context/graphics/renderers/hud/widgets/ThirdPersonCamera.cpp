@@ -23,12 +23,12 @@ ThirdPersonCamera::initialise() {
   auto& context = Context::get();
   const auto& vSize = context.graphic.cameraData.viewportSize;
 
-  _size = {175, 150};
+  _layout.size = {175, 150};
 
-  _position.x = vSize.x - _size.x + k_faceOutX;
-  _position.y = 10;
+  _layout.position.x = vSize.x - _layout.size.x + k_faceOutX;
+  _layout.position.y = 10;
 
-  _postProcess.initialise({_size.x, _size.y});
+  _postProcess.initialise({_layout.size.x, _layout.size.y});
 }
 
 bool
@@ -59,15 +59,15 @@ ThirdPersonCamera::fadeIn(float delay, float duration) {
   auto& graphic = context.graphic;
 
   const auto& vSize = graphic.cameraData.viewportSize;
-  const float targetPos = vSize.x - _size.x + k_faceInX;
+  const float targetPos = vSize.x - _layout.size.x + k_faceInX;
 
-  _timer.start(delay, duration);
+  _layout.timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeOutCubic)
+  _layout.moveEasing = gero::easing::GenericEasing<2>()
+                  .push(0.0f, _layout.position.x, gero::easing::easeOutCubic)
                   .push(1.0f, targetPos);
 
-  _isVisible = true;
+  _layout.isVisible = true;
 }
 
 void
@@ -77,22 +77,22 @@ ThirdPersonCamera::fadeOut(float delay, float duration) {
   auto& graphic = context.graphic;
 
   const auto& vSize = graphic.cameraData.viewportSize;
-  const float targetPos = vSize.x - _size.x + k_faceOutX;
+  const float targetPos = vSize.x - _layout.size.x + k_faceOutX;
 
-  _timer.start(delay, duration);
+  _layout.timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeInCubic)
+  _layout.moveEasing = gero::easing::GenericEasing<2>()
+                  .push(0.0f, _layout.position.x, gero::easing::easeInCubic)
                   .push(1.0f, targetPos);
 
-  _isVisible = false;
+  _layout.isVisible = false;
 }
 
 void
 ThirdPersonCamera::update(float elapsedTime) {
-  if (!_timer.isDone()) {
-    _timer.update(elapsedTime);
-    _position.x = _moveEasing.get(_timer.getCoefElapsed());
+  if (!_layout.timer.isDone()) {
+    _layout.timer.update(elapsedTime);
+    _layout.position.x = _layout.moveEasing.get(_layout.timer.getCoefElapsed());
   }
 
   if (canActivate()) {
@@ -118,7 +118,7 @@ ThirdPersonCamera::update(float elapsedTime) {
       const glm::vec3 target = carOrigin;
       const glm::vec3 upAxis = _upAxis;
 
-      _camera.setSize(_size.x, _size.y);
+      _camera.setSize(_layout.size.x, _layout.size.y);
       _camera.setPerspective(70.0f, 0.1f, 1500.0f);
       _camera.lookAt(eye, target, upAxis);
       _camera.computeMatrices();
@@ -128,7 +128,7 @@ ThirdPersonCamera::update(float elapsedTime) {
 
 void
 ThirdPersonCamera::resize() {
-  if (_isVisible)
+  if (_layout.isVisible)
     fadeIn(0.0f, 0.2f);
   else
     fadeOut(0.0f, 0.2f);
@@ -157,14 +157,14 @@ ThirdPersonCamera::render() {
     const auto& matricesData = cameraData.hud.getMatricesData();
     _postProcess.setMatricesData(matricesData);
 
-    _postProcess.setGeometry(_position, _size, -1.0f);
+    _postProcess.setGeometry(_layout.position, _layout.size, -1.0f);
 
     _postProcess.render();
 
     auto& stackRenderers = graphic.hud.stackRenderers;
     stackRenderers.triangles.pushQuad(
-      _position + _size * 0.5f, _size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
+      _layout.position + _layout.size * 0.5f, _layout.size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
     stackRenderers.wireFrames.pushRectangle(
-      _position, _size, glm::vec4(0.8f, 0.8f, 0.8f, 1), -0.1f);
+      _layout.position, _layout.size, glm::vec4(0.8f, 0.8f, 0.8f, 1), -0.1f);
   }
 }

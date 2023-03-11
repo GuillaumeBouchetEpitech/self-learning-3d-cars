@@ -39,35 +39,11 @@ private:
 private:
   Boids _boids;
 
-private:
-  struct BufferAttr {
-    glm::vec3 position;
-    float scale;
-    glm::vec3 color;
-
-    BufferAttr(const glm::vec3& position, float scale, const glm::vec3& color)
-      : position(position), scale(scale), color(color) {}
-  };
-
-  std::vector<BufferAttr> _particlesInstances;
-
-  std::shared_ptr<gero::graphics::ShaderProgram> _shader;
-
-  gero::graphics::Geometry _geometry;
-
-  gero::graphics::Camera::MatricesData _matricesData;
-
 public:
   FlockingManager();
   ~FlockingManager() = default;
 
 public:
-  void initialise();
-  void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
-
-public:
   void update();
-
-public:
   void render();
 };

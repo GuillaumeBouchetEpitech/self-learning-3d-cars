@@ -100,12 +100,12 @@ cd $DIR_ROOT
 
 cd ./thirdparties/dependencies/basic-genetic-algorithm
 
-make build_mode="release" build_platform="native" all -j6
+make build_mode="release" build_platform="native" all -j4
 
 case $WEB_WASM_AVAILABLE in
 yes)
   echo "  web-wasm version"
-  make build_mode="release" build_platform="web-wasm" all -j6
+  make build_mode="release" build_platform="web-wasm" all -j4
   ;;
 esac
 
@@ -119,14 +119,14 @@ cd $DIR_ROOT
 
 echo "building projects application"
 echo "  native version"
-make build_mode="release" build_platform="native-pthread" all -j6
+make build_mode="release" build_platform="native-pthread" all -j4
 
 case $WEB_WASM_AVAILABLE in
 yes)
   echo "  web-wasm version (webworker)"
-  make build_mode="release" build_platform="web-wasm-webworker" all -j6
+  make build_mode="release" build_platform="web-wasm-webworker" all -j4
   echo "  web-wasm version (pthread)"
-  make build_mode="release" build_platform="web-wasm-pthread" all -j6
+  make build_mode="release" build_platform="web-wasm-pthread" all -j4
   ;;
 esac
 

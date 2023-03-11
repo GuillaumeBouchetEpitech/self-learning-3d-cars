@@ -7,6 +7,9 @@
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/system/asValue.hpp"
 
+using namespace gero::graphics;
+using namespace gero::graphics::GlContext;
+
 void
 PostProcess::setMatricesData(
   const gero::graphics::Camera::MatricesData& matricesData) {
@@ -34,21 +37,18 @@ void
 PostProcess::startRecording() {
   _frameBuffer.bind();
 
-  gero::graphics::GlContext::setViewport(0, 0, _frameSize.x, _frameSize.y);
-  gero::graphics::GlContext::clearColor(0, 0, 0, 0);
-  gero::graphics::GlContext::clearDepth(1.0f);
-  gero::graphics::GlContext::clear(
-    gero::asValue(gero::graphics::GlContext::Buffers::color) |
-    gero::asValue(gero::graphics::GlContext::Buffers::depth));
+  GlContext::setViewport(0, 0, _frameSize.x, _frameSize.y);
+  GlContext::clearColor(0, 0, 0, 0);
+  GlContext::clearDepth(1.0f);
+  GlContext::clears(Buffers::color, Buffers::depth);
 
-  gero::graphics::GlContext::setDepthFunc(
-    gero::graphics::GlContext::DepthFuncs::less);
+  GlContext::setDepthFunc(DepthFuncs::less);
 }
 
 void
 PostProcess::stopRecording() {
   gero::graphics::FrameBuffer::unbind();
-  gero::graphics::GlContext::setViewport(0, 0, _frameSize.x, _frameSize.y);
+  GlContext::setViewport(0, 0, _frameSize.x, _frameSize.y);
 }
 
 void
@@ -60,16 +60,16 @@ PostProcess::render() {
     "u_invResolution", 1.0f / float(_frameSize.x), 1.0f / float(_frameSize.y));
 
   _shader->setUniform("u_colorTexture", 0);
-  gero::graphics::GlContext::Texture::active(0);
+  GlContext::Texture::active(0);
   _colorTexture.bind();
 
   _shader->setUniform("u_outlineTexture", 1);
-  gero::graphics::GlContext::Texture::active(1);
+  GlContext::Texture::active(1);
   _outlineTexture.bind();
 
   _screenQuad.render();
 
-  gero::graphics::GlContext::Texture::active(0);
+  GlContext::Texture::active(0);
 }
 
 void
@@ -110,7 +110,6 @@ PostProcess::setGeometry(
      {{inPos.x + inSize.x * 0.0f, inPos.y + inSize.y * 1.0f, depth}, {0, 1}}}};
 
   std::array<std::size_t, 6> indices{{1, 0, 2, 0, 3, 2}};
-  // std::array<std::size_t, 3> indices{{ 0,3,2 }};
 
   std::array<Vertex, 6> vertices;
   for (std::size_t index = 0; index < indices.size(); ++index)

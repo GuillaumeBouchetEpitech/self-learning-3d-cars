@@ -8,6 +8,9 @@
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
 
+using namespace gero::graphics;
+using namespace gero::graphics::GlContext;
+
 void
 FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
 
@@ -24,20 +27,22 @@ FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
   {
 
     const glm::ivec2 size = {512, 512};
-    auto pixelsPtr = std::make_unique<unsigned char[]>(size.x * size.y * 4);
-    unsigned char* rawPixels = pixelsPtr.get();
+    auto pixelsPtr = std::make_unique<uint8_t[]>(size.x * size.y * 4);
+    uint8_t* rawPixels = pixelsPtr.get();
 
     const auto setPixel =
-      [&size,
-       rawPixels](int x, int y, unsigned char grey, unsigned char alpha) {
-        rawPixels[y * 4 * size.x + x * 4 + 0] = grey;
-        rawPixels[y * 4 * size.x + x * 4 + 1] = grey;
-        rawPixels[y * 4 * size.x + x * 4 + 2] = grey;
-        rawPixels[y * 4 * size.x + x * 4 + 3] = alpha;
+      [&size, rawPixels](int x, int y, uint8_t grey, uint8_t alpha) {
+
+        const uint32_t pixelPos = y * 4 * size.x + x * 4;
+
+        rawPixels[pixelPos + 0] = grey;
+        rawPixels[pixelPos + 1] = grey;
+        rawPixels[pixelPos + 2] = grey;
+        rawPixels[pixelPos + 3] = alpha;
       };
 
-    for (int yy = 0; yy < size.y; ++yy)
-      for (int xx = 0; xx < size.x; ++xx) {
+    for (int32_t yy = 0; yy < size.y; ++yy)
+      for (int32_t xx = 0; xx < size.x; ++xx) {
         if (
           (xx < size.x * 0.5f && yy < size.y * 0.5f) ||
           (xx > size.x * 0.5f && yy > size.y * 0.5f)) {
@@ -47,9 +52,10 @@ FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
         }
       }
 
-    _texture.allocateBlank(
-      size, gero::graphics::Texture::Quality::smoothed,
-      gero::graphics::Texture::Pattern::repeat, rawPixels);
+    _texture.allocateBlank(size,
+      gero::graphics::Texture::Quality::smoothed,
+      gero::graphics::Texture::Pattern::repeat,
+      rawPixels);
   }
 
   { // compute chessboard ground
@@ -60,26 +66,20 @@ FloorRenderer::initialise(const glm::vec3& center, const glm::vec3& size) {
       glm::vec2 texCoord;
     };
 
-    glm::vec3 boardHSize = glm::ceil(size * 0.55f / 100.55f) * 100.0f;
-    glm::vec3 boardPos = center;
-    glm::vec3 texCoordSize = boardHSize / 100.0f;
-    constexpr float boardHeight = -0.1f;
+    const glm::vec3 hSize = glm::ceil(size * 0.55f / 100.55f) * 100.0f;
+    const glm::vec2 minPos = { center.x - hSize.x, center.y - hSize.y };
+    const glm::vec2 maxPos = { center.x + hSize.x, center.y + hSize.y };
+    constexpr float height = -0.1f;
 
     const glm::vec3 normal = {0, 0, 1};
 
+    const glm::vec3 texCoord = hSize / 100.0f;
+
     std::array<Vertex, 4> quadVertices{{
-      {{boardPos.x + boardHSize.x, boardPos.y - boardHSize.y, boardHeight},
-       normal,
-       {+texCoordSize.x, -texCoordSize.y}},
-      {{boardPos.x - boardHSize.x, boardPos.y - boardHSize.y, boardHeight},
-       normal,
-       {-texCoordSize.x, -texCoordSize.y}},
-      {{boardPos.x + boardHSize.x, boardPos.y + boardHSize.y, boardHeight},
-       normal,
-       {+texCoordSize.x, +texCoordSize.y}},
-      {{boardPos.x - boardHSize.x, boardPos.y + boardHSize.y, boardHeight},
-       normal,
-       {-texCoordSize.x, +texCoordSize.y}},
+      {{maxPos.x, minPos.y, height}, normal, {+texCoord.x, -texCoord.y}},
+      {{minPos.x, minPos.y, height}, normal, {-texCoord.x, -texCoord.y}},
+      {{maxPos.x, maxPos.y, height}, normal, {+texCoord.x, +texCoord.y}},
+      {{minPos.x, maxPos.y, height}, normal, {-texCoord.x, +texCoord.y}},
     }};
 
     std::array<int, 6> indices{{1, 0, 2, 1, 2, 3}};
@@ -101,11 +101,10 @@ FloorRenderer::render(const gero::graphics::Camera& inCamera) {
     D_THROW(std::runtime_error, "shader not setup");
 
   // hide the floor if the gero::graphics::Camera is looking from beneath it
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::cullFace);
+  GlContext::enable(States::cullFace);
 
   // transparency friendly
-  gero::graphics::GlContext::disable(
-    gero::graphics::GlContext::States::depthTest);
+  GlContext::disable(States::depthTest);
 
   _shader->bind();
 
@@ -116,6 +115,6 @@ FloorRenderer::render(const gero::graphics::Camera& inCamera) {
   _texture.bind();
   _geometry.render();
 
-  gero::graphics::GlContext::disable(gero::graphics::GlContext::States::cullFace);
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::depthTest);
+  GlContext::disable(States::cullFace);
+  GlContext::enable(States::depthTest);
 }

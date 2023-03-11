@@ -7,18 +7,18 @@
 #include "geronimo/graphics/ShaderProgram.hpp"
 #include "geronimo/system/math/clamp.hpp"
 
+using namespace gero::graphics;
+using namespace gero::graphics::GlContext;
+
 void
 Scene::initialise() {
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::depthTest);
-  gero::graphics::GlContext::setDepthFunc(
-    gero::graphics::GlContext::DepthFuncs::less);
+  GlContext::enable(States::depthTest);
+  GlContext::setDepthFunc(DepthFuncs::less);
 
-  gero::graphics::GlContext::enable(gero::graphics::GlContext::States::blend);
-  gero::graphics::GlContext::setBlendFunc(
-    gero::graphics::GlContext::BlendFuncs::srcAlpha,
-    gero::graphics::GlContext::BlendFuncs::oneMinusSrcAlpha);
+  GlContext::enable(States::blend);
+  GlContext::setBlendFunc(BlendFuncs::srcAlpha, BlendFuncs::oneMinusSrcAlpha);
 
-  gero::graphics::GlContext::disable(gero::graphics::GlContext::States::cullFace);
+  GlContext::disable(States::cullFace);
 }
 
 void
@@ -36,12 +36,10 @@ Scene::renderSimple() {
 
       const auto& vSize = graphic.cameraData.viewportSize;
 
-      gero::graphics::GlContext::setViewport(0, 0, vSize.x, vSize.y);
+      GlContext::setViewport(0, 0, vSize.x, vSize.y);
 
-      gero::graphics::GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
-      gero::graphics::GlContext::clear(
-        gero::asValue(gero::graphics::GlContext::Buffers::color) |
-        gero::asValue(gero::graphics::GlContext::Buffers::depth));
+      GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      GlContext::clears(Buffers::color, Buffers::depth);
     }
 
     graphic.hud.postProcess.stopRecording();
@@ -81,7 +79,7 @@ Scene::renderAll() {
 
     graphic.hud.postProcess.stopRecording();
 
-    gero::graphics::GlContext::setViewport(0, 0, vSize.x, vSize.y);
+    GlContext::setViewport(0, 0, vSize.x, vSize.y);
   }
 
   { // HUD
@@ -137,12 +135,10 @@ Scene::updateMatrices() {
 
 void
 Scene::_clear() {
-  const auto& viewportSize = Context::get().graphic.cameraData.viewportSize;
+  const auto& vSize = Context::get().graphic.cameraData.viewportSize;
 
-  gero::graphics::GlContext::setViewport(0, 0, viewportSize.x, viewportSize.y);
+  GlContext::setViewport(0, 0, vSize.x, vSize.y);
 
-  gero::graphics::GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  gero::graphics::GlContext::clear(
-    gero::asValue(gero::graphics::GlContext::Buffers::color) |
-    gero::asValue(gero::graphics::GlContext::Buffers::depth));
+  GlContext::clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  GlContext::clears(Buffers::color, Buffers::depth);
 }

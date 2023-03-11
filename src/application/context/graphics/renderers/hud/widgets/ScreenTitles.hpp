@@ -6,7 +6,7 @@
 
 class ScreenTitles {
 private:
-  gero::Timer _timer;
+  gero::Timer _alphaFadingTimer;
 
   gero::easing::GenericEasing<2> _backgroundEasing;
   gero::easing::GenericEasing<2> _mainTitleAlphaEasing;

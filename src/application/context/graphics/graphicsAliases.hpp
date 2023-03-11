@@ -6,7 +6,6 @@
 enum class ShadersAliases : uint32_t {
   stackRendererHud = 0,
   stackRendererScene,
-  particles,
   simpleTexture,
   chessboardFloor,
   textRenderer,
@@ -17,6 +16,7 @@ enum class ShadersAliases : uint32_t {
   modelsCarChassis,
   postProcess,
   backGroundTorus,
+  geometriesStackRenderer,
 };
 
 enum class GeometriesAliases : uint32_t {
@@ -24,7 +24,6 @@ enum class GeometriesAliases : uint32_t {
   stackRendererTrianglesHud,
   stackRendererWireFramesScene,
   stackRendererTrianglesScene,
-  particles,
   simpleTexture,
   chessboardFloor,
   textRenderer,
@@ -36,6 +35,7 @@ enum class GeometriesAliases : uint32_t {
   modelsCarChassis,
   // postProcess,
   backGroundTorus,
+  geometriesStackRenderer,
 };
 
 // enum class gero::graphics::Textures : uint32_t

@@ -2,10 +2,11 @@
 #include "CoreUsageRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "helpers/writeTime.hpp"
-#include "helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
+#include "geronimo/system/math/BSpline.hpp"
 
 namespace {
 
@@ -83,8 +84,7 @@ CoreUsageRenderer::renderWireFrame() {
 
   const uint32_t allTimeMaxDelta = profileData.getAllTimeMaxDelta();
 
-  const float verticalSize =
-    (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
+  const float verticalSize = (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
 
   { // background
 
@@ -105,8 +105,7 @@ CoreUsageRenderer::renderWireFrame() {
 
   { // dividers
 
-    for (float currDivider = k_divider; currDivider < verticalSize;
-         currDivider += k_divider) {
+    for (float currDivider = k_divider; currDivider < verticalSize; currDivider += k_divider) {
       const float ratio = currDivider / verticalSize;
 
       stackRenderers.wireFrames.pushLine(
@@ -124,10 +123,9 @@ CoreUsageRenderer::renderWireFrame() {
 
     const float widthStep = borderSize.x / profileData.getMaxStateHistory();
 
-    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores();
-         ++coreIndex)
-      for (uint32_t statIndex = 0;
-           statIndex + 1 < profileData.getMaxStateHistory(); ++statIndex) {
+    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores(); ++coreIndex) {
+
+      for (uint32_t statIndex = 0; statIndex + 1 < profileData.getMaxStateHistory(); ++statIndex) {
         const float prevDelta =
           float(profileData.getCoreHistoryData(coreIndex, statIndex + 0).delta);
         const float currDelta =
@@ -139,9 +137,54 @@ CoreUsageRenderer::renderWireFrame() {
         stackRenderers.wireFrames.pushLine(
           borderPos + glm::vec3((statIndex + 0) * widthStep, prevHeight, 0.0f),
           borderPos + glm::vec3((statIndex + 1) * widthStep, currHeight, 0.0f),
+          prevDelta < k_slowdownDelta ? whiteColor * 0.4f : redColor * 0.4f,
+          currDelta < k_slowdownDelta ? whiteColor * 0.4f : redColor * 0.4f);
+      }
+    }
+
+  }
+
+  {
+
+    gero::math::BSpline bsplineSmoother;
+
+    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores(); ++coreIndex) {
+
+      gero::math::BSpline::Definition smootherDef;
+      smootherDef.degree = 2;
+      smootherDef.dimensions = 1;
+      smootherDef.knotsLength = profileData.getMaxStateHistory() * smootherDef.dimensions;
+      smootherDef.getDataCallback = [&coreIndex, &profileData](uint32_t index)
+      {
+        return profileData.getCoreHistoryData(coreIndex, index).delta;
+      };
+      bsplineSmoother.initialise(smootherDef);
+
+
+      constexpr unsigned int maxIterations = 100;
+      constexpr float k_step = 1.0f / maxIterations; // tiny steps
+
+      float prevCoef = k_step * 1.0f;
+      float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
+
+      for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
+
+        const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
+
+        const float prevHeight = borderSize.y * prevDelta / verticalSize;
+        const float currHeight = borderSize.y * currDelta / verticalSize;
+
+        stackRenderers.wireFrames.pushLine(
+          borderPos + glm::vec3(prevCoef * borderSize.x, prevHeight, 0.1f),
+          borderPos + glm::vec3(currCoef * borderSize.x, currHeight, 0.1f),
           prevDelta < k_slowdownDelta ? whiteColor : redColor,
           currDelta < k_slowdownDelta ? whiteColor : redColor);
+
+        prevCoef = currCoef;
+        prevDelta = currDelta;
       }
+    }
+
   }
 
   stackRenderers.wireFrames.flush();

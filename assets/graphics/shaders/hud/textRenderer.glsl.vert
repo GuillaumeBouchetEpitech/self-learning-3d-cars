@@ -12,7 +12,7 @@ in vec4 a_offset_color;
 in float a_offset_scale;
 
 out vec2 v_texCoord;
-out vec4 v_color;
+flat out vec4 v_color;
 
 void main(void)
 {

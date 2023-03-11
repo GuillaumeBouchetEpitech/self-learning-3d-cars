@@ -4,7 +4,6 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
-#include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"

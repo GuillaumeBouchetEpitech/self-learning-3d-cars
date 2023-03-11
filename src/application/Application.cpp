@@ -19,10 +19,11 @@ constexpr bool k_canResize = false;
 #endif
 } // namespace
 
+using gero::graphics::SDLWindowWrapper;
+
 Application::Application(const Definition& def)
-  : gero::graphics::SDLWindowWrapper(
-      "Self Learning 3d Cars", def.width, def.height, 30,
-      SDLWindowWrapper::OpenGlEsVersion::v3, k_canResize) {
+  : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, 30, OpenGlEsVersion::v3, k_canResize)
+{
   Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();
   Scene::initialise();

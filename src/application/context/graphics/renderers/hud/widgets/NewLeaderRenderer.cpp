@@ -2,8 +2,7 @@
 #include "NewLeaderRenderer.hpp"
 
 #include "application/context/Context.hpp"
-
-#include "helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
 
 void
 NewLeaderRenderer::compute() {

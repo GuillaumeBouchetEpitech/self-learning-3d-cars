@@ -12,21 +12,22 @@
 #include "helpers/LeaderCar.hpp"
 #include "helpers/ProfileData.hpp"
 
-#include "graphics/renderers/hud/CoreUsageRenderer.hpp"
-#include "graphics/renderers/hud/FitnessDataRenderer.hpp"
-#include "graphics/renderers/hud/InformationTextRenderer.hpp"
-#include "graphics/renderers/hud/LeaderEyeRenderer.hpp"
 #include "graphics/renderers/hud/PostProcess.hpp"
-#include "graphics/renderers/hud/ScreenTitles.hpp"
 #include "graphics/renderers/hud/TextRenderer.hpp"
-#include "graphics/renderers/hud/ThirdPersonCamera.hpp"
-#include "graphics/renderers/hud/TopologyRenderer.hpp"
+#include "graphics/renderers/hud/widgets/CoreUsageRenderer.hpp"
+#include "graphics/renderers/hud/widgets/FitnessDataRenderer.hpp"
+#include "graphics/renderers/hud/widgets/InformationTextRenderer.hpp"
+#include "graphics/renderers/hud/widgets/LeaderEyeRenderer.hpp"
+#include "graphics/renderers/hud/widgets/ScreenTitles.hpp"
+#include "graphics/renderers/hud/widgets/ThirdPersonCamera.hpp"
+#include "graphics/renderers/hud/widgets/TopologyRenderer.hpp"
 
 #include "graphics/renderers/scene/AnimatedCircuitRenderer.hpp"
 #include "graphics/renderers/scene/BackGroundTorusRenderer.hpp"
 #include "graphics/renderers/scene/CarTailsRenderer.hpp"
+#include "graphics/renderers/scene/ChessBoardFloorRenderer.hpp"
 #include "graphics/renderers/scene/FlockingManager.hpp"
-#include "graphics/renderers/scene/FloorRenderer.hpp"
+#include "graphics/renderers/scene/GeometriesStackRenderer.hpp"
 #include "graphics/renderers/scene/ModelsRenderer.hpp"
 #include "graphics/renderers/scene/ParticleManager.hpp"
 
@@ -99,25 +100,29 @@ public:
     struct Hud {
       StackRenderers stackRenderers;
       TextRenderer textRenderer;
-      TopologyRenderer topologyRenderer;
-      ScreenTitles screenTitles;
-      CoreUsageRenderer coreUsageRenderer;
-      ThirdPersonCamera thirdPersonCamera;
-      FitnessDataRenderer fitnessDataRenderer;
-      InformationTextRenderer informationTextRenderer;
-      LeaderEyeRenderer leaderEyeRenderer;
       PostProcess postProcess;
+
+      struct Widgets {
+        TopologyRenderer topologyRenderer;
+        ScreenTitles screenTitles;
+        CoreUsageRenderer coreUsageRenderer;
+        ThirdPersonCamera thirdPersonCamera;
+        FitnessDataRenderer fitnessDataRenderer;
+        InformationTextRenderer informationTextRenderer;
+        LeaderEyeRenderer leaderEyeRenderer;
+      } widgets;
     } hud;
 
     struct Scene {
       StackRenderers stackRenderers;
       ParticleManager particleManager;
-      FloorRenderer floorRenderer;
+      ChessBoardFloorRenderer chessBoardFloorRenderer;
       BackGroundTorusRenderer backGroundTorusRenderer;
       AnimatedCircuitRenderer animatedCircuitRenderer;
       ModelsRenderer modelsRenderer;
       FlockingManager flockingManager;
       CarTailsRenderer carTailsRenderer;
+      GeometriesStackRenderer geometriesStackRenderer;
     } scene;
 
     gero::graphics::ResourceManager resourceManager;
