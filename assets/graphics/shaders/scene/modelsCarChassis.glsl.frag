@@ -3,6 +3,7 @@
 precision lowp float;
 
 uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -19,6 +20,7 @@ layout(location = 1) out vec4 out_outline;
 void main(void)
 {
   out_color = applyLighting(
+    u_viewPos,
     u_lightPos,
     v_color,
     v_worldSpaceNormal,

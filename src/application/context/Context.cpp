@@ -54,6 +54,8 @@ Context::_initialize(
 
 #endif
 
+  logic.carDataFrameHandler.initalize(totalGenomes);
+
   _initializeSimulationCallbacks();
   _initializeSimulation(totalGenomes, totalCores);
 

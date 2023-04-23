@@ -2,10 +2,13 @@
 #pragma once
 
 #include "application/context/simulation/AbstractSimulation.hpp"
+#include "application/context/simulation/logic/CarData.hpp"
+
 #include "application/states/StateManager.hpp"
 
 #include "graphics/renderers/common/StackRenderers.hpp"
 
+#include "helpers/CarDataFrameHandler.hpp"
 #include "helpers/CarWheelsTrails.hpp"
 #include "helpers/FitnessStats.hpp"
 #include "helpers/LeaderCar.hpp"
@@ -134,6 +137,8 @@ public:
     NeuralNetworkTopology annTopology;
 
     std::unique_ptr<AbstractSimulation> simulation = nullptr;
+
+    CarDataFrameHandler carDataFrameHandler;
 
     struct Cores {
       ProfileData profileData;

@@ -16,10 +16,14 @@ struct CarData {
   struct SingleTransform {
     glm::vec3 position;
     glm::quat orientation;
+
+    void lerp(const SingleTransform& valA, const SingleTransform& valB, float coef);
   };
   struct CarTransform {
     SingleTransform chassis;
     std::array<SingleTransform, 4> wheels;
+
+    void lerp(const CarTransform& valA, const CarTransform& valB, float coef);
   };
   CarTransform liveTransforms;
 
@@ -37,6 +41,8 @@ struct CarData {
   SensorData groundSensor;
 
   std::vector<float> neuronsValues;
+
+  void lerp(const CarData& valA, const CarData& valB, float coef);
 };
 
 using AllCarsData = std::vector<CarData>;

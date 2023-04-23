@@ -3,6 +3,8 @@
 #include "application/defines.hpp"
 #include "application/states/StateManager.hpp"
 
+#include "geronimo/system/ErrorHandler.hpp"
+
 #include <iomanip>
 #include <sstream>
 
@@ -34,6 +36,12 @@ Context::_initializeSimulationCallbacks() {
 
   logic.simulation->setOnGenerationStepCallback([this]() -> void {
     const auto& simulation = *logic.simulation;
+
+    { // TODO
+
+      logic.carDataFrameHandler.pushNewFrame(*logic.simulation);
+
+    } // TODO
 
     { // handle the car trails
 
@@ -83,6 +91,8 @@ Context::_initializeSimulationCallbacks() {
 
   logic.simulation->setOnGenerationEndCallback([this](bool isSmarter) -> void {
     logic.fitnessStats.update(logic.simulation->getBestGenome().getFitness());
+
+    logic.carDataFrameHandler.discardAll();
 
     if (isSmarter)
       graphic.scene.carTailsRenderer.updateLatestTrail();

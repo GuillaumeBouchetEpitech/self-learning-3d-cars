@@ -115,6 +115,7 @@ ChessBoardFloorRenderer::render(const gero::graphics::Camera& inCamera) {
   const auto& matricesData = inCamera.getMatricesData();
   _shader->setUniform("u_composedMatrix", matricesData.composed);
   _shader->setUniform("u_lightPos", inCamera.getEye());
+  _shader->setUniform("u_viewPos", inCamera.getEye());
 
   _texture.bind();
   _geometry.render();

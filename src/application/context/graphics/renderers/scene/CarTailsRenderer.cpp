@@ -44,10 +44,9 @@ CarTailsRenderer::updateLatestTrail() {
   auto& currCarNewTrail = _geometries.bestNewCarsTrails.at(_currentTrailIndex);
 
   for (std::size_t ii = 0; ii < currCarNewTrail.wheels.size(); ++ii) {
-    currCarNewTrail.wheels.at(ii).updateBuffer(
-      0, bestWheelsTrailData.wheels.at(ii));
-    currCarNewTrail.wheels.at(ii).setPrimitiveCount(
-      bestWheelsTrailData.wheels.at(ii).size());
+    auto& currWheel = currCarNewTrail.wheels.at(ii);
+    currWheel.updateBuffer(0, bestWheelsTrailData.wheels.at(ii));
+    currWheel.setPrimitiveCount(bestWheelsTrailData.wheels.at(ii).size());
   }
 
   // increase the currently used trail index (loop if too high)
@@ -86,15 +85,16 @@ CarTailsRenderer::render() {
       constexpr int maxSize = 30;
 
       for (const auto& currWheel : trailData.wheels) {
-        if (currWheel.empty())
+        if (currWheel.size() < 10)
           continue;
 
-        const int totalSize = currWheel.size();
-        const int currSize = std::min(totalSize, maxSize);
+        const int startIndex = 3;
 
-        const float* dataPointer = &currWheel.at(totalSize - currSize).x;
-        const int dataSize =
-          currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
+        const int totalSize = currWheel.size();
+        const int currSize = std::min(totalSize - startIndex, maxSize - startIndex);
+
+        const float* dataPointer = &currWheel.at(totalSize - currSize - startIndex).x;
+        const int dataSize = currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
 
         _geometries.leaderCarTrail.updateBuffer(0, dataPointer, dataSize, true);
         _geometries.leaderCarTrail.setPrimitiveCount(currSize);

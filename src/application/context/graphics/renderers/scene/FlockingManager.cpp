@@ -70,7 +70,7 @@ FlockingManager::Boid::wander(float coef) {
 
 void
 FlockingManager::Boid::applyAcceleration(
-  float maxAcceleration, float maxVelocity) {
+  float maxAcceleration, float maxVelocity, float elapsedTime) {
   // limitate acc
   const float accMagnitude = glm::length(acceleration);
   if (accMagnitude > maxAcceleration)
@@ -81,7 +81,7 @@ FlockingManager::Boid::applyAcceleration(
   const float velMagnitude = glm::length(velocity);
   if (velMagnitude > maxVelocity)
     velocity = (velocity / velMagnitude) * maxVelocity;
-  position += velocity;
+  position += velocity * 25.0f * elapsedTime;
 }
 
 bool
@@ -95,7 +95,7 @@ FlockingManager::FlockingManager() {
 }
 
 void
-FlockingManager::update() {
+FlockingManager::update(float elapsedTime) {
   auto& context = Context::get();
   const auto& logic = context.logic;
   const auto& simulation = *logic.simulation;
@@ -110,7 +110,17 @@ FlockingManager::update() {
     }
   }
 
-  constexpr float maxAcc = 0.1f;
+  bool needTrailUpdate = false;
+  if (_timeUntilTrailUpdate > 0.0f)
+    _timeUntilTrailUpdate -= elapsedTime;
+
+  if (_timeUntilTrailUpdate <= 0.0f)
+  {
+    _timeUntilTrailUpdate = 1.0f / 30.0f;
+    needTrailUpdate = true;
+  }
+
+  constexpr float maxAcc = 0.05f;
   constexpr float maxVel = 2.0f;
 
   for (Boid& boid : _boids) {
@@ -128,12 +138,15 @@ FlockingManager::update() {
 
     constexpr float k_maxDistance = 100.0f;
     const float coef = 1.0f + 1.0f * distance / k_maxDistance;
-    boid.applyAcceleration(maxAcc * coef, maxVel * coef);
+    boid.applyAcceleration(maxAcc * coef, maxVel * coef, elapsedTime);
 
-    // make a trail by reusing the previous positions N times
-    for (std::size_t ii = boid.trail.size() - 1; ii > 0; --ii)
-      boid.trail.at(ii) = boid.trail.at(ii - 1);
-    boid.trail.at(0) = boid.position;
+    if (needTrailUpdate)
+    {
+      // make a trail by reusing the previous positions N times
+      for (std::size_t ii = boid.trail.size() - 1; ii > 0; --ii)
+        boid.trail.at(ii) = boid.trail.at(ii - 1);
+      boid.trail.at(0) = boid.position;
+    }
   }
 }
 

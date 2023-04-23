@@ -111,6 +111,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addUniform("u_composedMatrix")
       .addUniform("u_texture")
       .addUniform("u_lightPos")
+      .addUniform("u_viewPos")
       ;
 
     auto shader = rManager.createShader(
@@ -203,9 +204,11 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addAttribute("a_vertex_index")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
+      .addUniform("u_viewPos")
       .addUniform("u_alpha")
       .addUniform("u_lowerLimit")
-      .addUniform("u_upperLimit");
+      .addUniform("u_upperLimit")
+      ;
 
     auto shader = rManager.createShader(
       gero::asValue(ShadersAliases::animatedCircuitGround),
@@ -279,6 +282,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addAttribute("a_offset_outlineValue")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
+      .addUniform("u_viewPos")
       ;
 
     auto shader = rManager.createShader(

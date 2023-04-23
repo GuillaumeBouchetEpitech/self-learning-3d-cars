@@ -225,12 +225,12 @@ InformationTextRenderer::render() {
         //
 
         sstr << "FPS:" << std::endl;
-        sstr << "${1}" << latestFpsValue << "${0}/30" << std::endl;
+        sstr << "${1}" << latestFpsValue << std::endl;
 
         if (timeData.getAverageDuration() > 0) {
           const int32_t averageFpsValue = int32_t(1000.0f / float(timeData.getAverageDuration()));
           if (averageFpsValue > 0) {
-            sstr << "${1}~" << averageFpsValue << "${1}/30" << std::endl;
+            sstr << "${1}~" << averageFpsValue << std::endl;
           }
         }
 

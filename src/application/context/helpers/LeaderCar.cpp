@@ -14,8 +14,7 @@ LeaderCar::update(float elapsedTime) {
     return;
   }
 
-  auto& simulation = *Context::get().logic.simulation;
-
+  auto& allCarsData = Context::get().logic.carDataFrameHandler.getAllCarsData();
   if (_countdownUntilNewLeader > 0.0f)
     _countdownUntilNewLeader -= elapsedTime;
 
@@ -25,9 +24,9 @@ LeaderCar::update(float elapsedTime) {
     // no leader yet
     _carIndex == -1 ||
     // the current leader is dead
-    simulation.getCarResult(_carIndex).isAlive == false ||
+    allCarsData.at(_carIndex).isAlive == false ||
     // the current leader is not on the ground
-    simulation.getCarResult(_carIndex).groundSensor.value > 0.5f ||
+    allCarsData.at(_carIndex).groundSensor.value > 0.5f ||
     // time to check for a potentially better leader
     _countdownUntilNewLeader <= 0.0f) {
     // reset the timeout
@@ -35,13 +34,13 @@ LeaderCar::update(float elapsedTime) {
 
     // refresh the currently best car
 
-    unsigned int totalCars = simulation.getTotalCars();
+    unsigned int totalCars = allCarsData.size();
 
     float bestFitness = 0.0f;
     int oldLeaderCarIndex = _carIndex;
     _carIndex = -1;
     for (unsigned int carIndex = 0; carIndex < totalCars; ++carIndex) {
-      const auto& carData = simulation.getCarResult(carIndex);
+      const auto& carData = allCarsData.at(carIndex);
 
       if (!carData.isAlive)
         continue;
@@ -60,7 +59,7 @@ LeaderCar::update(float elapsedTime) {
 
   // do we have a car to focus the gero::graphics::Camera on?
   if (_carIndex >= 0) {
-    const auto& carResult = simulation.getCarResult(_carIndex);
+    const auto& carResult = allCarsData.at(_carIndex);
 
     // this part elevate where the gero::graphics::Camera look along the up axis
     // of the car
@@ -94,7 +93,7 @@ LeaderCar::leaderData() const {
   if (_carIndex < 0)
     return {};
 
-  return Context::get().logic.simulation->getCarResult(_carIndex);
+  return Context::get().logic.carDataFrameHandler.getAllCarsData().at(_carIndex);
 }
 
 std::optional<glm::vec3>

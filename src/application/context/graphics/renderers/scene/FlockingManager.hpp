@@ -30,7 +30,7 @@ private:
     void separate(const std::vector<Boid>& boids, float radius, float coef);
     void wander(float coef);
 
-    void applyAcceleration(float maxAcceleration, float maxVelocity);
+    void applyAcceleration(float maxAcceleration, float maxVelocity, float elapsedTime);
 
     bool operator==(const Boid& other) const;
   };
@@ -39,11 +39,13 @@ private:
 private:
   Boids _boids;
 
+  float _timeUntilTrailUpdate = 0.0f;
+
 public:
   FlockingManager();
   ~FlockingManager() = default;
 
 public:
-  void update();
+  void update(float elapsedTime);
   void render();
 };

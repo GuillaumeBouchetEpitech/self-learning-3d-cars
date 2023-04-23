@@ -158,10 +158,14 @@ const onGlobalPageLoad = async () => {
     ].join("<br>"));
   }
 
-  const deltaTime = Math.floor(1000 / 30); // 30fps
+  let previousTime = Date.now();
   const onFrame = () => {
     if (isRunning)
-      setTimeout(onFrame, deltaTime);
+      requestAnimationFrame(onFrame);
+
+    const currTime = Date.now();
+    const deltaTime = currTime - previousTime;
+    previousTime = currTime;
 
     myApplication.update(deltaTime);
     myApplication.render();

@@ -14,15 +14,18 @@ namespace {
 
 #if defined D_NATIVE_PTHREAD_BUILD
 constexpr bool k_canResize = true;
+constexpr uint32_t k_frameRate = 120;
 #else
 constexpr bool k_canResize = false;
+constexpr uint32_t k_frameRate = 0;
 #endif
+
 } // namespace
 
 using gero::graphics::SDLWindowWrapper;
 
 Application::Application(const Definition& def)
-  : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, 30, OpenGlEsVersion::v3, k_canResize)
+  : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, k_frameRate, OpenGlEsVersion::v3, k_canResize)
 {
   Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();

@@ -10615,7 +10615,62 @@ f 145 146 148 147
 f 90 88 150 148 146 144 142 140 138 136 134 132 130 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100 98 96 94 92
 f 147 148 150 149
 f 149 150 88 87
-f 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149#version 300 es
+f 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149
+const vec3 k_specColor = vec3(1.0, 1.0, 1.0);
+
+vec4 applyLighting(vec3 viewPos, vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  float diffuseCoef = max(dot(lightDir, normal), 0.0);
+  float specularCoef = 0.0;
+
+  if (diffuseCoef > 0.0)
+  {
+    // lighting specular
+
+    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 viewDir = normalize(viewPos - worldPos);
+
+    float specAngle = max(dot(reflectDir, viewDir), 0.0);
+    specularCoef = pow(specAngle, 64.0);
+  }
+
+  // lighting output
+
+  return vec4(currentColor.xyz * (ambiantCoef + diffuseCoef) + k_specColor * specularCoef, currentColor.a);
+}
+
+vec4 applyLighting_no_specular(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  float diffuseCoef = max(dot(lightDir, normal), 0.0);
+
+  // lighting output
+
+  return vec4(currentColor.xyz * (ambiantCoef + diffuseCoef), currentColor.a);
+}
+
+vec4 quat_from_axis_angle(vec3 axis, float angle)
+{
+  vec4 qr;
+  float half_angle = (angle * 0.5);
+  float sin_val = sin(half_angle);
+  qr.x = axis.x * sin_val;
+  qr.y = axis.y * sin_val;
+  qr.z = axis.z * sin_val;
+  qr.w = cos(half_angle);
+  return qr;
+}
+
+vec3 apply_quat_to_vec3(vec3 pos, float angle, vec3 axis)
+{
+  return pos + 2.0 * cross(axis, cross(axis, pos) + angle * pos);
+}
+#version 300 es
 
 precision lowp float;
 
@@ -10748,86 +10803,12 @@ void main(void)
 	v_texCoord = a_vertex_texCoord + a_offset_texCoord;
 	v_color = a_offset_color;
 }
-
-const vec3 k_specColor = vec3(1.0, 1.0, 1.0);
-
-vec4 applyLighting(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
-{
-  normal = normalize(normal);
-  vec3 lightDir = normalize(lightPos - worldPos);
-
-  float diffuseCoef = max(dot(lightDir, normal.xyz), 0.0);
-  float specularCoef = 0.0;
-
-  if (diffuseCoef > 0.0)
-  {
-    // lighting specular
-
-    vec3 reflectDir = reflect(-lightDir, normal);
-    vec3 viewDir = normalize(-worldPos);
-
-    float specAngle = max(dot(reflectDir, viewDir), 0.0);
-    specularCoef = pow(specAngle, 64.0);
-  }
-
-  // lighting output
-
-  vec3 ambiantColor = currentColor.xyz * ambiantCoef;
-  vec3 diffuseColor = currentColor.xyz * diffuseCoef;
-  vec3 specularColor = k_specColor * specularCoef;
-
-  return vec4(ambiantColor + diffuseColor + specularColor, currentColor.a);
-}
-
-vec4 applyLighting_no_specular(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
-{
-  normal = normalize(normal);
-  vec3 lightDir = normalize(lightPos - worldPos);
-
-  float diffuseCoef = max(dot(lightDir, normal.xyz), 0.0);
-  float specularCoef = 0.0;
-
-  // if (diffuseCoef > 0.0)
-  // {
-  //   // lighting specular
-
-  //   vec3 reflectDir = reflect(-lightDir, normal);
-  //   vec3 viewDir = normalize(-worldPos);
-
-  //   float specAngle = max(dot(reflectDir, viewDir), 0.0);
-  //   specularCoef = pow(specAngle, 64.0);
-  // }
-
-  // lighting output
-
-  vec3 ambiantColor = currentColor.xyz * ambiantCoef;
-  vec3 diffuseColor = currentColor.xyz * diffuseCoef;
-  vec3 specularColor = k_specColor * specularCoef;
-
-  return vec4(ambiantColor + diffuseColor + specularColor, currentColor.a);
-}
-
-vec4 quat_from_axis_angle(vec3 axis, float angle)
-{
-  vec4 qr;
-  float half_angle = (angle * 0.5);
-  float sin_val = sin(half_angle);
-  qr.x = axis.x * sin_val;
-  qr.y = axis.y * sin_val;
-  qr.z = axis.z * sin_val;
-  qr.w = cos(half_angle);
-  return qr;
-}
-
-vec3 apply_quat_to_vec3(vec3 pos, float angle, vec3 axis)
-{
-  return pos + 2.0 * cross(axis, cross(axis, pos) + angle * pos);
-}
 #version 300 es
 
 precision lowp float;
 
 uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -10838,11 +10819,12 @@ in vec3 v_worldSpacePosition;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
     out_color = applyLighting(
+        u_viewPos,
         u_lightPos,
         v_color,
         v_worldSpaceNormal,
@@ -11021,6 +11003,7 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -11031,13 +11014,15 @@ in vec3 v_worldSpacePosition;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
 
-  out_color = applyLighting_no_specular(
+  out_color = applyLighting(
+    u_viewPos,
+  // out_color = applyLighting_no_specular(
     u_lightPos,
     texColor,
     v_worldSpaceNormal,
@@ -11084,7 +11069,7 @@ flat in float v_outlineValue;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-// #include "./assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+// #include "./assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
@@ -11119,7 +11104,7 @@ in float a_offset_outlineValue;
 flat out vec4 v_color;
 flat out float v_outlineValue;
 
-#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
 void main(void)
 {
@@ -11142,6 +11127,7 @@ void main(void)
 precision lowp float;
 
 uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -11153,11 +11139,12 @@ in vec3 v_worldSpaceNormal;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/scene/_common-apply-lighting.glsl.frag"
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
   out_color = applyLighting(
+    u_viewPos,
     u_lightPos,
     v_color,
     v_worldSpaceNormal,
@@ -11187,7 +11174,7 @@ flat out float v_outlineValue;
 out vec3 v_worldSpacePosition;
 out vec3 v_worldSpaceNormal;
 
-#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
 void main(void)
 {
@@ -11238,7 +11225,7 @@ in float a_offset_outlineValue;
 out vec4 v_color;
 flat out float v_outlineValue;
 
-#include "./assets/graphics/shaders/scene/_common-quat-rotations.glsl.vert"
+#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
 void main(void)
 {

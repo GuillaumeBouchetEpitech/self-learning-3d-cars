@@ -104,9 +104,8 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     D_THROW(std::runtime_error, "shader not setup");
 
   const auto& logic = Context::get().logic;
-  const auto& simulation = *logic.simulation;
 
-  const unsigned int totalCars = simulation.getTotalCars();
+  const unsigned int totalCars = logic.carDataFrameHandler.getAllCarsData().size();
   if (totalCars == 0)
     return;
 
@@ -130,7 +129,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
   const glm::vec4& deathColor = k_redColor;
 
   for (unsigned int ii = 0; ii < totalCars; ++ii) {
-    const auto& carData = simulation.getCarResult(ii);
+    const auto& carData = logic.carDataFrameHandler.getAllCarsData().at(ii);
 
     if (!carData.isAlive)
       continue;
@@ -177,6 +176,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _chassis.shader->bind();
     _chassis.shader->setUniform("u_composedMatrix", matricesData.composed);
     _chassis.shader->setUniform("u_lightPos", inCamera.getEye());
+    _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
 
     _chassis.geometry.updateBuffer(1, _modelsCarChassisMatrices);
     _chassis.geometry.setInstancedCount(_modelsCarChassisMatrices.size());

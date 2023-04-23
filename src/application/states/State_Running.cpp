@@ -43,14 +43,22 @@ State_Running::update(float elapsedTime) {
 
   { // simulation update
 
-    if (simulation.isGenerationComplete() == false) {
-      constexpr float fakeElapsedTime = 1.0f / 30.0f; // TODO: hardcoded
-      const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
 
-      simulation.update(fakeElapsedTime, totalSteps);
-    } else {
-      simulation.breed();
+    if (logic.carDataFrameHandler.needNewFrame())
+    {
+
+      if (simulation.isGenerationComplete() == false) {
+        constexpr float fakeElapsedTime = 1.0f / 50.0f; // TODO: hardcoded
+        const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
+
+        simulation.update(fakeElapsedTime, totalSteps);
+      } else {
+        simulation.breed();
+      }
+
     }
+
+    logic.carDataFrameHandler.update(elapsedTime);
 
   } // simulation update
 
