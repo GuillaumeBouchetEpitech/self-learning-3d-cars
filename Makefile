@@ -253,11 +253,14 @@ LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(NAME_LIB_BULLET_PHYSICS)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
-LDFLAGS += -Wl,--shared-memory,--no-check-features
-LDFLAGS += -s PTHREAD_POOL_SIZE=17
+LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/textRenderer/assets
+LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/stackRenderers/shaders
 
 # pthread build: the application need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
+
+LDFLAGS += -Wl,--shared-memory,--no-check-features
+LDFLAGS += -s PTHREAD_POOL_SIZE=17
 
 else
 
@@ -267,6 +270,8 @@ LDFLAGS += $(NAME_LIB_GERONIMO_SYSTEM)
 LDFLAGS += $(NAME_LIB_BASIC_GENTIC_ALGORITHM)
 LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
+LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/textRenderer/assets
+LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/stackRenderers/shaders
 
 # webworker build: main script need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
