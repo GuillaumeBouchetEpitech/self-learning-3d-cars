@@ -6,10 +6,7 @@
 #include <limits> // <= std::numeric_limits<T>::max()
 
 void
-Context::_initializeSimulation(
-  uint32_t totalGenomes,
-  uint32_t totalCores)
-{
+Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   std::vector<glm::vec3> skeletonVertices;
   AnimatedCircuitRenderer::AnimatedVertices groundVertices;
   AnimatedCircuitRenderer::AnimatedVertices wallsVertices;

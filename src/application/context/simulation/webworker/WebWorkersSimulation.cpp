@@ -43,8 +43,7 @@ WebWorkersSimulation::initialize(const Definition& def) {
 
   gero::rng::RNG::ensureRandomSeed();
 
-  genAlgoDef.getRandomCallback = []()
-  {
+  genAlgoDef.getRandomCallback = []() {
     return gero::rng::RNG::getNormalisedValue();
   };
 
@@ -98,8 +97,7 @@ WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
 
     auto& oldData = _allCarsData.at(index);
 
-    if (oldData.isAlive && !latestData.isAlive)
-    {
+    if (oldData.isAlive && !latestData.isAlive) {
       _addNewAgents();
 
       if (_callbacks.onGenomeDie)
@@ -148,8 +146,7 @@ WebWorkersSimulation::breed() {
     workerProducer->cleanupDeadAgents();
 
   // reset
-  for (auto& currData : _allCarsData)
-  {
+  for (auto& currData : _allCarsData) {
     currData.totalUpdates = 0;
     currData.fitness = 0.0f;
   }
@@ -183,8 +180,8 @@ WebWorkersSimulation::_processSimulation(
 }
 
 void
-WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t totalSteps)
-{
+WebWorkersSimulation::_resetAndProcessSimulation(
+  float elapsedTime, uint32_t totalSteps) {
   _currentAgentIndex = 0;
   _agentsWorkerMap.clear();
 
@@ -197,15 +194,13 @@ WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t tot
   _currentRequest = WorkerRequest::ResetAndProcess;
 }
 
-void WebWorkersSimulation::_addNewAgents()
-{
-  while (_currentAgentIndex < _def.totalGenomes)
-  {
+void
+WebWorkersSimulation::_addNewAgents() {
+  while (_currentAgentIndex < _def.totalGenomes) {
     // select the worker with fewest agents
 
     uint32_t bestWorkerIndex = 0;
-    for (std::size_t index = 1; index < _workerProducers.size(); ++index)
-    {
+    for (std::size_t index = 1; index < _workerProducers.size(); ++index) {
       const auto& bestWorker = _workerProducers.at(bestWorkerIndex);
       const auto& currWorker = _workerProducers.at(index);
 
@@ -280,29 +275,29 @@ WebWorkersSimulation::setOnGenerationEndCallback(
   _callbacks.onGenerationEnd = callback;
 }
 
-std::size_t WebWorkersSimulation::getWaitingGenomes() const
-{
+std::size_t
+WebWorkersSimulation::getWaitingGenomes() const {
   return std::size_t(_def.totalGenomes - _currentAgentIndex);
 }
 
-std::size_t WebWorkersSimulation::getLiveGenomes() const
-{
+std::size_t
+WebWorkersSimulation::getLiveGenomes() const {
   std::size_t totalLiveAgents = 0;
   for (const auto& worker : _workerProducers)
     totalLiveAgents += std::size_t(worker->getTotalLiveAgents());
   return totalLiveAgents;
 }
 
-std::size_t WebWorkersSimulation::getTotalGenomes() const
-{
+std::size_t
+WebWorkersSimulation::getTotalGenomes() const {
   return _geneticAlgorithm.getTotalGenomes();
 }
-AbstractGenome& WebWorkersSimulation::getGenome(std::size_t inIndex)
-{
+AbstractGenome&
+WebWorkersSimulation::getGenome(std::size_t inIndex) {
   return _geneticAlgorithm.getGenome(inIndex);
 }
-const AbstractGenome& WebWorkersSimulation::getGenome(std::size_t inIndex) const
-{
+const AbstractGenome&
+WebWorkersSimulation::getGenome(std::size_t inIndex) const {
   return _geneticAlgorithm.getGenome(inIndex);
 }
 

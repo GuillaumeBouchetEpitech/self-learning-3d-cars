@@ -17,16 +17,14 @@
 namespace {
 
 D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
-D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
+D_ALIAS_FUNCTION(
+  _asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
 
 } // namespace
 
 WorkerConsumer::AgentValues::AgentValues(
-  uint32_t inDataIndex,
-  const NeuralNetworkTopology& inNeuralNetworkTopology)
-  : dataIndex(inDataIndex)
-  , neuralNet(inNeuralNetworkTopology)
-{
+  uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
+  : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {
   transformsHistory.reserve(50); // TODO: hardcoded
 }
 
@@ -78,8 +76,7 @@ WorkerConsumer::_sendBackToProducer() {
 
 void
 WorkerConsumer::_initializeSimulation(
-  gero::messaging::MessageView& receivedMsg
-) {
+  gero::messaging::MessageView& receivedMsg) {
 
   CircuitBuilder::Knots circuitKnots;
 
@@ -131,7 +128,8 @@ WorkerConsumer::_initializeSimulation(
 
   { // setup neural network topology
 
-    _neuralNetworkTopology.init(layerInput, layerHidden, layerOutput, isUsingBias);
+    _neuralNetworkTopology.init(
+      layerInput, layerHidden, layerOutput, isUsingBias);
 
   } // setup neural network topology
 
@@ -148,8 +146,7 @@ WorkerConsumer::_initializeSimulation(
 }
 
 void
-WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg)
-{
+WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg) {
   const uint32_t floatWeightsSize = _neuralNetworkTopology.getTotalWeights();
   const uint32_t byteWeightsSize = floatWeightsSize * sizeof(float);
 
@@ -159,15 +156,16 @@ WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg)
   uint32_t totalAgentsToAdd = 0;
   receivedMsg >> totalAgentsToAdd;
 
-  for (uint32_t ii = 0; ii < totalAgentsToAdd; ++ii)
-  {
+  for (uint32_t ii = 0; ii < totalAgentsToAdd; ++ii) {
     uint32_t dataIndex = 0;
     receivedMsg >> dataIndex;
     receivedMsg.read(newWeightsRaw, byteWeightsSize);
 
-    auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
+    auto newValues =
+      std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
     newValues->neuralNet.setConnectionsWeights(newWeightsRaw, floatWeightsSize);
-    newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion);
+    newValues->carAgent.reset(
+      _physicWorld.get(), _startTransform.position, _startTransform.quaternion);
 
     _allAgentValues.emplace_back(newValues);
   }
@@ -188,15 +186,13 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
 
   CarData::CarTransform tmpCarTransform;
 
-  for (uint32_t step = 0; step < totalSteps; ++step)
-  {
+  for (uint32_t step = 0; step < totalSteps; ++step) {
     _frameProfiler.start();
 
     constexpr uint32_t maxSubSteps = 0;
     _physicWorld->step(elapsedTime, maxSubSteps, elapsedTime);
 
-    for (auto currValues : _allAgentValues)
-    {
+    for (auto currValues : _allAgentValues) {
       auto& carAgent = currValues->carAgent;
 
       if (!carAgent.isAlive())
@@ -217,8 +213,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
         tmpCarTransform.chassis.orientation = body->getOrientation();
 
         // transformation matrix of the wheels
-        for (uint32_t jj = 0; jj < 4U; ++jj)
-        {
+        for (uint32_t jj = 0; jj < 4U; ++jj) {
           auto& currWheel = tmpCarTransform.wheels.at(jj);
 
           currWheel.position = vehicle->getWheelPosition(jj);
@@ -229,8 +224,8 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
       }
     }
 
-    _frameProfiler.stop(_physicWorld->getPhysicVehicleManager().totalLiveVehicles());
-
+    _frameProfiler.stop(
+      _physicWorld->getPhysicVehicleManager().totalLiveVehicles());
   }
 
   //
@@ -265,8 +260,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
 
   std::vector<float> tmpNeuronsValues;
 
-  for (const auto currValue : _allAgentValues)
-  {
+  for (const auto currValue : _allAgentValues) {
     _messageToSend << currValue->dataIndex;
 
     const auto& currAgent = currValue->carAgent;
@@ -274,25 +268,19 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     //
     // core data
 
-    _messageToSend
-      << currValue->dataIndex
-      << currAgent.isAlive()
-      << currAgent.getLife()
-      << currAgent.getFitness()
-      << currAgent.getTotalUpdates()
-      << currAgent.getGroundIndex();
+    _messageToSend << currValue->dataIndex << currAgent.isAlive()
+                   << currAgent.getLife() << currAgent.getFitness()
+                   << currAgent.getTotalUpdates() << currAgent.getGroundIndex();
 
     //
     // transform history
 
     _messageToSend << int32_t(currValue->transformsHistory.size());
-    for (const auto& transforms : currValue->transformsHistory)
-    {
+    for (const auto& transforms : currValue->transformsHistory) {
       _messageToSend << transforms.chassis.position;
       _messageToSend << transforms.chassis.orientation;
 
-      for (const auto& wheel : transforms.wheels)
-      {
+      for (const auto& wheel : transforms.wheels) {
         _messageToSend << wheel.position;
         _messageToSend << wheel.orientation;
       }
@@ -320,8 +308,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     _messageToSend << body->getOrientation();
 
     // record the transformation of the wheels
-    for (int jj = 0; jj < 4; ++jj)
-    {
+    for (int jj = 0; jj < 4; ++jj) {
       _messageToSend << vehicle->getWheelPosition(jj);
       _messageToSend << vehicle->getWheelOrientation(jj);
     }
@@ -352,17 +339,13 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   // dead agent(s) cleanup
   //
 
-  for (std::size_t index = 0; index < _allAgentValues.size(); )
-  {
-    if (!_allAgentValues.at(index)->carAgent.isAlive())
-    {
+  for (std::size_t index = 0; index < _allAgentValues.size();) {
+    if (!_allAgentValues.at(index)->carAgent.isAlive()) {
       // fast removal (no reallocation)
       if (index + 1 < _allAgentValues.size())
         std::swap(_allAgentValues.at(index), _allAgentValues.back());
       _allAgentValues.pop_back();
-    }
-    else
-    {
+    } else {
       ++index;
     }
   }

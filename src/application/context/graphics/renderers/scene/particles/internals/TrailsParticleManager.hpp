@@ -43,5 +43,4 @@ private:
 
 private:
   TrailParticles _trailParticles;
-
 };

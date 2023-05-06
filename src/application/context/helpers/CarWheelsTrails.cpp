@@ -6,8 +6,7 @@
 #include "geronimo/system/ErrorHandler.hpp"
 
 void
-CarWheelsTrails::reset(const AbstractSimulation& simulation)
-{
+CarWheelsTrails::reset(const AbstractSimulation& simulation) {
   _genomeIndexMap.clear();
 
   const uint32_t totalCars = simulation.getTotalCars();
@@ -22,7 +21,8 @@ CarWheelsTrails::reset(const AbstractSimulation& simulation)
     }
   }
 
-  const std::size_t safeSize = std::min<std::size_t>(totalCars, simulation.getTotalGenomes());
+  const std::size_t safeSize =
+    std::min<std::size_t>(totalCars, simulation.getTotalGenomes());
   for (std::size_t ii = 0; ii < safeSize; ++ii) {
     // record the trail index with it's genome id in the lookup map
     _genomeIndexMap[simulation.getGenome(ii).getId()] = ii;
@@ -30,7 +30,8 @@ CarWheelsTrails::reset(const AbstractSimulation& simulation)
 }
 
 void
-CarWheelsTrails::push(uint32_t carIndex, uint32_t wheelIndex, const glm::vec3& value) {
+CarWheelsTrails::push(
+  uint32_t carIndex, uint32_t wheelIndex, const glm::vec3& value) {
   _allWheelsTrails.at(carIndex).wheels.at(wheelIndex).emplace_back(value);
 }
 

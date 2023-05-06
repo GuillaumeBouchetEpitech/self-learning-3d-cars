@@ -1,58 +1,54 @@
 
 #include "CarDataFrameHandler.hpp"
 
-#include "geronimo/system/math/clamp.hpp"
 #include "geronimo/system/ErrorHandler.hpp"
+#include "geronimo/system/math/clamp.hpp"
 
-void CarDataFrameHandler::initialize(uint32_t totalGenomes, float logicFrameDuration)
-{
+void
+CarDataFrameHandler::initialize(
+  uint32_t totalGenomes, float logicFrameDuration) {
   _totalGenomes = totalGenomes;
   _logicFrameDuration = logicFrameDuration;
 
   _allCarsData.resize(totalGenomes);
-  for (int ii = 0; ii < 4; ++ii)
-  {
+  for (int ii = 0; ii < 4; ++ii) {
     _unusedFrames.push_back(AllCarsData());
     _unusedFrames.back().resize(totalGenomes);
   }
-
 }
 
-bool CarDataFrameHandler::needNewFrame() const
-{
+bool
+CarDataFrameHandler::needNewFrame() const {
   return _usedFrames.size() <= 3 && !_unusedFrames.empty();
 }
 
-void CarDataFrameHandler::pushNewFrame(const AbstractSimulation& simulation)
-{
+void
+CarDataFrameHandler::pushNewFrame(const AbstractSimulation& simulation) {
   if (_unusedFrames.empty())
     D_THROW(std::runtime_error, "not more unused frames");
 
   if (_unusedFrames.back().size() != simulation.getTotalCars())
-    D_THROW(std::runtime_error, "new frame match not matching"
-                                << ", expected: " << _unusedFrames.back().size()
-                                << ", input: " << simulation.getTotalCars());
+    D_THROW(
+      std::runtime_error, "new frame match not matching"
+                            << ", expected: " << _unusedFrames.back().size()
+                            << ", input: " << simulation.getTotalCars());
 
   AllCarsData newFrame = std::move(_unusedFrames.back());
   _unusedFrames.pop_back();
 
-
   for (uint32_t ii = 0; ii < _totalGenomes; ++ii)
     newFrame.at(ii) = simulation.getCarResult(ii);
 
-
   _usedFrames.push_back(std::move(newFrame));
-
 }
 
-void CarDataFrameHandler::update(float deltaTime)
-{
+void
+CarDataFrameHandler::update(float deltaTime) {
   if (_usedFrames.size() < 3)
     return;
 
   _interpolationValue += deltaTime;
-  if (_interpolationValue > _logicFrameDuration)
-  {
+  if (_interpolationValue > _logicFrameDuration) {
     // discard oldest frame
     _unusedFrames.push_back(std::move(_usedFrames.front()));
     _usedFrames.pop_front();
@@ -62,7 +58,8 @@ void CarDataFrameHandler::update(float deltaTime)
 
   // D_MYLOG("_interpolationValue " << _interpolationValue);
 
-  const float coef = gero::math::clamp(_interpolationValue / _logicFrameDuration, 0.0f, 1.0f);
+  const float coef =
+    gero::math::clamp(_interpolationValue / _logicFrameDuration, 0.0f, 1.0f);
 
   // D_MYLOG("coef " << coef);
 
@@ -81,17 +78,14 @@ void CarDataFrameHandler::update(float deltaTime)
         continue;
 
       _allCarsData.at(ii).lerp(frameA.at(ii), frameB.at(ii), coef);
-
     }
   }
-
 }
 
-void CarDataFrameHandler::discardAll()
-{
+void
+CarDataFrameHandler::discardAll() {
   // discard all used frames
-  while (!_usedFrames.empty())
-  {
+  while (!_usedFrames.empty()) {
     _unusedFrames.push_back(std::move(_usedFrames.front()));
     _usedFrames.pop_front();
   }
@@ -100,13 +94,12 @@ void CarDataFrameHandler::discardAll()
     _allCarsData.at(ii).isAlive = false;
 }
 
-const AllCarsData& CarDataFrameHandler::getAllCarsData() const
-{
+const AllCarsData&
+CarDataFrameHandler::getAllCarsData() const {
   return _allCarsData;
 }
 
-float CarDataFrameHandler::getLogicFrameDuration() const
-{
+float
+CarDataFrameHandler::getLogicFrameDuration() const {
   return _logicFrameDuration;
 }
-

@@ -10,7 +10,8 @@ void
 Scene::_renderLeadingCarSensors() {
   auto& context = Context::get();
   const auto& leaderCar = context.logic.leaderCar;
-  auto& stackRenderer = context.graphic.scene.stackRenderers.getWireFramesStack();
+  auto& stackRenderer =
+    context.graphic.scene.stackRenderers.getWireFramesStack();
 
   if (auto leaderCarData = leaderCar.leaderData()) {
     // leading car alive?

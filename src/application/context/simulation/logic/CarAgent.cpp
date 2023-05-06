@@ -39,8 +39,7 @@ constexpr float groundHeight = 1.0f;
 } // namespace constants
 
 void
-CarAgent::update(
-  float elapsedTime, NeuralNetwork& neuralNetwork) {
+CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   if (_health <= 0.0f)
     return;
 
@@ -379,8 +378,8 @@ CarAgent::reset(
 }
 
 bool
-CarAgent::isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const
-{
+CarAgent::isOwnedByPhysicWorld(
+  const gero::physics::PhysicWorld* inPhysicWorld) const {
   return _physicWorld == inPhysicWorld;
 }
 

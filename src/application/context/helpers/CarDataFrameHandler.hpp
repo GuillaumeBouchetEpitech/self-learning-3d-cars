@@ -1,13 +1,12 @@
 
 #pragma once
 
-#include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/AbstractSimulation.hpp"
+#include "application/context/simulation/logic/CarData.hpp"
 
 #include <list>
 
-class CarDataFrameHandler
-{
+class CarDataFrameHandler {
 public:
   CarDataFrameHandler() = default;
   ~CarDataFrameHandler() = default;
@@ -33,6 +32,4 @@ private:
   float _interpolationValue = 0.0f;
 
   AllCarsData _allCarsData;
-
 };
-

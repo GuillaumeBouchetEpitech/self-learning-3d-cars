@@ -21,10 +21,10 @@ AnimatedCircuitRenderer::initialize(
 
   _shaderWireFrame =
     resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
-  _shaderCircuitLit =
-    resourceManager.getShader(gero::asValue(ShadersAliases::animatedCircuitGround));
-  _shaderCircuit =
-    resourceManager.getShader(gero::asValue(ShadersAliases::animatedCircuitWalls));
+  _shaderCircuitLit = resourceManager.getShader(
+    gero::asValue(ShadersAliases::animatedCircuitGround));
+  _shaderCircuit = resourceManager.getShader(
+    gero::asValue(ShadersAliases::animatedCircuitWalls));
 
   { // compute circuit skeleton wireFrame geometry
 
@@ -128,7 +128,8 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
 }
 
 void
-AnimatedCircuitRenderer::renderWireFrame(const gero::graphics::Camera& inCamera) {
+AnimatedCircuitRenderer::renderWireFrame(
+  const gero::graphics::Camera& inCamera) {
   if (!_shaderWireFrame)
     D_THROW(std::runtime_error, "shader not setup");
 

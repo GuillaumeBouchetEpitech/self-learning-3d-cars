@@ -45,8 +45,7 @@ State_Running::update(float elapsedTime) {
 
     auto& frameHandler = logic.carDataFrameHandler;
 
-    if (frameHandler.needNewFrame())
-    {
+    if (frameHandler.needNewFrame()) {
 
       if (simulation.isGenerationComplete() == false) {
         const float fakeElapsedTime = frameHandler.getLogicFrameDuration();
@@ -56,7 +55,6 @@ State_Running::update(float elapsedTime) {
       } else {
         simulation.breed();
       }
-
     }
 
     frameHandler.update(elapsedTime);

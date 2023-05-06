@@ -22,11 +22,9 @@
 //
 //
 
-namespace
-{
+namespace {
 
-class CircuitParser
-{
+class CircuitParser {
 private:
   gero::parserUtils::BasicRegexParser _regexpParser;
 
@@ -34,7 +32,8 @@ private:
   std::unordered_map<std::string, StrategyCallback> _commandsMap;
 
 private:
-  const std::string_view cmd_name_agent_start_transform = "AGENTS_START_TRANSFORM";
+  const std::string_view cmd_name_agent_start_transform =
+    "AGENTS_START_TRANSFORM";
   const std::string_view cmd_name_next_knots_states = "NEXT_KNOTS_STATES";
   const std::string_view cmd_name_push_knots = "PUSH_KNOTS";
 
@@ -49,9 +48,7 @@ public:
   CircuitParser(
     CircuitBuilder::StartTransform& startTransform,
     CircuitBuilder::Knots& rawKnots)
-  : _startTransform(startTransform)
-  , _rawKnots(rawKnots)
-  {
+    : _startTransform(startTransform), _rawKnots(rawKnots) {
     {
       // AGENTS_START_TRANSFORM
       //   position="{float},{float},{float}"
@@ -61,8 +58,8 @@ public:
         [this](std::istringstream& isstr) {
           _regexpParser.setErrorHint(cmd_name_agent_start_transform);
           _regexpParser.forEachArgs(
-            isstr.str(), [this](
-                          const std::string_view key, const std::string_view value) {
+            isstr.str(),
+            [this](const std::string_view key, const std::string_view value) {
               if (key == "position") {
                 _startTransform.position =
                   _regexpParser.get3F(value, -10000.0f, +10000.0f);
@@ -82,10 +79,11 @@ public:
         [this](std::istringstream& isstr) {
           _regexpParser.setErrorHint(cmd_name_next_knots_states);
           _regexpParser.forEachArgs(
-            isstr.str(), [this](
-                          const std::string_view key, const std::string_view value) {
+            isstr.str(),
+            [this](const std::string_view key, const std::string_view value) {
               if (key == "size") {
-                _currentKnotsSize = _regexpParser.get1F(value, 0.001f, +10000.0f);
+                _currentKnotsSize =
+                  _regexpParser.get1F(value, 0.001f, +10000.0f);
               } else if (key == "color") {
                 _currentColor = _regexpParser.get3F(value, 0.0f, +1.0f);
               }
@@ -105,10 +103,8 @@ public:
           _regexpParser.setErrorHint(cmd_name_push_knots);
           _regexpParser.forEachArgs(
             isstr.str(),
-            [this, &left, &right](
-              const std::string_view key,
-              const std::string_view value
-            ) {
+            [this, &left,
+             &right](const std::string_view key, const std::string_view value) {
               if (key == "left") {
                 left = _regexpParser.get3F(value, -10000.0, +10000.0f);
               } else if (key == "right") {
@@ -116,15 +112,14 @@ public:
               }
             });
 
-          _rawKnots.push_back({ left, right, _currentKnotsSize, _currentColor });
+          _rawKnots.push_back({left, right, _currentKnotsSize, _currentColor});
         };
     }
-
   }
 
 public:
-  void parseLine(const std::string& inTextLine)
-  {
+  void
+  parseLine(const std::string& inTextLine) {
     std::istringstream isstr(inTextLine);
 
     // extract command type
@@ -140,11 +135,9 @@ public:
     // run command (parse)
     itCmd->second(isstr);
   }
-
 };
 
 } // namespace
-
 
 //
 //
@@ -299,8 +292,7 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
   smootherDef.dimensions = gero::asValue(SplineType::count);
   smootherDef.degree = 3;
   smootherDef.knotsLength = _knots.size() * smootherDef.dimensions;
-  smootherDef.getDataCallback = [this](uint32_t index)
-  {
+  smootherDef.getDataCallback = [this](uint32_t index) {
     const float* dataPtr = &_knots.front().left.x;
     return dataPtr[index];
   };

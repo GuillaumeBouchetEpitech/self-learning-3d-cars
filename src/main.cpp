@@ -21,11 +21,8 @@ namespace {
 
 void
 _validateInputs(
-  uint32_t inWidth,
-  uint32_t inHeight,
-  uint32_t inTotalGenomes,
-  uint32_t inTotalCores
-) {
+  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes,
+  uint32_t inTotalCores) {
   if (inWidth < 800)
     D_THROW(std::runtime_error, "argument 0 (width) cannot be < 800");
   if (inHeight < 600)
@@ -43,42 +40,38 @@ _validateInputs(
 namespace {
 
 void
-_processCommandLineArgs(Application::Definition& def, int argc, char** argv)
-{
+_processCommandLineArgs(Application::Definition& def, int argc, char** argv) {
   gero::valuesParsers::IntValueParser intValueParser;
 
-  if (argc >= 2)
-  {
+  if (argc >= 2) {
     auto value = intValueParser.validate(argv[1]);
     if (!value)
       D_THROW(std::runtime_error, "argument 0 (width) is not a valid number");
     def.width = *value;
   }
 
-  if (argc >= 3)
-  {
+  if (argc >= 3) {
     auto value = intValueParser.validate(argv[2]);
     if (!value)
       D_THROW(std::runtime_error, "argument 1 (height) is not a valid number");
     def.height = *value;
   }
 
-  if (argc >= 4)
-  {
+  if (argc >= 4) {
     auto value = intValueParser.validate(argv[3]);
     if (!value)
-      D_THROW(std::runtime_error, "argument 2 (total genomes) is not a valid number");
+      D_THROW(
+        std::runtime_error, "argument 2 (total genomes) is not a valid number");
     def.totalGenomes = *value;
   }
 
-  if (argc >= 5)
-  {
+  if (argc >= 5) {
     auto value = intValueParser.validate(argv[4]);
     if (!value)
-      D_THROW(std::runtime_error, "argument 3 (total cores) is not a valid number");
+      D_THROW(
+        std::runtime_error, "argument 3 (total cores) is not a valid number");
     def.totalCores = *value;
   }
-
 }
 
 } // namespace
@@ -113,11 +106,8 @@ extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void
 startApplication(
-  uint32_t inWidth,
-  uint32_t inHeight,
-  uint32_t inTotalGenomes,
-  uint32_t inTotalCores)
-{
+  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes,
+  uint32_t inTotalCores) {
   if (myApplication)
     return;
 

@@ -23,10 +23,13 @@ StateManager* StateManager::_instance = nullptr;
 StateManager::StateManager() {
   // allocate states
 
-  _states.at(gero::asValue(States::Running)) = std::make_unique<State_Running>();
+  _states.at(gero::asValue(States::Running)) =
+    std::make_unique<State_Running>();
   _states.at(gero::asValue(States::Paused)) = std::make_unique<State_Paused>();
-  _states.at(gero::asValue(States::StartGeneration)) = std::make_unique<State_StartGeneration>();
-  _states.at(gero::asValue(States::EndGeneration)) = std::make_unique<State_EndGeneration>();
+  _states.at(gero::asValue(States::StartGeneration)) =
+    std::make_unique<State_StartGeneration>();
+  _states.at(gero::asValue(States::EndGeneration)) =
+    std::make_unique<State_EndGeneration>();
 
 #if defined D_WEB_WEBWORKER_BUILD
   _states.at(gero::asValue(States::WorkersLoading)) =

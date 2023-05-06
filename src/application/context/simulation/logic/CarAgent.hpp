@@ -57,7 +57,8 @@ private: // method(s)
   bool _collideGroundSensor();
 
 public: // setter(s)/getter(s)
-  bool isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const;
+  bool
+  isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const;
   const Sensors& getEyeSensors() const;
   const Sensor& getGroundSensor() const;
   float getFitness() const;

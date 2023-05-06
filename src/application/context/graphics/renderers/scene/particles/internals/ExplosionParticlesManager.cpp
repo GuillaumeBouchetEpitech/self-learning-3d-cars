@@ -41,15 +41,13 @@ ExplosionParticlesManager::ExplosionParticle::ExplosionParticle(
   : position(position), linearVelocity(linearVelocity), scale(scale),
     color(color), life(life), maxLife(life) {}
 
-
-ExplosionParticlesManager::ExplosionParticlesManager()
-{
+ExplosionParticlesManager::ExplosionParticlesManager() {
   _smallExplosionParticles.pre_allocate(256);
   _bigExplosionParticles.pre_allocate(256);
 }
 
-void ExplosionParticlesManager::update(float delta)
-{
+void
+ExplosionParticlesManager::update(float delta) {
 
   // update particle's life and handle removal of dead particles
   for (std::size_t ii = 0; ii < _smallExplosionParticles.size();) {
@@ -72,8 +70,6 @@ void ExplosionParticlesManager::update(float delta)
 
     _bigExplosionParticles.unsorted_erase(ii);
   }
-
-
 
   for (auto& currParticle : _smallExplosionParticles) {
     // update current position
@@ -104,22 +100,20 @@ void ExplosionParticlesManager::update(float delta)
     //   currParticle.linearVelocity.z -= 20.0f * delta;
     // }
   }
-
 }
 
-void ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera)
-{
+void
+ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
 
   auto& context = Context::get();
   auto& scene = context.graphic.scene;
 
   GeometriesStackRenderer::GeometryInstance instance;
   instance.position = glm::vec3(0.0f),
-  instance.orientation = glm::quat(0.0f, glm::vec3(0,0,1));
+  instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
   instance.scale = glm::vec3(0.2f);
   instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
   instance.outlineValue = 1.0f;
-
 
   const auto& frustumCulling = inCamera.getFrustumCulling();
 
@@ -137,14 +131,11 @@ void ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera)
     scene.geometriesStackRenderer.pushAlias(1111, instance);
   }
 
-
-
   auto tmpEasing = gero::easing::GenericEasing<3>()
-                    // .push(0.0f, 0.75f, gero::easing::easeOutCubic)
-                    .push(0.00f, 0.75f)
-                    .push(0.75f, 1.0f)
-                    .push(1.00f, 0.0f);
-
+                     // .push(0.0f, 0.75f, gero::easing::easeOutCubic)
+                     .push(0.00f, 0.75f)
+                     .push(0.75f, 1.0f)
+                     .push(1.00f, 0.0f);
 
   for (auto& particle : _bigExplosionParticles) {
 
@@ -161,16 +152,17 @@ void ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera)
 
     instance.position = particle.position;
     instance.color = glm::vec4(particle.color, easedVal);
-    // instance.scale = glm::vec3(particle.scale + (1.0f - tmpCoef) * particle.scale * 0.2f);
+    // instance.scale = glm::vec3(particle.scale + (1.0f - tmpCoef) *
+    // particle.scale * 0.2f);
     instance.scale = glm::vec3(particle.scale + easedVal);
 
     scene.geometriesStackRenderer.pushAlias(2222, instance);
   }
-
 }
 
-void ExplosionParticlesManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity)
-{
+void
+ExplosionParticlesManager::emitParticles(
+  const glm::vec3& position, const glm::vec3& velocity) {
 
   const unsigned int totalParticles = gero::rng::RNG::getRangedValue(5, 8);
 
@@ -216,7 +208,4 @@ void ExplosionParticlesManager::emitParticles(const glm::vec3& position, const g
     _bigExplosionParticles.emplace_back(
       particlePos, linearVelocity, color, scale, life);
   }
-
 }
-
-

@@ -7,46 +7,37 @@
 
 #include <iomanip>
 
-namespace
-{
+namespace {
 
-  constexpr float k_timeAnimDivider = 0.3f;
+constexpr float k_timeAnimDivider = 0.3f;
 
-  gero::graphics::TextRenderer::State _getColor(
-    const glm::vec4& inBaseOutlineColor,
-    const glm::vec4& inAnimOutlineColor,
-    float currVal,
-    int step,
-    int maxSteps
-  ) {
-    const float midVal = float(step) / float(maxSteps);
-    const float minVal = midVal - k_timeAnimDivider;
-    const float maxVal = midVal + k_timeAnimDivider;
+gero::graphics::TextRenderer::State
+_getColor(
+  const glm::vec4& inBaseOutlineColor, const glm::vec4& inAnimOutlineColor,
+  float currVal, int step, int maxSteps) {
+  const float midVal = float(step) / float(maxSteps);
+  const float minVal = midVal - k_timeAnimDivider;
+  const float maxVal = midVal + k_timeAnimDivider;
 
-    if (currVal > minVal && currVal < maxVal)
-    {
-      if (currVal < midVal)
-      {
-        const float subCoef = 1.0f - (currVal - minVal) * (1.0f / k_timeAnimDivider);
-        return gero::graphics::TextRenderer::State(
-          std::nullopt,
-          glm::mix(inAnimOutlineColor, inBaseOutlineColor, subCoef)
-        );
-      }
-      else
-      if (currVal >= midVal)
-      {
-        const float subCoef = 1.0f - ((currVal - midVal) * (1.0f / k_timeAnimDivider));
-        return gero::graphics::TextRenderer::State(
-          std::nullopt,
-          glm::mix(inBaseOutlineColor, inAnimOutlineColor, subCoef)
-        );
-      }
+  if (currVal > minVal && currVal < maxVal) {
+    if (currVal < midVal) {
+      const float subCoef =
+        1.0f - (currVal - minVal) * (1.0f / k_timeAnimDivider);
+      return gero::graphics::TextRenderer::State(
+        std::nullopt,
+        glm::mix(inAnimOutlineColor, inBaseOutlineColor, subCoef));
+    } else if (currVal >= midVal) {
+      const float subCoef =
+        1.0f - ((currVal - midVal) * (1.0f / k_timeAnimDivider));
+      return gero::graphics::TextRenderer::State(
+        std::nullopt,
+        glm::mix(inBaseOutlineColor, inAnimOutlineColor, subCoef));
     }
-    return gero::graphics::TextRenderer::State(std::nullopt, inBaseOutlineColor);
   }
-
+  return gero::graphics::TextRenderer::State(std::nullopt, inBaseOutlineColor);
 }
+
+} // namespace
 
 void
 ScreenTitles::fadeIn(float delay, float duration) {
@@ -60,9 +51,10 @@ ScreenTitles::fadeIn(float delay, float duration) {
                         .push(0.00f, _backgroundAlpha)
                         .push(step1, 1.0f);
 
-  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>()
-                          .push(step1, _mainTitleAlpha, gero::easing::easeOutCubic)
-                          .push(step2, 1.0f);
+  _mainTitleAlphaEasing =
+    gero::easing::GenericEasing<2>()
+      .push(step1, _mainTitleAlpha, gero::easing::easeOutCubic)
+      .push(step2, 1.0f);
 
   _fitnessTitleAlphaEasing =
     gero::easing::GenericEasing<2>()
@@ -84,25 +76,17 @@ ScreenTitles::fadeIn(float delay, float duration) {
   constexpr float k_maxVal = 1.0f + k_timeAnimDivider;
 
   _mainTitleAnimEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step1, k_minVal)
-      .push(1.0f, k_maxVal);
+    gero::easing::GenericEasing<2>().push(step1, k_minVal).push(1.0f, k_maxVal);
 
   _fitnessTitleAnimEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step2, k_minVal)
-      .push(1.0f, k_maxVal);
+    gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
 
   _commentTitleAnimEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step2, k_minVal)
-      .push(1.0f, k_maxVal);
-
+    gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
 
   //
   //
   //
-
 }
 
 void
@@ -114,8 +98,8 @@ ScreenTitles::fadeOut(float delay, float duration) {
   constexpr float step3 = 0.6f;
 
   _mainTitleAlphaEasing = gero::easing::GenericEasing<2>()
-                       .push(0.00f, _mainTitleAlpha)
-                       .push(step1, 0.0f);
+                            .push(0.00f, _mainTitleAlpha)
+                            .push(step1, 0.0f);
 
   _fitnessTitleAlphaEasing =
     gero::easing::GenericEasing<2>()
@@ -149,7 +133,6 @@ ScreenTitles::update(float elapsedTime) {
   if (!_titleAnimTimer.isDone()) {
     _titleAnimTimer.update(elapsedTime);
   }
-
 }
 
 void
@@ -182,8 +165,10 @@ ScreenTitles::render() {
     const std::string message = sstr.str();
 
     const glm::vec4 color = glm::vec4(glm::vec3(0.7f), _mainTitleAlpha);
-    const glm::vec4 outlineColor = glm::vec4(glm::vec3(0.2f, 0.2f, 0.2f), _mainTitleAlpha);
-    const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _mainTitleAlpha);
+    const glm::vec4 outlineColor =
+      glm::vec4(glm::vec3(0.2f, 0.2f, 0.2f), _mainTitleAlpha);
+    const glm::vec4 outlineColorTitleAnim =
+      glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _mainTitleAlpha);
 
     constexpr float k_scale = 50.0f;
 
@@ -194,8 +179,7 @@ ScreenTitles::render() {
     textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
 
     textRenderer.pushText(
-      currPos,
-      message.data(),
+      currPos, message.data(),
       //
       gero::graphics::TextRenderer::State(color, outlineColor),
       //
@@ -209,9 +193,7 @@ ScreenTitles::render() {
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 8, 11),
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 9, 11),
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 10, 11),
-      _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 11, 11)
-      );
-
+      _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 11, 11));
   }
 
   {
@@ -237,18 +219,20 @@ ScreenTitles::render() {
         std::string message = sstr.str();
 
         const glm::vec4 color = glm::vec4(0.8f, 0.8f, 0.8f, _fitnessTitleAlpha);
-        const glm::vec4 outlineColor = glm::vec4(0.2f, 0.2f, 0.2f, _fitnessTitleAlpha);
-        const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
+        const glm::vec4 outlineColor =
+          glm::vec4(0.2f, 0.2f, 0.2f, _fitnessTitleAlpha);
+        const glm::vec4 outlineColorTitleAnim =
+          glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
 
         textRenderer.setMainColor(color);
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setTextAlign(
+          gero::graphics::TextRenderer::TextAlign::center);
 
         textRenderer.pushText(
-          currPos,
-          message.data(),
+          currPos, message.data(),
           //
           gero::graphics::TextRenderer::State(color, outlineColor),
           //
@@ -259,9 +243,7 @@ ScreenTitles::render() {
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 5, 8),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 6, 8),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 7, 8),
-          _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 8, 8)
-          );
-
+          _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 8, 8));
       }
 
       currPos.y -= 35.0f;
@@ -275,18 +257,22 @@ ScreenTitles::render() {
         const float diff = currFitness - prevFitness;
 
         if (currFitness > prevFitness)
-          sstr << "${1}Sm${2}a${3}r${4}t${5}e${6}r r${7}e${8}s${9}u${10}l${11}t${12} (+";
+          sstr << "${1}Sm${2}a${3}r${4}t${5}e${6}r "
+                  "r${7}e${8}s${9}u${10}l${11}t${12} (+";
         else if (currFitness < prevFitness)
-          sstr << "${1}W${2}o${3}r${4}s${5}e ${6}r${7}e${8}s${9}u${10}l${11}t${12} (";
+          sstr << "${1}W${2}o${3}r${4}s${5}e "
+                  "${6}r${7}e${8}s${9}u${10}l${11}t${12} (";
         sstr << std::fixed << std::setprecision(1) << diff;
         sstr << ")";
 
         const std::string message = sstr.str();
 
         const glm::vec4 color = glm::vec4(0.8f, 0.8f, 0.8f, _commentTitleAlpha);
-        const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
+        const glm::vec4 outlineColorTitleAnim =
+          glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
 
-        glm::vec4 outlineColor = glm::vec4(0.0f, 0.0f, 0.0f, _commentTitleAlpha);
+        glm::vec4 outlineColor =
+          glm::vec4(0.0f, 0.0f, 0.0f, _commentTitleAlpha);
         if (currFitness > prevFitness)
           outlineColor.y = 0.5f;
         else if (currFitness < prevFitness)
@@ -296,11 +282,11 @@ ScreenTitles::render() {
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setTextAlign(
+          gero::graphics::TextRenderer::TextAlign::center);
 
         textRenderer.pushText(
-          currPos,
-          message,
+          currPos, message,
           //
           gero::graphics::TextRenderer::State(color, outlineColor),
           //
@@ -315,9 +301,8 @@ ScreenTitles::render() {
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 9, 12),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 10, 12),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 11, 12),
-          _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 12, 12)
-          );
-
+          _getColor(
+            outlineColor, outlineColorTitleAnim, animEasingVal, 12, 12));
       }
     }
   }

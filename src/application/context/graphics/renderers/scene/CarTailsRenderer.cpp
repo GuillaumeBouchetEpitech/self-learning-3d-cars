@@ -11,7 +11,8 @@ CarTailsRenderer::initialize() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
+  _shader =
+    resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
 
   auto geoDef = resourceManager.getGeometryDefinition(
     gero::asValue(GeometriesAliases::wireFramesLineStrip));
@@ -91,12 +92,16 @@ CarTailsRenderer::render() {
         const int startIndex = 3;
 
         const int totalSize = currWheel.size();
-        const int currSize = std::min(totalSize - startIndex, maxSize - startIndex);
+        const int currSize =
+          std::min(totalSize - startIndex, maxSize - startIndex);
 
-        const float* dataPointer = &currWheel.at(totalSize - currSize - startIndex).x;
-        const int dataSize = currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
+        const float* dataPointer =
+          &currWheel.at(totalSize - currSize - startIndex).x;
+        const int dataSize =
+          currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
 
-        _geometries.leaderCarTrail.updateOrAllocateBuffer(0, dataSize, dataPointer);
+        _geometries.leaderCarTrail.updateOrAllocateBuffer(
+          0, dataSize, dataPointer);
         _geometries.leaderCarTrail.setPrimitiveCount(currSize);
         _geometries.leaderCarTrail.render();
       }

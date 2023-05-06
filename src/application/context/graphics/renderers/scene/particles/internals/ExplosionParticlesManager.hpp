@@ -11,8 +11,7 @@
 #include <memory>
 #include <vector>
 
-class ExplosionParticlesManager
-{
+class ExplosionParticlesManager {
 public:
   ExplosionParticlesManager();
   ~ExplosionParticlesManager() = default;
@@ -23,7 +22,6 @@ public:
 
 public:
   void emitParticles(const glm::vec3& position, const glm::vec3& velocity);
-
 
 private:
   struct ExplosionParticle {
@@ -44,6 +42,4 @@ private:
 private:
   ExplosionParticles _smallExplosionParticles;
   ExplosionParticles _bigExplosionParticles;
-
-
 };

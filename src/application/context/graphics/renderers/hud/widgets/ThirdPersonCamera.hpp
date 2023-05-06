@@ -10,17 +10,14 @@
 // TODO: smoother camera movements
 class ThirdPersonCamera {
 private:
-
-  struct Layout
-  {
+  struct Layout {
     glm::vec2 position;
     glm::vec2 size;
 
     bool isVisible = false;
     gero::Timer timer;
     gero::easing::GenericEasing<2> moveEasing;
-  }
-  _layout;
+  } _layout;
 
   PostProcess _postProcess;
 

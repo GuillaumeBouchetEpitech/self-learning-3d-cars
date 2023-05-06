@@ -3,9 +3,9 @@
 
 #include "application/context/Context.hpp"
 
-#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 
@@ -56,7 +56,8 @@ InformationTextRenderer::render() {
 
   { // top-center header text
 
-    const glm::vec2 textPos = {vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
+    const glm::vec2 textPos = {
+      vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
 
     textRenderer.setMainColor(textColor);
     textRenderer.setOutlineColor(textOutlineColor);
@@ -67,17 +68,12 @@ InformationTextRenderer::render() {
     textRenderer.pushText(textPos, logic.hudText.header);
 
     helpers::renderTextBackground(
-      k_textDepth,
-      glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f),
-      3.0f,
-      6.0f
-    );
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
 
   } // top-center header text
 
   {
-
 
     const uint32_t totalCars = logic.cores.totalGenomes;
     const uint32_t liveCars = logic.simulation->getLiveGenomes();
@@ -92,39 +88,30 @@ InformationTextRenderer::render() {
       sstr << "progress: " << (totalCars - carsLeft) << "/" << totalCars;
       const std::string str = sstr.str();
 
-      const glm::vec2 textPos = { vSize.x * 0.5f, 4.0f * k_textScale - k_textHScale};
+      const glm::vec2 textPos = {
+        vSize.x * 0.5f, 4.0f * k_textScale - k_textHScale};
 
       textRenderer.setMainColor(textColor);
       textRenderer.setOutlineColor(textOutlineColor);
       textRenderer.setScale(k_textScale);
       textRenderer.setDepth(k_textDepth);
-      textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+      textRenderer.setTextAlign(
+        gero::graphics::TextRenderer::TextAlign::center);
 
       textRenderer.pushText(textPos, str);
 
       helpers::renderTextBackground(
-        k_textDepth,
-        glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f),
-        3.0f,
-        6.0f
-      );
+        k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
+        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
     }
 
     helpers::renderProgressBar(
       glm::vec2(vSize.x * 0.5f, 1.25f * k_textHScale),
-      glm::vec2(250.0f, k_textScale * 1.5f),
-      progressValue,
-      k_textDepth,
-      k_textScale,
-      textColor,
-      textOutlineColor,
-      4.0f,
+      glm::vec2(250.0f, k_textScale * 1.5f), progressValue, k_textDepth,
+      k_textScale, textColor, textOutlineColor, 4.0f,
       glm::vec4(1.0f, 1.0f, 1.0f, _alpha * 0.75f),
       glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-      glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f)
-    );
-
+      glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f));
   }
 
   { // top-left performance stats
@@ -159,14 +146,13 @@ InformationTextRenderer::render() {
           }
           sstr << std::endl;
         }
-
       }
-
     }
 
     const std::string str = sstr.str();
 
-    const glm::vec2 textPos = {k_textHScale, vSize.y - 5.0f * k_textScale - k_textHScale};
+    const glm::vec2 textPos = {
+      k_textHScale, vSize.y - 5.0f * k_textScale - k_textHScale};
 
     textRenderer.setMainColor(textColor);
     textRenderer.setOutlineColor(textOutlineColor);
@@ -177,12 +163,8 @@ InformationTextRenderer::render() {
     textRenderer.pushText(textPos, str);
 
     helpers::renderTextBackground(
-      k_textDepth,
-      glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f),
-      3.0f,
-      6.0f
-    );
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
 
   } // top-left performance stats
 
@@ -197,7 +179,8 @@ InformationTextRenderer::render() {
 
       std::stringstream sstr;
 
-      const int32_t latestFpsValue = int32_t(1000.0f / float(timeData.getLatestDuration()));
+      const int32_t latestFpsValue =
+        int32_t(1000.0f / float(timeData.getLatestDuration()));
 
       {
 
@@ -225,7 +208,8 @@ InformationTextRenderer::render() {
         sstr << "${1}" << latestFpsValue << std::endl;
 
         if (timeData.getAverageDuration() > 0) {
-          const int32_t averageFpsValue = int32_t(1000.0f / float(timeData.getAverageDuration()));
+          const int32_t averageFpsValue =
+            int32_t(1000.0f / float(timeData.getAverageDuration()));
           if (averageFpsValue > 0) {
             sstr << "${1}~" << averageFpsValue << std::endl;
           }
@@ -234,16 +218,15 @@ InformationTextRenderer::render() {
         //
         //
         //
-
       }
 
-
-      const glm::vec3 activeColor = (latestFpsValue < 25) ? glm::vec3(1,0,0) : glm::vec3(textColor);
-
+      const glm::vec3 activeColor =
+        (latestFpsValue < 25) ? glm::vec3(1, 0, 0) : glm::vec3(textColor);
 
       const std::string str = sstr.str();
 
-      const glm::vec2 textPos = {vSize.x - k_textHScale, vSize.y - 3.0f * k_textScale - k_textHScale};
+      const glm::vec2 textPos = {
+        vSize.x - k_textHScale, vSize.y - 3.0f * k_textScale - k_textHScale};
 
       textRenderer.setMainColor(textColor);
       textRenderer.setOutlineColor(textOutlineColor);
@@ -252,21 +235,14 @@ InformationTextRenderer::render() {
       textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::right);
 
       textRenderer.pushText(
-        textPos,
-        str,
+        textPos, str,
         //
         gero::graphics::TextRenderer::State(textColor),
-        gero::graphics::TextRenderer::State(glm::vec4(activeColor,_alpha))
-        );
+        gero::graphics::TextRenderer::State(glm::vec4(activeColor, _alpha)));
 
       helpers::renderTextBackground(
-        k_textDepth,
-        glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f),
-        3.0f,
-        6.0f
-      );
-
+        k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
+        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
     }
 
   } // top-right performance stats

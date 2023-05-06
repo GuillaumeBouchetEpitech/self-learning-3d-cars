@@ -66,7 +66,8 @@ LeaderCar::update(float elapsedTime) {
     // => without it the gero::graphics::Camera look at the ground
     // => mostly useful for a shoulder gero::graphics::Camera0
     const auto& chassis = carResult.liveTransforms.chassis;
-    _carPosition = chassis.position + glm::mat3_cast(chassis.orientation) * glm::vec3(0.0f, 0.0f, 2.0f);
+    _carPosition = chassis.position + glm::mat3_cast(chassis.orientation) *
+                                        glm::vec3(0.0f, 0.0f, 2.0f);
   }
 }
 
@@ -93,7 +94,8 @@ LeaderCar::leaderData() const {
   if (_carIndex < 0)
     return {};
 
-  return Context::get().logic.carDataFrameHandler.getAllCarsData().at(_carIndex);
+  return Context::get().logic.carDataFrameHandler.getAllCarsData().at(
+    _carIndex);
 }
 
 std::optional<glm::vec3>

@@ -102,13 +102,16 @@ Context::_initialize(
     graphic.scene.carTailsRenderer.initialize();
     const auto& dimension = logic.circuitDimension;
     const glm::vec3 boundariesSize = dimension.max - dimension.min;
-    graphic.scene.chessBoardFloorRenderer.initialize(dimension.center, boundariesSize);
+    graphic.scene.chessBoardFloorRenderer.initialize(
+      dimension.center, boundariesSize);
     graphic.scene.backGroundTorusRenderer.initialize();
     graphic.scene.geometriesStackRenderer.initialize();
 
-    graphic.hud.stackRenderers.initialize("./thirdparties/dependencies/geronimo/src");
+    graphic.hud.stackRenderers.initialize(
+      "./thirdparties/dependencies/geronimo/src");
 
-    graphic.hud.textRenderer.initialize("./thirdparties/dependencies/geronimo/src");
+    graphic.hud.textRenderer.initialize(
+      "./thirdparties/dependencies/geronimo/src");
 
     graphic.hud.postProcess.initialize({width, height});
     graphic.hud.postProcess.setGeometry(
@@ -135,17 +138,15 @@ Context::_initialize(
       gero::graphics::MakeGeometries::makeSphere(vertices, 1, 0.5f);
       // gero::graphics::MakeGeometries::convertToPerFacesNormals(vertices);
       graphic.scene.geometriesStackRenderer.createAlias(2222, vertices);
-
     }
-
   }
 }
 
 //
 
 void
-Context::create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores)
-{
+Context::create(
+  uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
   if (_instance)
     D_THROW(std::runtime_error, "Context singleton already initialized");
 

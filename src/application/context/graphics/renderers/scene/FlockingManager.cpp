@@ -114,8 +114,7 @@ FlockingManager::update(float elapsedTime) {
   if (_timeUntilTrailUpdate > 0.0f)
     _timeUntilTrailUpdate -= elapsedTime;
 
-  if (_timeUntilTrailUpdate <= 0.0f)
-  {
+  if (_timeUntilTrailUpdate <= 0.0f) {
     _timeUntilTrailUpdate = 1.0f / 30.0f;
     needTrailUpdate = true;
   }
@@ -140,8 +139,7 @@ FlockingManager::update(float elapsedTime) {
     const float coef = 1.0f + 1.0f * distance / k_maxDistance;
     boid.applyAcceleration(maxAcc * coef, maxVel * coef, elapsedTime);
 
-    if (needTrailUpdate)
-    {
+    if (needTrailUpdate) {
       // make a trail by reusing the previous positions N times
       for (std::size_t ii = boid.trail.size() - 1; ii > 0; --ii)
         boid.trail.at(ii) = boid.trail.at(ii - 1);
@@ -162,17 +160,15 @@ FlockingManager::render() {
 
     GeometriesStackRenderer::GeometryInstance instance;
     instance.position = glm::vec3(0.0f),
-    instance.orientation = glm::quat(0.0f, glm::vec3(0,0,1));
+    instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
     instance.scale = glm::vec3(0.4f);
     instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
     instance.outlineValue = 1.0f;
 
-    for (Boid& boid : _boids)
-    {
+    for (Boid& boid : _boids) {
       instance.position = boid.position;
       scene.geometriesStackRenderer.pushAlias(1111, instance);
     }
-
   }
 
   {
@@ -188,5 +184,4 @@ FlockingManager::render() {
 
     scene.stackRenderers.flush();
   }
-
 }

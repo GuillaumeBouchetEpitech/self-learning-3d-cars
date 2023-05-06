@@ -4,8 +4,8 @@
 #include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/webworker/common.hpp"
 #include "application/context/simulation/utilities/FrameProfiler.hpp"
+#include "application/context/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
@@ -49,8 +49,7 @@ private:
 
   AbstractSimulation::CoreState _coreState;
 
-  struct AgentData
-  {
+  struct AgentData {
     uint32_t dataIndex = 0;
     CarData carData;
 
@@ -104,5 +103,4 @@ public:
   const AbstractSimulation::CoreState& getCoreState() const;
 
   uint32_t getTotalLiveAgents() const;
-
 };

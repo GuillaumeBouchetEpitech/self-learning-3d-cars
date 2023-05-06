@@ -1,9 +1,9 @@
 
 #include "Application.hpp"
 
-#include "application/defines.hpp"
 #include "application/context/Context.hpp"
 #include "application/context/graphics/Scene.hpp"
+#include "application/defines.hpp"
 #include "application/states/StateManager.hpp"
 
 #include "geronimo/system/TraceLogger.hpp"
@@ -25,8 +25,9 @@ constexpr uint32_t k_frameRate = 0;
 using gero::graphics::SDLWindowWrapper;
 
 Application::Application(const Definition& def)
-  : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, k_frameRate, OpenGlEsVersion::v3, k_canResize)
-{
+  : SDLWindowWrapper(
+      "Self Learning 3d Cars", def.width, def.height, k_frameRate,
+      OpenGlEsVersion::v3, k_canResize) {
   Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();
   Scene::initialize();

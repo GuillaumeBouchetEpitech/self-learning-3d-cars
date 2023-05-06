@@ -17,7 +17,8 @@ struct CarData {
     glm::vec3 position;
     glm::quat orientation;
 
-    void lerp(const SingleTransform& valA, const SingleTransform& valB, float coef);
+    void
+    lerp(const SingleTransform& valA, const SingleTransform& valB, float coef);
   };
   struct CarTransform {
     SingleTransform chassis;

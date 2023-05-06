@@ -28,5 +28,4 @@ public:
 private:
   ExplosionParticlesManager _explosionParticlesManager;
   TrailsParticleManager _trailsParticleManager;
-
 };

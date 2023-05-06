@@ -19,22 +19,18 @@
 
 class PthreadSimulation : public AbstractSimulation {
 
-
 private:
-  struct AgentValues
-  {
+  struct AgentValues {
     uint64_t dataIndex;
     CarAgent carAgent;
     NeuralNetwork neuralNet;
 
     AgentValues(
       uint64_t inDataIndex,
-      const NeuralNetworkTopology& inNeuralNetworkTopology
-    );
+      const NeuralNetworkTopology& inNeuralNetworkTopology);
   };
 
 private:
-
   gero::threading::Producer _multithreadProducer;
 
   Definition _def;
@@ -48,9 +44,7 @@ private:
     AbstractSimulation::GenerationEndCallback onGenerationEnd;
   } _callbacks;
 
-
-  struct ThreadData
-  {
+  struct ThreadData {
     /**
      * need multiple physic worlds so that we can divide the
      * physical update and raycasting inside different threads
@@ -60,7 +54,6 @@ private:
     FrameProfiler frameProfiler;
   };
   std::vector<std::unique_ptr<ThreadData>> _allThreadsData;
-
 
   uint32_t _currentAgentIndex = 0;
   uint32_t _currentLiveAgents = 0;

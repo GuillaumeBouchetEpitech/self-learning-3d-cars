@@ -21,7 +21,8 @@ PostProcess::initialize(const glm::uvec2& frameSize) {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::postProcess));
+  _shader =
+    resourceManager.getShader(gero::asValue(ShadersAliases::postProcess));
 
   auto geoDef =
     // resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::postProcess));

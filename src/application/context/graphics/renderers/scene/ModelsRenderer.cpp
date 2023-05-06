@@ -45,8 +45,8 @@ ModelsRenderer::initialize() {
 
     _updateVerticesNormals(modelVertices);
 
-    _chassis.shader =
-      resourceManager.getShader(gero::asValue(ShadersAliases::modelsCarChassis));
+    _chassis.shader = resourceManager.getShader(
+      gero::asValue(ShadersAliases::modelsCarChassis));
 
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarChassis));
@@ -105,7 +105,8 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
 
   const auto& logic = Context::get().logic;
 
-  const unsigned int totalCars = logic.carDataFrameHandler.getAllCarsData().size();
+  const unsigned int totalCars =
+    logic.carDataFrameHandler.getAllCarsData().size();
   if (totalCars == 0)
     return;
 
@@ -138,7 +139,8 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     // 3d clipping
 
     const auto& chassis = carData.liveTransforms.chassis;
-    const glm::vec3 carOrigin = chassis.position + glm::mat3_cast(chassis.orientation) * modelHeight;
+    const glm::vec3 carOrigin =
+      chassis.position + glm::mat3_cast(chassis.orientation) * modelHeight;
 
     if (!frustumCulling.sphereInFrustum(carOrigin, 5.0f))
       continue;
@@ -159,16 +161,11 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     // transforms
 
     _modelsCarChassisMatrices.emplace_back(
-      chassis.position,
-      chassis.orientation,
-      k_scale,
-      color);
+      chassis.position, chassis.orientation, k_scale, color);
 
     for (const auto& wheelTransform : carData.liveTransforms.wheels)
       _modelsCarWheelsMatrices.emplace_back(
-        wheelTransform.position,
-        wheelTransform.orientation,
-        k_scale,
+        wheelTransform.position, wheelTransform.orientation, k_scale,
         k_whiteColor);
   }
 

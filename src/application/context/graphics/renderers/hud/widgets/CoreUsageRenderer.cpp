@@ -2,8 +2,8 @@
 #include "CoreUsageRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
 #include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/BSpline.hpp"
@@ -77,14 +77,16 @@ CoreUsageRenderer::renderWireFrame() {
   const glm::vec3 whiteColor(0.8f, 0.8f, 0.8f);
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
 
-  const glm::vec3 borderPos = {_position.x, _position.y + k_textScale + k_textHScale, 0.1f};
+  const glm::vec3 borderPos = {
+    _position.x, _position.y + k_textScale + k_textHScale, 0.1f};
   const glm::vec2 borderSize = {_size.x, _size.y - k_textScale * 3.0f};
 
   const auto& profileData = context.logic.cores.profileData;
 
   const uint32_t allTimeMaxDelta = profileData.getAllTimeMaxDelta();
 
-  const float verticalSize = (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
+  const float verticalSize =
+    (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
 
   { // background
 
@@ -94,8 +96,10 @@ CoreUsageRenderer::renderWireFrame() {
 
     const glm::vec3 center = borderPos + glm::vec3(borderSize, 0) * 0.5f;
 
-    stackRenderers.getTrianglesStack().pushQuad(center, borderSize, bgColor, -0.2f);
-    stackRenderers.getWireFramesStack().pushRectangle(borderPos, borderSize, whiteColor, +0.1f);
+    stackRenderers.getTrianglesStack().pushQuad(
+      center, borderSize, bgColor, -0.2f);
+    stackRenderers.getWireFramesStack().pushRectangle(
+      borderPos, borderSize, whiteColor, +0.1f);
 
   } // background
 
@@ -104,7 +108,8 @@ CoreUsageRenderer::renderWireFrame() {
 
   { // dividers
 
-    for (float currDivider = k_divider; currDivider < verticalSize; currDivider += k_divider) {
+    for (float currDivider = k_divider; currDivider < verticalSize;
+         currDivider += k_divider) {
       const float ratio = currDivider / verticalSize;
 
       stackRenderers.getWireFramesStack().pushLine(
@@ -122,14 +127,18 @@ CoreUsageRenderer::renderWireFrame() {
 
     const float widthStep = borderSize.x / profileData.getMaxStateHistory();
 
-    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores(); ++coreIndex) {
+    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores();
+         ++coreIndex) {
 
-      float prevDelta = float(profileData.getCoreHistoryData(coreIndex, 0).delta);
+      float prevDelta =
+        float(profileData.getCoreHistoryData(coreIndex, 0).delta);
       float prevHeight = borderSize.y * prevDelta / verticalSize;
 
-      for (uint32_t statIndex = 1; statIndex < profileData.getMaxStateHistory(); ++statIndex) {
+      for (uint32_t statIndex = 1; statIndex < profileData.getMaxStateHistory();
+           ++statIndex) {
 
-        const float currDelta = float(profileData.getCoreHistoryData(coreIndex, statIndex).delta);
+        const float currDelta =
+          float(profileData.getCoreHistoryData(coreIndex, statIndex).delta);
         const float currHeight = borderSize.y * currDelta / verticalSize;
 
         stackRenderers.getWireFramesStack().pushLine(
@@ -142,25 +151,25 @@ CoreUsageRenderer::renderWireFrame() {
         prevHeight = currHeight;
       }
     }
-
   }
 
   // {
 
   //   gero::math::BSpline bsplineSmoother;
 
-  //   for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores(); ++coreIndex) {
+  //   for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores();
+  //   ++coreIndex) {
 
   //     gero::math::BSpline::Definition smootherDef;
   //     smootherDef.degree = 4;
   //     smootherDef.dimensions = 1;
-  //     smootherDef.knotsLength = profileData.getMaxStateHistory() * smootherDef.dimensions;
-  //     smootherDef.getDataCallback = [&coreIndex, &profileData](uint32_t index)
+  //     smootherDef.knotsLength = profileData.getMaxStateHistory() *
+  //     smootherDef.dimensions; smootherDef.getDataCallback = [&coreIndex,
+  //     &profileData](uint32_t index)
   //     {
   //       return profileData.getCoreHistoryData(coreIndex, index).delta;
   //     };
   //     bsplineSmoother.initialize(smootherDef);
-
 
   //     constexpr unsigned int maxIterations = 100;
   //     constexpr float k_step = 1.0f / maxIterations; // tiny steps
@@ -168,7 +177,8 @@ CoreUsageRenderer::renderWireFrame() {
   //     float prevCoef = k_step * 1.0f;
   //     float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
 
-  //     for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
+  //     for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef +=
+  //     k_step) {
 
   //       const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
 
@@ -233,13 +243,7 @@ CoreUsageRenderer::renderHudText() {
     textRenderer.pushText(textPos, str);
 
     helpers::renderTextBackground(
-      textDepth,
-      glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-      3.0f,
-      6.0f
-    );
-
+      textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f);
   }
-
 }

@@ -1,12 +1,11 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
+#include <unordered_map>
 
-class FrameProfiler
-{
+class FrameProfiler {
 private:
   std::chrono::high_resolution_clock::time_point _startTime;
 
@@ -29,5 +28,4 @@ public:
   const std::unordered_map<uint32_t, int32_t>& getDeltasMap() const;
 
   int32_t getMaxDelta(uint32_t totalLiveAgents) const;
-
 };

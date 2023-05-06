@@ -8,15 +8,10 @@
 
 #include "application/defines.hpp"
 
-
 WorkerProducer::AgentData::AgentData(uint32_t inDataIndex)
-  : dataIndex(inDataIndex)
-{}
+  : dataIndex(inDataIndex) {}
 
-
-WorkerProducer::WorkerProducer(const Definition& def)
-  : _def(def)
-{
+WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
   _workerHandle = emscripten_create_worker(D_WORKER_SCRIPT_URL);
 
   _flags[gero::asValue(Status::WebWorkerLoaded)] = false;
@@ -91,8 +86,7 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
     int32_t totalDeltasPerTotalAgents = 0;
     receivedMsg >> totalDeltasPerTotalAgents;
-    for (int32_t ii = 0; ii < totalDeltasPerTotalAgents; ++ii)
-    {
+    for (int32_t ii = 0; ii < totalDeltasPerTotalAgents; ++ii) {
       int32_t totalLiveVehicles = 0;
       int32_t stepMilliSeconds = 0;
 
@@ -110,8 +104,7 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
     uint32_t totalAgents = 0;
     receivedMsg >> totalAgents;
 
-    for (uint32_t ii = 0; ii < totalAgents; ++ii)
-    {
+    for (uint32_t ii = 0; ii < totalAgents; ++ii) {
       //
       // core data
 
@@ -128,12 +121,8 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
       const bool carWasAlive = currData.isAlive;
 
-      receivedMsg
-        >> currData.isAlive
-        >> currData.life
-        >> currData.fitness
-        >> currData.totalUpdates
-        >> currData.groundIndex;
+      receivedMsg >> currData.isAlive >> currData.life >> currData.fitness >>
+        currData.totalUpdates >> currData.groundIndex;
 
       if (carWasAlive && !currData.isAlive) {
         _currentLiveAgents -= 1;
@@ -149,12 +138,10 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
       currData.latestTransformsHistory.reserve(totalHistory);
 
       CarData::CarTransform newData;
-      for (int32_t jj = 0; jj < totalHistory; ++jj)
-      {
+      for (int32_t jj = 0; jj < totalHistory; ++jj) {
         receivedMsg >> newData.chassis.position;
         receivedMsg >> newData.chassis.orientation;
-        for (auto& currWheel : newData.wheels)
-        {
+        for (auto& currWheel : newData.wheels) {
           receivedMsg >> currWheel.position;
           receivedMsg >> currWheel.orientation;
         }
@@ -178,8 +165,7 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
       receivedMsg >> currData.liveTransforms.chassis.position;
       receivedMsg >> currData.liveTransforms.chassis.orientation;
-      for (auto& wheelTransform : currData.liveTransforms.wheels)
-      {
+      for (auto& wheelTransform : currData.liveTransforms.wheels) {
         receivedMsg >> wheelTransform.position;
         receivedMsg >> wheelTransform.orientation;
       }
@@ -259,13 +245,11 @@ WorkerProducer::processSimulation(float elapsedTime, uint32_t totalSteps) {
 }
 
 void
-WorkerProducer::_fillMessageWithAgentToAdd()
-{
+WorkerProducer::_fillMessageWithAgentToAdd() {
   const uint32_t totalAgentsToAdd = _waitingAgentsData.size();
   _message << totalAgentsToAdd;
 
-  for (const auto currAgent : _waitingAgentsData)
-  {
+  for (const auto currAgent : _waitingAgentsData) {
     _message << currAgent->dataIndex;
 
     const auto& weights = currAgent->connectionsWeights;
@@ -281,12 +265,11 @@ WorkerProducer::_fillMessageWithAgentToAdd()
 }
 
 bool
-WorkerProducer::addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome)
-{
+WorkerProducer::addNewAgent(
+  uint32_t inDataIndex, const AbstractGenome& inGenome) {
   const uint32_t totalLiveVehicles = getTotalLiveAgents();
 
-  if (totalLiveVehicles > 20)
-  {
+  if (totalLiveVehicles > 20) {
     if (_waitingAgentsData.size() >= 10)
       return false;
 
@@ -305,23 +288,19 @@ WorkerProducer::addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome
   return true;
 }
 
-void WorkerProducer::cleanupDeadAgents()
-{
-  for (std::size_t index = 0; index < _allAgentsData.size(); )
-  {
+void
+WorkerProducer::cleanupDeadAgents() {
+  for (std::size_t index = 0; index < _allAgentsData.size();) {
     auto& currData = _allAgentsData.at(index);
 
-    if (!currData->carData.isAlive)
-    {
+    if (!currData->carData.isAlive) {
       _agentsDataMap.erase(currData->dataIndex);
 
       // fast removal (no reallocation)
       if (index + 1 < _allAgentsData.size())
         std::swap(currData, _allAgentsData.back());
       _allAgentsData.pop_back();
-    }
-    else
-    {
+    } else {
       ++index;
     }
   }
@@ -347,34 +326,32 @@ WorkerProducer::isUpdated() const {
 //   return _allAgentsData;
 // }
 
-const CarData& WorkerProducer::getCarDataByDataIndex(uint32_t inDataIndex) const
-{
+const CarData&
+WorkerProducer::getCarDataByDataIndex(uint32_t inDataIndex) const {
   auto it = _agentsDataMap.find(inDataIndex);
   if (it == _agentsDataMap.end())
-    D_THROW(std::invalid_argument, "data index not found, value -> " << inDataIndex);
+    D_THROW(
+      std::invalid_argument, "data index not found, value -> " << inDataIndex);
 
   return it->second->carData;
 }
 
-const CarData& WorkerProducer::getCarDataByIndex(uint32_t inIndex) const
-{
+const CarData&
+WorkerProducer::getCarDataByIndex(uint32_t inIndex) const {
   return _allAgentsData.at(inIndex)->carData;
 }
 
-std::size_t WorkerProducer::getTotalCarsData() const
-{
+std::size_t
+WorkerProducer::getTotalCarsData() const {
   return _allAgentsData.size();
 }
-
 
 const AbstractSimulation::CoreState&
 WorkerProducer::getCoreState() const {
   return _coreState;
 }
 
-uint32_t WorkerProducer::getTotalLiveAgents() const
-{
+uint32_t
+WorkerProducer::getTotalLiveAgents() const {
   return _currentLiveAgents + uint32_t(_waitingAgentsData.size());
 }
-
-

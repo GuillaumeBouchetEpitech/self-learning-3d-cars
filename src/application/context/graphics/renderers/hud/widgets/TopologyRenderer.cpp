@@ -91,7 +91,8 @@ TopologyRenderer::render() {
   auto& stackRenderers = graphic.hud.stackRenderers;
   stackRenderers.getTrianglesStack().pushQuad(
     _position + _size * 0.5f, _size, glm::vec4(0, 0, 0, 0.75f), -0.2f);
-  stackRenderers.getWireFramesStack().pushRectangle(_position, _size, whiteColor, -0.1f);
+  stackRenderers.getWireFramesStack().pushRectangle(
+    _position, _size, whiteColor, -0.1f);
 
   if (!logic.leaderCar.hasLeader())
     return;
@@ -107,9 +108,11 @@ TopologyRenderer::render() {
     topologyArray.push_back(hidden);
   topologyArray.push_back(logic.annTopology.getOutputLayerSize());
 
-  const auto& carData = logic.simulation->getCarResult(logic.leaderCar.leaderIndex());
+  const auto& carData =
+    logic.simulation->getCarResult(logic.leaderCar.leaderIndex());
 
-  const auto& currGenome = logic.simulation->getGenome(logic.leaderCar.leaderIndex());
+  const auto& currGenome =
+    logic.simulation->getGenome(logic.leaderCar.leaderIndex());
   const auto& connectionsWeights = currGenome.getConnectionsWeights();
 
   struct NeuronData {
@@ -136,7 +139,8 @@ TopologyRenderer::render() {
       for (unsigned int jj = 0; jj < actualSize; ++jj) {
         currPos.x += _size.x / (actualSize + 1);
 
-        const float neuronsValue = glm::clamp(carData.neuronsValues.at(neuronIndex++), 0.0f, 1.0f);
+        const float neuronsValue =
+          glm::clamp(carData.neuronsValues.at(neuronIndex++), 0.0f, 1.0f);
 
         layersData.at(ii).push_back({currPos, neuronsValue});
       }

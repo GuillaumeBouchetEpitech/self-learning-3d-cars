@@ -38,14 +38,14 @@ getRandomVec3(float radius) {
 TrailsParticleManager::TrailParticle::TrailParticle(
   const glm::vec3& position, const glm::vec3& linearVelocity,
   const glm::vec3& color, float scale, float life)
-  : position(position), linearVelocity(linearVelocity), scale(scale), color(color), life(life), maxLife(life) {
+  : position(position), linearVelocity(linearVelocity), scale(scale),
+    color(color), life(life), maxLife(life) {
   // initialize the particle's trail
   for (auto& trailPos : trail)
     trailPos = position;
 }
 
-TrailsParticleManager::TrailsParticleManager()
-{
+TrailsParticleManager::TrailsParticleManager() {
   _trailParticles.pre_allocate(2048);
 }
 
@@ -82,7 +82,6 @@ TrailsParticleManager::update(float delta) {
       trailParticle.linearVelocity.z -= 20.0f * delta;
     }
   }
-
 }
 
 void
@@ -102,7 +101,8 @@ TrailsParticleManager::render(const gero::graphics::Camera& inCamera) {
         continue;
 
       // update scale
-      const float localScale = trailParticle.life / trailParticle.maxLife * trailParticle.scale;
+      const float localScale =
+        trailParticle.life / trailParticle.maxLife * trailParticle.scale;
 
       const glm::vec4 particleColor = glm::vec4(trailParticle.color, 1);
 

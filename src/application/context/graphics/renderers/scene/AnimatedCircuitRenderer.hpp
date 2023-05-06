@@ -62,5 +62,4 @@ private:
   float _upperValue = 10.0f;
   float _maxUpperValue = 0.0f;
   std::size_t _maxPrimitiveCount = 0;
-
 };

@@ -3,12 +3,12 @@
 
 #include "application/context/Context.hpp"
 
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
+#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
-#include "geronimo/system/math/clamp.hpp"
 #include "geronimo/system/math/BSpline.hpp"
+#include "geronimo/system/math/clamp.hpp"
 
 #include <iomanip>
 
@@ -29,7 +29,7 @@ FitnessDataRenderer::FitnessDataRenderer() {
   _position.x = k_faceOutX;
   _position.y = 60 + 0.0f * k_textScale + k_textHScale;
 
-  _size = { k_width, k_height };
+  _size = {k_width, k_height};
 }
 
 void
@@ -91,8 +91,6 @@ FitnessDataRenderer::renderWireFrame() {
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
   const glm::vec3 greenColor(0.0f, 1.0f, 0.0f);
 
-
-
   const uint32_t totalCars = logic.cores.totalGenomes;
   float localBestFitness = 0.0f;
   for (uint32_t ii = 0; ii < totalCars; ++ii) {
@@ -100,17 +98,15 @@ FitnessDataRenderer::renderWireFrame() {
     localBestFitness = std::max(localBestFitness, carData.fitness);
   }
 
-
   const float maxFitness = std::max(logic.fitnessStats.max(), localBestFitness);
 
   {
     stackRenderers.getTrianglesStack().pushQuad(
-      glm::vec2(_position + _size * 0.5f),
-      _size,
-      glm::vec4(0, 0, 0, 0.75f),
+      glm::vec2(_position + _size * 0.5f), _size, glm::vec4(0, 0, 0, 0.75f),
       -0.5f);
 
-    stackRenderers.getWireFramesStack().pushRectangle(_position, _size, whiteColor, 0.5f);
+    stackRenderers.getWireFramesStack().pushRectangle(
+      _position, _size, whiteColor, 0.5f);
   }
 
   {
@@ -139,8 +135,7 @@ FitnessDataRenderer::renderWireFrame() {
       // vertical delimiter
       stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
-        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
-        lightGrayColor);
+        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f), lightGrayColor);
     }
 
     {
@@ -159,21 +154,19 @@ FitnessDataRenderer::renderWireFrame() {
         (currData / maxFitness) * _size.y,
       };
 
-      const glm::vec3& currColor = localBestFitness < maxFitness ? redColor : greenColor;
+      const glm::vec3& currColor =
+        localBestFitness < maxFitness ? redColor : greenColor;
 
       // horizontal data curve
       stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position + prevPos, 0.0f),
-        glm::vec3(_position + currPos, 0.0f),
-        currColor);
+        glm::vec3(_position + currPos, 0.0f), currColor);
 
       // vertical delimiter
       stackRenderers.getWireFramesStack().pushLine(
         glm::vec3(_position.x + prevPos.x, _position.y + prevPos.y, 0.0f),
-        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f),
-        lightGrayColor);
+        glm::vec3(_position.x + prevPos.x, _position.y, 0.0f), lightGrayColor);
     }
-
   }
 
   //
@@ -182,24 +175,21 @@ FitnessDataRenderer::renderWireFrame() {
 
   {
 
-    struct Dividers
-    {
+    struct Dividers {
       float step;
       float limit;
       glm::vec3 color;
       float zValue;
     };
 
-    const std::array<Dividers, 4> allDividers =
-    {{
-      { 1.0f, 10.0f, glm::vec3(0.4f, 0.4f, 0.4f), -0.4f },
-      { 2.5f, 40.0f, glm::vec3(0.5f, 0.5f, 0.0f), -0.3f },
-      { 5.0f, 100.0f, glm::vec3(0.75f, 0.25f, 0.25f), -0.2f },
-      { 10.0f, 999999.0f, glm::vec3(0.25f, 0.75f, 0.25f), -0.1f },
+    const std::array<Dividers, 4> allDividers = {{
+      {1.0f, 10.0f, glm::vec3(0.4f, 0.4f, 0.4f), -0.4f},
+      {2.5f, 40.0f, glm::vec3(0.5f, 0.5f, 0.0f), -0.3f},
+      {5.0f, 100.0f, glm::vec3(0.75f, 0.25f, 0.25f), -0.2f},
+      {10.0f, 999999.0f, glm::vec3(0.25f, 0.75f, 0.25f), -0.1f},
     }};
 
-    for (const auto& values : allDividers)
-    {
+    for (const auto& values : allDividers) {
 
       if (maxFitness < values.step || maxFitness > values.limit)
         continue;
@@ -213,19 +203,14 @@ FitnessDataRenderer::renderWireFrame() {
       const float x1 = _position.x;
       const float x2 = x1 + _size.x;
 
-      for (uint32_t ii = 0; ii < totalSteps; ++ii)
-      {
+      for (uint32_t ii = 0; ii < totalSteps; ++ii) {
         const float mainY = _position.y + float(ii + 1) * stepHeight;
 
         stackRenderers.getWireFramesStack().pushLine(
           glm::vec3(x1, mainY, values.zValue),
-          glm::vec3(x2, mainY, values.zValue),
-          values.color
-        );
+          glm::vec3(x2, mainY, values.zValue), values.color);
       }
-
     }
-
   }
 
   //
@@ -239,8 +224,9 @@ FitnessDataRenderer::renderWireFrame() {
   //   gero::math::BSpline::Definition smootherDef;
   //   smootherDef.degree = 4;
   //   smootherDef.dimensions = 1;
-  //   smootherDef.knotsLength = logic.fitnessStats.size() * smootherDef.dimensions;
-  //   smootherDef.getDataCallback = [&logic](uint32_t index)
+  //   smootherDef.knotsLength = logic.fitnessStats.size() *
+  //   smootherDef.dimensions; smootherDef.getDataCallback = [&logic](uint32_t
+  //   index)
   //   {
   //     return logic.fitnessStats.get(index);
   //   };
@@ -252,7 +238,8 @@ FitnessDataRenderer::renderWireFrame() {
   //   float prevCoef = k_step * 1.0f;
   //   float prevDelta = bsplineSmoother.calcAt(prevCoef, 0);
 
-  //   for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step) {
+  //   for (float currCoef = k_step * 2.0f; currCoef < 1.0f; currCoef += k_step)
+  //   {
 
   //     const float currDelta = bsplineSmoother.calcAt(currCoef, 0);
 
@@ -260,19 +247,15 @@ FitnessDataRenderer::renderWireFrame() {
   //     const float currHeight = _size.y * currDelta / maxFitness;
 
   //     stackRenderers.getWireFramesStack().pushLine(
-  //       glm::vec3(_position, 0.0f) + glm::vec3(prevCoef * _size.x, prevHeight, 0.1f),
-  //       glm::vec3(_position, 0.0f) + glm::vec3(currCoef * _size.x, currHeight, 0.1f),
-  //       whiteColor);
+  //       glm::vec3(_position, 0.0f) + glm::vec3(prevCoef * _size.x,
+  //       prevHeight, 0.1f), glm::vec3(_position, 0.0f) + glm::vec3(currCoef *
+  //       _size.x, currHeight, 0.1f), whiteColor);
 
   //     prevCoef = currCoef;
   //     prevDelta = currDelta;
   //   }
 
   // }
-
-
-
-
 }
 
 void
@@ -294,7 +277,6 @@ FitnessDataRenderer::renderHudText() {
   const uint32_t liveAgents = simulation.getLiveGenomes();
   const uint32_t agentsLeft = simulation.getWaitingGenomes() + liveAgents;
 
-
   const float bestFitness = simulation.getBestGenome().getFitness();
 
   const glm::vec4 textColor = glm::vec4(glm::vec3(0.8f), _alpha);
@@ -303,7 +285,7 @@ FitnessDataRenderer::renderHudText() {
   const glm::vec4 colorGreen = glm::vec4(0.0f, 0.5f, 0.0f, _alpha);
   constexpr float k_textDepth = 0.25f;
 
-  const glm::vec2 basePos = { _position.x, _position.y - 1.5f * k_textScale};
+  const glm::vec2 basePos = {_position.x, _position.y - 1.5f * k_textScale};
 
   glm::vec2 currPos = basePos;
 
@@ -326,12 +308,15 @@ FitnessDataRenderer::renderHudText() {
     if (bestFitness == 0.0f) {
       bestFitnessCoef = localBestFitness > 0.0f ? 1.0f : 0.5f;
     } else {
-      bestFitnessCoef = gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
+      bestFitnessCoef =
+        gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
     }
 
-    const glm::vec4 bestFitnessColor = glm::mix(colorRed, colorGreen, bestFitnessCoef);
+    const glm::vec4 bestFitnessColor =
+      glm::mix(colorRed, colorGreen, bestFitnessCoef);
 
-    const float carLeftCoef = 1.0f - gero::math::clamp(float(agentsLeft) / totalCars, 0.0f, 1.0f);
+    const float carLeftCoef =
+      1.0f - gero::math::clamp(float(agentsLeft) / totalCars, 0.0f, 1.0f);
 
     const glm::vec4 carLeftColor = glm::mix(colorGreen, colorRed, carLeftCoef);
 
@@ -342,22 +327,14 @@ FitnessDataRenderer::renderHudText() {
     textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
 
     textRenderer.pushText(
-      textPos,
-      str,
+      textPos, str,
       //
       gero::graphics::TextRenderer::State(textColor, textOutlineColor),
       gero::graphics::TextRenderer::State(textColor, bestFitnessColor),
-      gero::graphics::TextRenderer::State(textColor, carLeftColor)
-      );
+      gero::graphics::TextRenderer::State(textColor, carLeftColor));
 
     helpers::renderTextBackground(
-      k_textDepth,
-      glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha),
-      3.0f,
-      6.0f
-    );
-
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f);
   }
-
 }

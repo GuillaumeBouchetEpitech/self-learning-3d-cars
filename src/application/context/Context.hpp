@@ -21,7 +21,6 @@
 #include "graphics/renderers/hud/widgets/ThirdPersonCamera.hpp"
 #include "graphics/renderers/hud/widgets/TopologyRenderer.hpp"
 
-#include "graphics/renderers/scene/SceneStackRenderers.hpp"
 #include "graphics/renderers/scene/AnimatedCircuitRenderer.hpp"
 #include "graphics/renderers/scene/BackGroundTorusRenderer.hpp"
 #include "graphics/renderers/scene/CarTailsRenderer.hpp"
@@ -29,6 +28,7 @@
 #include "graphics/renderers/scene/FlockingManager.hpp"
 #include "graphics/renderers/scene/GeometriesStackRenderer.hpp"
 #include "graphics/renderers/scene/ModelsRenderer.hpp"
+#include "graphics/renderers/scene/SceneStackRenderers.hpp"
 #include "graphics/renderers/scene/particles/ParticleManager.hpp"
 
 #include "geronimo/graphics/ResourceManager.hpp"
@@ -37,16 +37,15 @@
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/metrics/PerformanceProfiler.hpp"
 
-#include "geronimo/graphics/advanced-concept/textRenderer/TextRenderer.hpp"
 #include "geronimo/graphics/advanced-concept/stackRenderers/StackRenderers.hpp"
+#include "geronimo/graphics/advanced-concept/textRenderer/TextRenderer.hpp"
 
 #include <array>
+#include <chrono>
 #include <list>
 #include <memory> // <= unique_ptr / make_unique
 #include <string>
 #include <unordered_map>
-#include <chrono>
-
 
 class Context : public gero::NonCopyable {
 
@@ -61,10 +60,14 @@ private:
   ~Context();
 
 private:
-  void _initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
+  void _initialize(
+    uint32_t width, uint32_t height, uint32_t totalGenomes,
+    uint32_t totalCores);
 
 public:
-  static void create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
+  static void create(
+    uint32_t width, uint32_t height, uint32_t totalGenomes,
+    uint32_t totalCores);
   static void destroy();
   static Context& get();
 

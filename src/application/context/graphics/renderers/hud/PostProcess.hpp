@@ -37,7 +37,8 @@ public:
   ~PostProcess() = default;
 
 public:
-  void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
+  void
+  setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
   void initialize(const glm::uvec2& frameSize);
   void dispose();

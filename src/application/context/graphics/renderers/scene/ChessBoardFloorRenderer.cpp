@@ -12,7 +12,8 @@ using namespace gero::graphics;
 using namespace gero::graphics::GlContext;
 
 void
-ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& size) {
+ChessBoardFloorRenderer::initialize(
+  const glm::vec3& center, const glm::vec3& size) {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
@@ -32,7 +33,6 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
 
     const auto setPixel =
       [&size, rawPixels](int x, int y, uint8_t grey, uint8_t alpha) {
-
         const uint32_t pixelPos = y * 4 * size.x + x * 4;
 
         rawPixels[pixelPos + 0] = grey;
@@ -52,10 +52,9 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
         }
       }
 
-    _texture.allocateBlankRgbaUBytes(size,
-      gero::graphics::Texture::Quality::smoothed,
-      gero::graphics::Texture::Pattern::repeat,
-      rawPixels);
+    _texture.allocateBlankRgbaUBytes(
+      size, gero::graphics::Texture::Quality::smoothed,
+      gero::graphics::Texture::Pattern::repeat, rawPixels);
   }
 
   { // compute chessboard ground
@@ -67,8 +66,8 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
     };
 
     const glm::vec3 hSize = glm::ceil(size * 0.55f / 100.55f) * 100.0f;
-    const glm::vec2 minPos = { center.x - hSize.x, center.y - hSize.y };
-    const glm::vec2 maxPos = { center.x + hSize.x, center.y + hSize.y };
+    const glm::vec2 minPos = {center.x - hSize.x, center.y - hSize.y};
+    const glm::vec2 maxPos = {center.x + hSize.x, center.y + hSize.y};
     constexpr float height = -0.1f;
 
     const glm::vec3 normal = {0, 0, 1};

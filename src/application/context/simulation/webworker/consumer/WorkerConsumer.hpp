@@ -4,8 +4,8 @@
 #include "application/context/simulation/logic/CarAgent.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/webworker/common.hpp"
 #include "application/context/simulation/utilities/FrameProfiler.hpp"
+#include "application/context/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
@@ -18,14 +18,13 @@
 #include "application/defines.hpp"
 
 #include <memory>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 class WorkerConsumer : public gero::NonCopyable {
 
 private:
-  struct AgentValues
-  {
+  struct AgentValues {
     uint32_t dataIndex;
     CarAgent carAgent;
     NeuralNetwork neuralNet;
@@ -33,14 +32,11 @@ private:
 
     AgentValues(
       uint32_t inDataIndex,
-      const NeuralNetworkTopology& inNeuralNetworkTopology
-    );
+      const NeuralNetworkTopology& inNeuralNetworkTopology);
   };
 
 private:
-
   std::unique_ptr<gero::physics::PhysicWorld> _physicWorld;
-
 
   std::vector<std::shared_ptr<AgentValues>> _allAgentValues;
 

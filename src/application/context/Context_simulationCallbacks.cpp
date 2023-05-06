@@ -84,7 +84,8 @@ Context::_initializeSimulationCallbacks() {
 
       const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
       const auto& chassis = carData.liveTransforms.chassis;
-      glm::vec3 carPos = chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
+      glm::vec3 carPos =
+        chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
 
       graphic.scene.particleManager.emitParticles(carPos, carData.velocity);
     });

@@ -28,7 +28,8 @@ private:
   glm::vec3 _startPosition;
 
   std::vector<std::shared_ptr<WorkerProducer>> _workerProducers;
-  std::unordered_map<uint64_t, std::shared_ptr<WorkerProducer>> _agentsWorkerMap;
+  std::unordered_map<uint64_t, std::shared_ptr<WorkerProducer>>
+    _agentsWorkerMap;
 
   uint32_t _currentAgentIndex = 0;
 

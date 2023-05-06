@@ -12,8 +12,8 @@ using namespace gero::graphics;
 
 namespace {
 
-void _initializeSceneStructures(ResourceManager& rManager)
-{
+void
+_initializeSceneStructures(ResourceManager& rManager) {
   const std::string basePath = "./assets/graphics/shaders/scene/";
 
   ShaderProgramBuilder shaderProgramBuilder;
@@ -43,8 +43,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       gero::asValue(GeometriesAliases::stackRendererWireFramesScene),
       geometryBuilder.getDefinition(), true);
 
-    geometryBuilder.setPrimitiveType(
-      Geometry::PrimitiveType::triangles);
+    geometryBuilder.setPrimitiveType(Geometry::PrimitiveType::triangles);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererTrianglesScene),
@@ -112,8 +111,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addUniform("u_composedMatrix")
       .addUniform("u_texture")
       .addUniform("u_lightPos")
-      .addUniform("u_viewPos")
-      ;
+      .addUniform("u_viewPos");
 
     auto shader = rManager.createShader(
       gero::asValue(ShadersAliases::chessboardFloor),
@@ -151,11 +149,10 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireFrames), geometryBuilder.getDefinition(),
-      true);
+      gero::asValue(GeometriesAliases::wireFrames),
+      geometryBuilder.getDefinition(), true);
 
-    geometryBuilder.setPrimitiveType(
-      Geometry::PrimitiveType::line_strip);
+    geometryBuilder.setPrimitiveType(Geometry::PrimitiveType::line_strip);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::wireFramesLineStrip),
@@ -208,8 +205,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addUniform("u_viewPos")
       .addUniform("u_alpha")
       .addUniform("u_lowerLimit")
-      .addUniform("u_upperLimit")
-      ;
+      .addUniform("u_upperLimit");
 
     auto shader = rManager.createShader(
       gero::asValue(ShadersAliases::animatedCircuitGround),
@@ -284,8 +280,7 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addAttribute("a_offset_outlineValue")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
-      .addUniform("u_viewPos")
-      ;
+      .addUniform("u_viewPos");
 
     auto shader = rManager.createShader(
       gero::asValue(ShadersAliases::modelsCarChassis),
@@ -333,7 +328,8 @@ void _initializeSceneStructures(ResourceManager& rManager)
       ;
 
     auto shader = rManager.createShader(
-      gero::asValue(ShadersAliases::geometriesStackRenderer), shaderProgramBuilder.getDefinition());
+      gero::asValue(ShadersAliases::geometriesStackRenderer),
+      shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*shader)
@@ -349,13 +345,12 @@ void _initializeSceneStructures(ResourceManager& rManager)
       .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float)
-      ;
+      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::geometriesStackRenderer), geometryBuilder.getDefinition(), true);
+      gero::asValue(GeometriesAliases::geometriesStackRenderer),
+      geometryBuilder.getDefinition(), true);
   }
-
 }
 
 void
@@ -389,8 +384,7 @@ _initializeHudStructures(ResourceManager& rManager) {
       gero::asValue(GeometriesAliases::stackRendererWireFramesHud),
       geometryBuilder.getDefinition(), true);
 
-    geometryBuilder.setPrimitiveType(
-      Geometry::PrimitiveType::triangles);
+    geometryBuilder.setPrimitiveType(Geometry::PrimitiveType::triangles);
 
     rManager.createGeometryDefinition(
       gero::asValue(GeometriesAliases::stackRendererTrianglesHud),
@@ -429,8 +423,8 @@ _initializeHudStructures(ResourceManager& rManager) {
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Float);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::textRenderer), geometryBuilder.getDefinition(),
-      true);
+      gero::asValue(GeometriesAliases::textRenderer),
+      geometryBuilder.getDefinition(), true);
   }
 
   //
@@ -480,8 +474,7 @@ Context::_initializeGraphicResource() {
   { // font
 
     rManager.createTexture(
-      0, "assets/graphics/textures/ascii_font.png",
-      Texture::Quality::pixelated,
+      0, "assets/graphics/textures/ascii_font.png", Texture::Quality::pixelated,
       Texture::Pattern::clamped);
 
   } // font

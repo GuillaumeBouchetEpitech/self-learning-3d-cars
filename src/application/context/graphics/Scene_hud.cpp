@@ -3,8 +3,8 @@
 
 #include "application/states/StateManager.hpp"
 
-#include "renderers/hud/widgets/NewLeaderRenderer.hpp"
 #include "renderers/hud/helpers/renderTextBackground.hpp"
+#include "renderers/hud/widgets/NewLeaderRenderer.hpp"
 
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/system/TraceLogger.hpp"
@@ -73,13 +73,8 @@ Scene::_renderHUD_ortho() {
       textRenderer.pushText(textPos, message);
 
       helpers::renderTextBackground(
-        depth,
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-        50.0f,
-        60.0f
-      );
-
+        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f);
     }
 
 #endif
@@ -104,13 +99,8 @@ Scene::_renderHUD_ortho() {
       textRenderer.pushText(textPos, message);
 
       helpers::renderTextBackground(
-        depth,
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-        50.0f,
-        60.0f
-      );
-
+        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f);
     }
 
   } // big titles

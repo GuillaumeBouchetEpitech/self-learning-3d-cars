@@ -62,8 +62,8 @@ NewLeaderRenderer::renderHudText() {
   auto& textRenderer = graphic.hud.textRenderer;
 
   const float textScale = 16.0f;
-  const glm::vec4 color = { 0.8f, 0.8f, 0.8f, 1.0f };
-  const glm::vec4 outlineColor = { 0.3f, 0.3f, 0.0f, 1.0f };
+  const glm::vec4 color = {0.8f, 0.8f, 0.8f, 1.0f};
+  const glm::vec4 outlineColor = {0.3f, 0.3f, 0.0f, 1.0f};
   const float depth = 0.20f;
 
   const glm::vec2 textPos = glm::vec2(_screenCoord) + glm::vec2(0, 50.0f);
@@ -79,11 +79,6 @@ NewLeaderRenderer::renderHudText() {
   textRenderer.pushText(textPos, message.data());
 
   helpers::renderTextBackground(
-    depth,
-    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-    glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-    3.0f,
-    6.0f
-  );
-
+    depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
+    3.0f, 6.0f);
 }
