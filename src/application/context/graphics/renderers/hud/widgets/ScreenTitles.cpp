@@ -12,7 +12,7 @@ namespace
 
   constexpr float k_timeAnimDivider = 0.3f;
 
-  TextRenderer::State _getColor(
+  gero::graphics::TextRenderer::State _getColor(
     const glm::vec4& inBaseOutlineColor,
     const glm::vec4& inAnimOutlineColor,
     float currVal,
@@ -28,7 +28,7 @@ namespace
       if (currVal < midVal)
       {
         const float subCoef = 1.0f - (currVal - minVal) * (1.0f / k_timeAnimDivider);
-        return TextRenderer::State(
+        return gero::graphics::TextRenderer::State(
           std::nullopt,
           glm::mix(inAnimOutlineColor, inBaseOutlineColor, subCoef)
         );
@@ -37,13 +37,13 @@ namespace
       if (currVal >= midVal)
       {
         const float subCoef = 1.0f - ((currVal - midVal) * (1.0f / k_timeAnimDivider));
-        return TextRenderer::State(
+        return gero::graphics::TextRenderer::State(
           std::nullopt,
           glm::mix(inBaseOutlineColor, inAnimOutlineColor, subCoef)
         );
       }
     }
-    return TextRenderer::State(std::nullopt, inBaseOutlineColor);
+    return gero::graphics::TextRenderer::State(std::nullopt, inBaseOutlineColor);
   }
 
 }
@@ -187,16 +187,17 @@ ScreenTitles::render() {
 
     constexpr float k_scale = 50.0f;
 
+    textRenderer.setMainColor(color);
+    textRenderer.setOutlineColor(outlineColor);
+    textRenderer.setScale(k_scale);
+    textRenderer.setDepth(depth);
+    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
     textRenderer.pushText(
       currPos,
-      message,
-      color,
-      k_scale,
-      depth,
-      outlineColor,
-      TextRenderer::TextAlign::center,
+      message.data(),
       //
-      TextRenderer::State(color, outlineColor),
+      gero::graphics::TextRenderer::State(color, outlineColor),
       //
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 1, 11),
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 2, 11),
@@ -210,6 +211,7 @@ ScreenTitles::render() {
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 10, 11),
       _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 11, 11)
       );
+
   }
 
   {
@@ -238,16 +240,17 @@ ScreenTitles::render() {
         const glm::vec4 outlineColor = glm::vec4(0.2f, 0.2f, 0.2f, _fitnessTitleAlpha);
         const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
 
+        textRenderer.setMainColor(color);
+        textRenderer.setOutlineColor(outlineColor);
+        textRenderer.setScale(k_scale);
+        textRenderer.setDepth(depth);
+        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
         textRenderer.pushText(
           currPos,
-          message,
-          color,
-          k_scale,
-          depth,
-          outlineColor,
-          TextRenderer::TextAlign::center,
+          message.data(),
           //
-          TextRenderer::State(color, outlineColor),
+          gero::graphics::TextRenderer::State(color, outlineColor),
           //
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 1, 8),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 2, 8),
@@ -289,16 +292,17 @@ ScreenTitles::render() {
         else if (currFitness < prevFitness)
           outlineColor.x = 0.5f;
 
+        textRenderer.setMainColor(color);
+        textRenderer.setOutlineColor(outlineColor);
+        textRenderer.setScale(k_scale);
+        textRenderer.setDepth(depth);
+        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
         textRenderer.pushText(
           currPos,
           message,
-          color,
-          k_scale,
-          depth,
-          outlineColor,
-          TextRenderer::TextAlign::center,
           //
-          TextRenderer::State(color, outlineColor),
+          gero::graphics::TextRenderer::State(color, outlineColor),
           //
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 1, 12),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 2, 12),

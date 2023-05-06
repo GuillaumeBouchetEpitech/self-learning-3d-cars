@@ -31,7 +31,7 @@ AnimatedCircuitRenderer::initialize(
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::wireFrames));
     _geometries.skeleton.initialize(*_shaderWireFrame, geoDef);
-    _geometries.skeleton.updateBuffer(0, skeletonVertices);
+    _geometries.skeleton.allocateBuffer(0, skeletonVertices);
     _geometries.skeleton.setPrimitiveCount(skeletonVertices.size());
 
   } // compute circuit skeleton wireFrame geometry
@@ -41,7 +41,7 @@ AnimatedCircuitRenderer::initialize(
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitGround));
     _geometries.grounds.initialize(*_shaderCircuitLit, geoDef);
-    _geometries.grounds.updateBuffer(0, groundVertices);
+    _geometries.grounds.allocateBuffer(0, groundVertices);
     _geometries.grounds.setPrimitiveCount(groundVertices.size());
 
   } // compute circuit ground geometries
@@ -51,7 +51,7 @@ AnimatedCircuitRenderer::initialize(
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::animatedCircuitWalls));
     _geometries.walls.initialize(*_shaderCircuit, geoDef);
-    _geometries.walls.updateBuffer(0, wallsVertices);
+    _geometries.walls.allocateBuffer(0, wallsVertices);
     _geometries.walls.setPrimitiveCount(wallsVertices.size());
 
   } // compute circuit walls geometries

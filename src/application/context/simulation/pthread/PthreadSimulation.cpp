@@ -53,7 +53,7 @@ PthreadSimulation::initialize(const Definition& def) {
   GeneticAlgorithm::Definition genAlgoDef;
   genAlgoDef.topology = _def.neuralNetworkTopology;
   genAlgoDef.totalGenomes = _def.totalGenomes;
-  genAlgoDef.minimumMutations = 0;
+  genAlgoDef.minimumMutations = 1;
   genAlgoDef.mutationMaxChance = 0.2f;
   genAlgoDef.mutationMaxEffect = 0.2f;
 
@@ -111,8 +111,6 @@ PthreadSimulation::initialize(const Definition& def) {
   _allAgentValues.reserve(_def.totalGenomes);
 
   _carsData.resize(_def.totalGenomes);
-  for (auto& carData : _carsData)
-    carData.latestTransformsHistory.reserve(50); // TODO: hardcoded (o_o)
 
   _addCars();
 }
@@ -265,9 +263,7 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
         // update physical world
 
         constexpr uint32_t maxSubSteps = 0;
-        constexpr float fixedTimeStep = 1.0f / 30.0f;
-
-        currPhysicWorlds.step(fixedTimeStep, maxSubSteps, fixedTimeStep);
+        currPhysicWorlds.step(elapsedTime, maxSubSteps, elapsedTime);
 
         // update cars
 

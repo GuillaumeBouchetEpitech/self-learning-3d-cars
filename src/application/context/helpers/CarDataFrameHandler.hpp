@@ -13,7 +13,7 @@ public:
   ~CarDataFrameHandler() = default;
 
 public:
-  void initalize(uint32_t totalGenomes);
+  void initialize(uint32_t totalGenomes, float logicFrameDuration);
   bool needNewFrame() const;
   void pushNewFrame(const AbstractSimulation& simulation);
   void update(float deltaTime);
@@ -21,8 +21,10 @@ public:
 
 public:
   const AllCarsData& getAllCarsData() const;
+  float getLogicFrameDuration() const;
 
 private:
+  float _logicFrameDuration = 0.0f;
   uint32_t _totalGenomes = 0;
 
   std::list<AllCarsData> _unusedFrames;

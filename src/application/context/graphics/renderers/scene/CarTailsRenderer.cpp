@@ -45,7 +45,7 @@ CarTailsRenderer::updateLatestTrail() {
 
   for (std::size_t ii = 0; ii < currCarNewTrail.wheels.size(); ++ii) {
     auto& currWheel = currCarNewTrail.wheels.at(ii);
-    currWheel.updateBuffer(0, bestWheelsTrailData.wheels.at(ii));
+    currWheel.updateOrAllocateBuffer(0, bestWheelsTrailData.wheels.at(ii));
     currWheel.setPrimitiveCount(bestWheelsTrailData.wheels.at(ii).size());
   }
 
@@ -96,7 +96,7 @@ CarTailsRenderer::render() {
         const float* dataPointer = &currWheel.at(totalSize - currSize - startIndex).x;
         const int dataSize = currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
 
-        _geometries.leaderCarTrail.updateBuffer(0, dataPointer, dataSize, true);
+        _geometries.leaderCarTrail.updateOrAllocateBuffer(0, dataSize, dataPointer);
         _geometries.leaderCarTrail.setPrimitiveCount(currSize);
         _geometries.leaderCarTrail.render();
       }

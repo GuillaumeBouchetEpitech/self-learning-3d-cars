@@ -70,14 +70,13 @@ NewLeaderRenderer::renderHudText() {
 
   const std::string_view message = "NEW\nLEADER";
 
-  textRenderer.pushText(
-    textPos,
-    message.data(),
-    color,
-    textScale,
-    depth,
-    outlineColor,
-    TextRenderer::TextAlign::center);
+  textRenderer.setMainColor(color);
+  textRenderer.setOutlineColor(outlineColor);
+  textRenderer.setScale(textScale);
+  textRenderer.setDepth(depth);
+  textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
+  textRenderer.pushText(textPos, message.data());
 
   helpers::renderTextBackground(
     depth,

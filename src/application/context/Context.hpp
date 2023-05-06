@@ -6,8 +6,6 @@
 
 #include "application/states/StateManager.hpp"
 
-#include "graphics/renderers/common/StackRenderers.hpp"
-
 #include "helpers/CarDataFrameHandler.hpp"
 #include "helpers/CarWheelsTrails.hpp"
 #include "helpers/FitnessStats.hpp"
@@ -15,7 +13,6 @@
 #include "helpers/ProfileData.hpp"
 
 #include "graphics/renderers/hud/PostProcess.hpp"
-#include "graphics/renderers/hud/TextRenderer.hpp"
 #include "graphics/renderers/hud/widgets/CoreUsageRenderer.hpp"
 #include "graphics/renderers/hud/widgets/FitnessDataRenderer.hpp"
 #include "graphics/renderers/hud/widgets/InformationTextRenderer.hpp"
@@ -24,6 +21,7 @@
 #include "graphics/renderers/hud/widgets/ThirdPersonCamera.hpp"
 #include "graphics/renderers/hud/widgets/TopologyRenderer.hpp"
 
+#include "graphics/renderers/scene/SceneStackRenderers.hpp"
 #include "graphics/renderers/scene/AnimatedCircuitRenderer.hpp"
 #include "graphics/renderers/scene/BackGroundTorusRenderer.hpp"
 #include "graphics/renderers/scene/CarTailsRenderer.hpp"
@@ -38,6 +36,9 @@
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/metrics/PerformanceProfiler.hpp"
+
+#include "geronimo/graphics/advanced-concept/textRenderer/TextRenderer.hpp"
+#include "geronimo/graphics/advanced-concept/stackRenderers/StackRenderers.hpp"
 
 #include <array>
 #include <list>
@@ -95,8 +96,9 @@ public:
     } cameraData;
 
     struct Hud {
-      StackRenderers stackRenderers;
-      TextRenderer textRenderer;
+      gero::graphics::StackRenderers stackRenderers;
+      gero::graphics::TextRenderer textRenderer;
+
       PostProcess postProcess;
 
       struct Widgets {
@@ -111,7 +113,7 @@ public:
     } hud;
 
     struct Scene {
-      StackRenderers stackRenderers;
+      SceneStackRenderers stackRenderers;
       ParticleManager particleManager;
       ChessBoardFloorRenderer chessBoardFloorRenderer;
       BackGroundTorusRenderer backGroundTorusRenderer;

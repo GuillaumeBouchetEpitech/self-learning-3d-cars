@@ -43,12 +43,13 @@ State_Running::update(float elapsedTime) {
 
   { // simulation update
 
+    auto& frameHandler = logic.carDataFrameHandler;
 
-    if (logic.carDataFrameHandler.needNewFrame())
+    if (frameHandler.needNewFrame())
     {
 
       if (simulation.isGenerationComplete() == false) {
-        constexpr float fakeElapsedTime = 1.0f / 50.0f; // TODO: hardcoded
+        const float fakeElapsedTime = frameHandler.getLogicFrameDuration();
         const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
 
         simulation.update(fakeElapsedTime, totalSteps);
@@ -58,7 +59,7 @@ State_Running::update(float elapsedTime) {
 
     }
 
-    logic.carDataFrameHandler.update(elapsedTime);
+    frameHandler.update(elapsedTime);
 
   } // simulation update
 

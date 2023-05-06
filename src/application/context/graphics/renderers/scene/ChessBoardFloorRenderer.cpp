@@ -52,7 +52,7 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
         }
       }
 
-    _texture.allocateBlank(size,
+    _texture.allocateBlankRgbaUBytes(size,
       gero::graphics::Texture::Quality::smoothed,
       gero::graphics::Texture::Pattern::repeat,
       rawPixels);
@@ -89,7 +89,7 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
     for (int index : indices)
       vertices.push_back(quadVertices.at(index));
 
-    _geometry.updateBuffer(0, vertices);
+    _geometry.allocateBuffer(0, vertices);
     _geometry.setPrimitiveCount(vertices.size());
 
   } // compute chessboard ground

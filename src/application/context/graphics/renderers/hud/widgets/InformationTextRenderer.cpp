@@ -57,15 +57,14 @@ InformationTextRenderer::render() {
   { // top-center header text
 
     const glm::vec2 textPos = {vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
-    textRenderer.pushText(
-      textPos,
-      logic.hudText.header,
-      textColor,
-      k_textScale,
-      k_textDepth,
-      textOutlineColor,
-      TextRenderer::TextAlign::center
-    );
+
+    textRenderer.setMainColor(textColor);
+    textRenderer.setOutlineColor(textOutlineColor);
+    textRenderer.setScale(k_textScale);
+    textRenderer.setDepth(k_textDepth);
+    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
+    textRenderer.pushText(textPos, logic.hudText.header);
 
     helpers::renderTextBackground(
       k_textDepth,
@@ -95,15 +94,13 @@ InformationTextRenderer::render() {
 
       const glm::vec2 textPos = { vSize.x * 0.5f, 4.0f * k_textScale - k_textHScale};
 
-      textRenderer.pushText(
-        textPos,
-        str,
-        textColor,
-        k_textScale,
-        k_textDepth,
-        textOutlineColor,
-        TextRenderer::TextAlign::center
-      );
+      textRenderer.setMainColor(textColor);
+      textRenderer.setOutlineColor(textOutlineColor);
+      textRenderer.setScale(k_textScale);
+      textRenderer.setDepth(k_textDepth);
+      textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
+      textRenderer.pushText(textPos, str);
 
       helpers::renderTextBackground(
         k_textDepth,
@@ -171,13 +168,13 @@ InformationTextRenderer::render() {
 
     const glm::vec2 textPos = {k_textHScale, vSize.y - 5.0f * k_textScale - k_textHScale};
 
-    textRenderer.pushText(
-      textPos,
-      str,
-      textColor,
-      k_textScale,
-      k_textDepth,
-      textOutlineColor);
+    textRenderer.setMainColor(textColor);
+    textRenderer.setOutlineColor(textOutlineColor);
+    textRenderer.setScale(k_textScale);
+    textRenderer.setDepth(k_textDepth);
+    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+
+    textRenderer.pushText(textPos, str);
 
     helpers::renderTextBackground(
       k_textDepth,
@@ -247,17 +244,19 @@ InformationTextRenderer::render() {
       const std::string str = sstr.str();
 
       const glm::vec2 textPos = {vSize.x - k_textHScale, vSize.y - 3.0f * k_textScale - k_textHScale};
+
+      textRenderer.setMainColor(textColor);
+      textRenderer.setOutlineColor(textOutlineColor);
+      textRenderer.setScale(k_textScale);
+      textRenderer.setDepth(k_textDepth);
+      textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::right);
+
       textRenderer.pushText(
         textPos,
         str,
-        textColor,
-        k_textScale,
-        k_textDepth,
-        textOutlineColor,
-        TextRenderer::TextAlign::right,
         //
-        TextRenderer::State(textColor),
-        TextRenderer::State(glm::vec4(activeColor,_alpha))
+        gero::graphics::TextRenderer::State(textColor),
+        gero::graphics::TextRenderer::State(glm::vec4(activeColor,_alpha))
         );
 
       helpers::renderTextBackground(

@@ -17,7 +17,7 @@ NEXT_KNOTS_STATES   size="2" color="0.25,0.25,0.75"
 PUSH_KNOTS  left=" 5,15, 5"   right=" 5, 5, 5"
 PUSH_KNOTS  left="90, 0, 0"   right="90, 0, 0"
 
-# decrease rewards
+# increase distance to next reward(s)
 NEXT_KNOTS_STATES   size="4"
 
 # departure straight
@@ -60,16 +60,16 @@ PUSH_KNOTS       left="40,0,7"     right="40,0,0"
 #
 # horizontal loop (right)
 
-# increase rewards
-NEXT_KNOTS_STATES   size="2.5"
+# increase distance to next reward(s)
+NEXT_KNOTS_STATES   size="6"
 
     NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
 
     PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
     PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
 
-# decrease rewards
-NEXT_KNOTS_STATES   size="4"
+# increase distance to next reward(s)
+#NEXT_KNOTS_STATES   size="6"
 
     PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
     PUSH_KNOTS  left="60,60,6"     right="50,50,6"
@@ -101,6 +101,10 @@ PUSH_KNOTS   left="90,0,0"     right="90,0,0"
     NEXT_KNOTS_STATES   color="0.75,0.25,0.25"
 
 	PUSH_KNOTS  left="45,0,60"     right="45,0,60"
+
+    # decrease distance to next reward(s)
+    NEXT_KNOTS_STATES   size="4"
+
 	PUSH_KNOTS  left="-45,0,55"   right="-45,0,50"
 
 	PUSH_KNOTS  left="-40,30,-5"    right="-40,40,-15"

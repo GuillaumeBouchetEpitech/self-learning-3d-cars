@@ -64,7 +64,13 @@ Scene::_renderHUD_ortho() {
       sstr << "WEB WORKERS" << std::endl << "  LOADING  " << std::endl;
       const std::string message = sstr.str();
 
-      textRenderer.pushText(textPos, message, color, scale, depth, outlineColor, TextRenderer::TextAlign::center);
+      textRenderer.setMainColor(color);
+      textRenderer.setOutlineColor(outlineColor);
+      textRenderer.setScale(scale);
+      textRenderer.setDepth(depth);
+      textRenderer.setTextAlign(TextRenderer::TextAlign::center);
+
+      textRenderer.pushText(textPos, message);
 
       helpers::renderTextBackground(
         depth,
@@ -89,7 +95,13 @@ Scene::_renderHUD_ortho() {
 
       const std::string_view message = "PAUSED";
 
-      textRenderer.pushText(textPos, message, color, scale, depth, outlineColor, TextRenderer::TextAlign::center);
+      textRenderer.setMainColor(color);
+      textRenderer.setOutlineColor(outlineColor);
+      textRenderer.setScale(scale);
+      textRenderer.setDepth(depth);
+      textRenderer.setTextAlign(TextRenderer::TextAlign::center);
+
+      textRenderer.pushText(textPos, message);
 
       helpers::renderTextBackground(
         depth,

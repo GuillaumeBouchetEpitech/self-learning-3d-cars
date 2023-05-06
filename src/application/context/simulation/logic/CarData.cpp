@@ -15,6 +15,10 @@ void CarData::CarTransform::lerp(const CarData::CarTransform& valA, const CarDat
     wheels.at(ii).lerp(valA.wheels.at(ii), valB.wheels.at(ii), coef);
 }
 
+CarData::CarData()
+{
+  latestTransformsHistory.reserve(50); // TODO: hardcoded
+}
 
 void CarData::lerp(const CarData& valA, const CarData& valB, float coef)
 {

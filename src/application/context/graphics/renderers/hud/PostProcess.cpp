@@ -79,10 +79,10 @@ PostProcess::resize(const glm::uvec2& inFrameSize) {
 
   {
 
-    _colorTexture.allocateBlank(
+    _colorTexture.allocateBlankRgbaUBytes(
       _frameSize, gero::graphics::Texture::Quality::pixelated,
       gero::graphics::Texture::Pattern::clamped);
-    _outlineTexture.allocateBlank(
+    _outlineTexture.allocateBlankRgbaUBytes(
       _frameSize, gero::graphics::Texture::Quality::pixelated,
       gero::graphics::Texture::Pattern::clamped);
     _depthRenderBuffer.allocateCompatibleDepth(_frameSize);
@@ -115,7 +115,7 @@ PostProcess::setGeometry(
   for (std::size_t index = 0; index < indices.size(); ++index)
     vertices.at(index) = quadVertices.at(indices.at(index));
 
-  _screenQuad.updateBuffer(
-    0, vertices.data(), uint32_t(vertices.size() * sizeof(Vertex)));
+  _screenQuad.updateOrAllocateBuffer(
+    0, uint32_t(vertices.size() * sizeof(Vertex)), vertices.data());
   _screenQuad.setPrimitiveCount(uint32_t(vertices.size()));
 }

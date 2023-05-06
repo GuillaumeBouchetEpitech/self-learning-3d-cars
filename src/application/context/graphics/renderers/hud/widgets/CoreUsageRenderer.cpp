@@ -200,7 +200,7 @@ CoreUsageRenderer::renderHudText() {
   auto& textRenderer = graphic.hud.textRenderer;
   auto& profileData = logic.cores.profileData;
 
-  std::vector<TextRenderer::MessageRectangle> outRectangles;
+  std::vector<gero::graphics::TextRenderer::MessageRectangle> outRectangles;
   const glm::vec4 color = glm::vec4(0.8, 0.8, 0.8, 1);
   const glm::vec4 outlineColor = glm::vec4(0.3, 0.3, 0.3, 1);
 
@@ -224,15 +224,13 @@ CoreUsageRenderer::renderHudText() {
     const glm::vec2 textPos = currPos;
     const float textDepth = 0.25f;
 
-    textRenderer.pushText(
-      textPos,
-      str,
-      color,
-      k_textScale,
-      textDepth,
-      outlineColor,
-      TextRenderer::TextAlign::left
-      );
+    textRenderer.setMainColor(color);
+    textRenderer.setOutlineColor(outlineColor);
+    textRenderer.setScale(k_textScale);
+    textRenderer.setDepth(textDepth);
+    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+
+    textRenderer.pushText(textPos, str);
 
     helpers::renderTextBackground(
       textDepth,

@@ -42,6 +42,8 @@ struct CarData {
 
   std::vector<float> neuronsValues;
 
+  CarData();
+
   void lerp(const CarData& valA, const CarData& valB, float coef);
 };
 

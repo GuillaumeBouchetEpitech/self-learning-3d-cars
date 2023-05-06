@@ -335,18 +335,19 @@ FitnessDataRenderer::renderHudText() {
 
     const glm::vec4 carLeftColor = glm::mix(colorGreen, colorRed, carLeftCoef);
 
+    textRenderer.setMainColor(textColor);
+    textRenderer.setOutlineColor(textOutlineColor);
+    textRenderer.setScale(k_textScale);
+    textRenderer.setDepth(k_textDepth);
+    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+
     textRenderer.pushText(
       textPos,
       str,
-      textColor,
-      k_textScale,
-      k_textDepth,
-      textOutlineColor,
-      TextRenderer::TextAlign::left,
       //
-      TextRenderer::State(textColor, textOutlineColor),
-      TextRenderer::State(textColor, bestFitnessColor),
-      TextRenderer::State(textColor, carLeftColor)
+      gero::graphics::TextRenderer::State(textColor, textOutlineColor),
+      gero::graphics::TextRenderer::State(textColor, bestFitnessColor),
+      gero::graphics::TextRenderer::State(textColor, carLeftColor)
       );
 
     helpers::renderTextBackground(

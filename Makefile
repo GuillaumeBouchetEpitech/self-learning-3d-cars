@@ -126,8 +126,6 @@ SRC+=	\
 		$(DIR_SRC)/application/context/graphics/*.cpp \
 		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \
-		$(DIR_SRC)/application/context/graphics/renderers/common/*.cpp \
-		$(DIR_SRC)/application/context/graphics/renderers/common/internals/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/helpers/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/widgets/*.cpp \
@@ -271,7 +269,7 @@ LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
 
 # webworker build: main script need more memory
-LDFLAGS += -s TOTAL_MEMORY=128Mb # 16Kb, 256Mb, etc.
+LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
 
 LDFLAGS_WEB_WASM_WORKER += $(BUILD_FLAG)
 LDFLAGS_WEB_WASM_WORKER += $(NAME_LIB_GERONIMO_PHYSICS)

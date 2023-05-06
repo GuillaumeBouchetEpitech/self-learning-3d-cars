@@ -104,7 +104,7 @@ BackGroundTorusRenderer::initialize() {
         rawPixels[texelIndex + 3] = 255;
       }
 
-    _texture.allocateBlank(texSize, quality, pattern, rawPixels);
+    _texture.allocateBlankRgbaUBytes(texSize, quality, pattern, rawPixels);
 
   } // generate the gero::graphics::Texture
 
@@ -123,7 +123,7 @@ BackGroundTorusRenderer::initialize() {
       gero::asValue(GeometriesAliases::backGroundTorus));
 
     _geometry.initialize(*_shader, geoDef);
-    _geometry.updateBuffer(0, vertices);
+    _geometry.allocateBuffer(0, vertices);
     _geometry.setPrimitiveCount(vertices.size());
   }
 }

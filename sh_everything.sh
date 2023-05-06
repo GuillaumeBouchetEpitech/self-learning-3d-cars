@@ -8,22 +8,6 @@ DIR_ROOT=$PWD
 #
 #
 
-echo ""
-echo "#################################################"
-echo "#                                               #"
-echo "# IF THIS SCRIPT FAIL -> TRY THOSE TWO COMMANDS #"
-echo "# -> 'chmod u+x ./sh_everything.sh'              #"
-echo "# -> './sh_everything.sh'                       #"
-echo "#                                               #"
-echo "#################################################"
-echo ""
-
-#
-#
-#
-#
-#
-
 func_ensure_pkg() {
 
   PKG_NAME=$1
@@ -51,26 +35,101 @@ func_ensure_pkg libgles2
 #
 #
 
+DIR_THIRDPARTIES=$PWD/thirdparties
+DIR_DEPENDENCIES=$DIR_THIRDPARTIES/dependencies
+
+mkdir -p $DIR_DEPENDENCIES
+
+#
+#
+#
+#
+#
+
+echo ""
+echo "###"
+echo "###"
+echo "### ensuring the cpp to wasm compiler (emsdk) is installed"
+echo "###"
+echo "###"
+echo ""
+
+EMSDK_VERSION=3.1.26
+
 if [ -z "${EMSDK}" ]; then
+
+  echo " -> not installed"
+  echo "   -> installing"
+
   echo "the env var 'EMSDK' is missing, the web-wasm builds will be skipped"
   echo " => check the readme if you want to install emscripten"
   echo " => it emscripten is laready installed, you may just need to run '. ./emsdk_env.sh' in this terminal"
-  WEB_WASM_AVAILABLE=no
+
+
+  sh sh_install_one_git_thirdparty.sh \
+    $DIR_DEPENDENCIES \
+    "EMSDK" \
+    "emsdk" \
+    "emscripten-core/emsdk" \
+    $EMSDK_VERSION \
+    "not-interactive"
+
+  cd $DIR_DEPENDENCIES/emsdk
+
 else
-  echo "the env var 'EMSDK' was found, the web-wasm builds will be included"
-  WEB_WASM_AVAILABLE=yes
+
+  echo " -> already installed"
+
+  cd $EMSDK
 fi
 
+echo " -> ensuring the correct version is installed"
+
+./emsdk install $EMSDK_VERSION
+
+echo " -> activating the correct version"
+
+./emsdk activate --embedded $EMSDK_VERSION
+
+. ./emsdk_env.sh
+
+# em++ --clear-cache
+
+cd $DIR_ROOT
+
+echo " -> success"
+
 #
 #
 #
 #
 #
 
-echo "ensuring the thirdparties are installed"
+echo ""
+echo "###"
+echo "###"
+echo "### ensuring the thirdparties are installed"
+echo "###"
+echo "###"
+echo ""
 
-chmod u+x ./sh_install_thirdparties.sh
-./sh_install_thirdparties.sh not-interactive
+sh sh_install_one_git_thirdparty.sh \
+  $DIR_DEPENDENCIES \
+  "BASIC_GENETIC_ALGORITHM" \
+  "basic-genetic-algorithm" \
+  "GuillaumeBouchetEpitech/basic-genetic-algorithm" \
+  "v0.0.6" \
+  "not-interactive"
+
+sh sh_install_one_git_thirdparty.sh \
+  $DIR_DEPENDENCIES \
+  "GERONIMO" \
+  "geronimo" \
+  "GuillaumeBouchetEpitech/geronimo" \
+  "v0.0.9" \
+  "not-interactive"
+
+tree -L 1 $DIR_DEPENDENCIES
 
 #
 #
@@ -78,17 +137,21 @@ chmod u+x ./sh_install_thirdparties.sh
 #
 #
 
-echo "building thirdparties libraries"
-echo "  native version"
+echo ""
+echo "###"
+echo "###"
+echo "### building thirdparties libraries"
+echo "###"
+echo "###"
+echo ""
 
 #
 #
 #
 
-cd ./thirdparties/dependencies/geronimo
+cd $DIR_ROOT/thirdparties/dependencies/geronimo
 
-chmod u+x ./sh_everything.sh
-./sh_everything.sh
+sh sh_everything.sh
 
 export DIR_LIB_GERONIMO=$DIR_ROOT/thirdparties/dependencies/geronimo
 
@@ -98,16 +161,19 @@ cd $DIR_ROOT
 #
 #
 
-cd ./thirdparties/dependencies/basic-genetic-algorithm
+echo "#"
+echo "# native version"
+echo "#"
+
+cd $DIR_ROOT/thirdparties/dependencies/basic-genetic-algorithm
 
 make build_mode="release" build_platform="native" all -j4
 
-case $WEB_WASM_AVAILABLE in
-yes)
-  echo "  web-wasm version"
-  make build_mode="release" build_platform="web-wasm" all -j4
-  ;;
-esac
+echo "#"
+echo "# web-wasm version"
+echo "#"
+
+make build_mode="release" build_platform="web-wasm" all -j4
 
 cd $DIR_ROOT
 
@@ -117,18 +183,31 @@ cd $DIR_ROOT
 #
 #
 
-echo "building projects application"
-echo "  native version"
+echo ""
+echo "###"
+echo "###"
+echo "### building main application"
+echo "###"
+echo "###"
+echo ""
+
+echo "#"
+echo "# native version"
+echo "#"
+
 make build_mode="release" build_platform="native-pthread" all -j4
 
-case $WEB_WASM_AVAILABLE in
-yes)
-  echo "  web-wasm version (webworker)"
-  make build_mode="release" build_platform="web-wasm-webworker" all -j4
-  echo "  web-wasm version (pthread)"
-  make build_mode="release" build_platform="web-wasm-pthread" all -j4
-  ;;
-esac
+echo "#"
+echo "# web-wasm version (webworker)"
+echo "#"
+
+make build_mode="release" build_platform="web-wasm-webworker" all -j4
+
+echo "#"
+echo "# web-wasm version (pthread)"
+echo "#"
+
+make build_mode="release" build_platform="web-wasm-pthread" all -j4
 
 #
 #
@@ -136,13 +215,16 @@ esac
 #
 #
 
-case $WEB_WASM_AVAILABLE in
-yes)
-  echo "building web-wasm-loader"
-  cd ./web-wasm-loader
-  npm install
-  npm run build
-  cd $DIR_ROOT
-  ;;
-esac
+echo ""
+echo "###"
+echo "###"
+echo "### building web-wasm-loader"
+echo "###"
+echo "###"
+echo ""
+
+cd $DIR_ROOT/web-wasm-loader
+npm install
+npm run build
+cd $DIR_ROOT
 

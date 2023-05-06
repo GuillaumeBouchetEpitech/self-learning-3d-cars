@@ -135,7 +135,7 @@ WorkerConsumer::_initializeSimulation(
 
   } // setup neural network topology
 
-  _allAgentValues.reserve(256);
+  _allAgentValues.reserve(256); // TODO: hardcoded
 
   { // send reply
 
@@ -193,8 +193,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     _frameProfiler.start();
 
     constexpr uint32_t maxSubSteps = 0;
-    constexpr float fixedTimeStep = 1.0f / 30.0f;
-    _physicWorld->step(elapsedTime, maxSubSteps, fixedTimeStep);
+    _physicWorld->step(elapsedTime, maxSubSteps, elapsedTime);
 
     for (auto currValues : _allAgentValues)
     {

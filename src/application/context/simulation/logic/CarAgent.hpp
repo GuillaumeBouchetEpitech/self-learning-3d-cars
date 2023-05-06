@@ -27,8 +27,8 @@ public: // external structures
 
 private: // attributes
   gero::physics::PhysicWorld* _physicWorld = nullptr;
-  gero::physics::PhysicVehicleManager::VehicleWeakRef _physicVehicle;
-  gero::physics::PhysicBodyManager::BodyWeakRef _physicBody;
+  gero::physics::VehicleWeakRef _physicVehicle;
+  gero::physics::BodyWeakRef _physicBody;
 
   float _fitness;
   float _health;
@@ -64,8 +64,8 @@ public: // setter(s)/getter(s)
   bool isAlive() const;
   int getGroundIndex() const;
   const NeuralNetworkOutput& getNeuralNetworkOutput() const;
-  const gero::physics::PhysicBodyManager::BodyWeakRef getBody() const;
-  const gero::physics::PhysicVehicleManager::VehicleWeakRef getVehicle() const;
+  const gero::physics::BodyWeakRef getBody() const;
+  const gero::physics::VehicleWeakRef getVehicle() const;
   float getLife() const;
   unsigned int getTotalUpdates() const;
 };

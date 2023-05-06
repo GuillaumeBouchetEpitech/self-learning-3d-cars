@@ -1,11 +1,13 @@
 
 #include "CarDataFrameHandler.hpp"
 
+#include "geronimo/system/math/clamp.hpp"
 #include "geronimo/system/ErrorHandler.hpp"
 
-void CarDataFrameHandler::initalize(uint32_t totalGenomes)
+void CarDataFrameHandler::initialize(uint32_t totalGenomes, float logicFrameDuration)
 {
   _totalGenomes = totalGenomes;
+  _logicFrameDuration = logicFrameDuration;
 
   _allCarsData.resize(totalGenomes);
   for (int ii = 0; ii < 4; ++ii)
@@ -48,22 +50,19 @@ void CarDataFrameHandler::update(float deltaTime)
   if (_usedFrames.size() < 3)
     return;
 
-
-  constexpr float logicFrameDuration = 1.0f / 50.0f; // TODO: hardcoded
-
-  _interpolationValue += std::min(deltaTime, logicFrameDuration);
-  if (_interpolationValue > logicFrameDuration)
+  _interpolationValue += deltaTime;
+  if (_interpolationValue > _logicFrameDuration)
   {
     // discard oldest frame
     _unusedFrames.push_back(std::move(_usedFrames.front()));
     _usedFrames.pop_front();
 
-    _interpolationValue -= logicFrameDuration;
+    _interpolationValue -= _logicFrameDuration;
   }
 
   // D_MYLOG("_interpolationValue " << _interpolationValue);
 
-  const float coef = _interpolationValue / logicFrameDuration;
+  const float coef = gero::math::clamp(_interpolationValue / _logicFrameDuration, 0.0f, 1.0f);
 
   // D_MYLOG("coef " << coef);
 
@@ -106,4 +105,8 @@ const AllCarsData& CarDataFrameHandler::getAllCarsData() const
   return _allCarsData;
 }
 
+float CarDataFrameHandler::getLogicFrameDuration() const
+{
+  return _logicFrameDuration;
+}
 

@@ -45,13 +45,14 @@ void GeometriesStackRenderer::createAlias(int32_t alias, const gero::graphics::M
 
   auto newAlias = std::make_shared<AliasedGeometry>();
 
+  newAlias->instanceVertices.reserve(256); // pre-allocate
+
   auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::geometriesStackRenderer));
   newAlias->geometry.initialize(*_shader, geoDef);
-  newAlias->geometry.updateBuffer(0, vertices, false);
+  newAlias->geometry.allocateBuffer(0, vertices);
+  newAlias->geometry.preAllocateBufferFromCapacity(1, newAlias->instanceVertices);
   newAlias->geometry.setPrimitiveStart(0);
   newAlias->geometry.setPrimitiveCount(uint32_t(vertices.size()));
-
-  newAlias->instanceVertices.reserve(256); // pre-allocate
 
   _aliasedGeometriesMap[alias] = newAlias;
 }
@@ -120,7 +121,7 @@ void GeometriesStackRenderer::renderAll()
 
     auto& geometry = pair.second->geometry;
 
-    geometry.updateBuffer(1, vertices, true);
+    geometry.updateOrAllocateBuffer(1, vertices);
     geometry.setInstancedCount(uint32_t(vertices.size()));
     geometry.render();
 

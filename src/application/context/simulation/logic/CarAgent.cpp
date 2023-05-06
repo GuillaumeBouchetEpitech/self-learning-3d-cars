@@ -15,7 +15,7 @@ namespace constants {
 
 constexpr float steeringMaxValue = gero::math::opi;
 // constexpr float speedMaxValue = 10.0f;
-constexpr float speedMaxValue = 20.0f;
+constexpr float speedMaxValue = 30.0f;
 constexpr float healthMaxValue = 3.2f;
 
 constexpr float eyeMaxRange = 50.0f;
@@ -414,12 +414,12 @@ CarAgent::getNeuralNetworkOutput() const {
   return _output;
 }
 
-const gero::physics::PhysicBodyManager::BodyWeakRef
+const gero::physics::BodyWeakRef
 CarAgent::getBody() const {
   return _physicBody;
 }
 
-const gero::physics::PhysicVehicleManager::VehicleWeakRef
+const gero::physics::VehicleWeakRef
 CarAgent::getVehicle() const {
   return _physicVehicle;
 }

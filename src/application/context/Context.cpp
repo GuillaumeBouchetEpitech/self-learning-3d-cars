@@ -54,7 +54,8 @@ Context::_initialize(
 
 #endif
 
-  logic.carDataFrameHandler.initalize(totalGenomes);
+  constexpr float k_logicFrameDuration = 1.0f / 40.0f;
+  logic.carDataFrameHandler.initialize(totalGenomes, k_logicFrameDuration);
 
   _initializeSimulationCallbacks();
   _initializeSimulation(totalGenomes, totalCores);
@@ -95,10 +96,7 @@ Context::_initialize(
 
   {
 
-    graphic.scene.stackRenderers.initialize(
-      ShadersAliases::stackRendererScene,
-      GeometriesAliases::stackRendererTrianglesScene,
-      GeometriesAliases::stackRendererWireFramesScene);
+    graphic.scene.stackRenderers.initialize();
 
     graphic.scene.modelsRenderer.initialize();
     graphic.scene.carTailsRenderer.initialize();
@@ -108,12 +106,9 @@ Context::_initialize(
     graphic.scene.backGroundTorusRenderer.initialize();
     graphic.scene.geometriesStackRenderer.initialize();
 
-    graphic.hud.stackRenderers.initialize(
-      ShadersAliases::stackRendererScene,
-      GeometriesAliases::stackRendererTrianglesHud,
-      GeometriesAliases::stackRendererWireFramesHud);
+    graphic.hud.stackRenderers.initialize("./thirdparties/dependencies/geronimo/src");
 
-    graphic.hud.textRenderer.initialize();
+    graphic.hud.textRenderer.initialize("./thirdparties/dependencies/geronimo/src");
 
     graphic.hud.postProcess.initialize({width, height});
     graphic.hud.postProcess.setGeometry(

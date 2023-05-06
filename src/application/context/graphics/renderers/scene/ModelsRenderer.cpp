@@ -51,7 +51,7 @@ ModelsRenderer::initialize() {
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarChassis));
     _chassis.geometry.initialize(*_chassis.shader, geoDef);
-    _chassis.geometry.updateBuffer(0, modelVertices);
+    _chassis.geometry.allocateBuffer(0, modelVertices);
     _chassis.geometry.setPrimitiveCount(modelVertices.size());
   }
 
@@ -69,7 +69,7 @@ ModelsRenderer::initialize() {
     auto geoDef = resourceManager.getGeometryDefinition(
       gero::asValue(GeometriesAliases::modelsCarWheels));
     _wheels.geometry.initialize(*_wheels.shader, geoDef);
-    _wheels.geometry.updateBuffer(0, modelVertices);
+    _wheels.geometry.allocateBuffer(0, modelVertices);
     _wheels.geometry.setPrimitiveCount(modelVertices.size());
   }
 }
@@ -178,7 +178,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _chassis.shader->setUniform("u_lightPos", inCamera.getEye());
     _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
 
-    _chassis.geometry.updateBuffer(1, _modelsCarChassisMatrices);
+    _chassis.geometry.updateOrAllocateBuffer(1, _modelsCarChassisMatrices);
     _chassis.geometry.setInstancedCount(_modelsCarChassisMatrices.size());
     _chassis.geometry.render();
   }
@@ -187,7 +187,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _wheels.shader->bind();
     _wheels.shader->setUniform("u_composedMatrix", matricesData.composed);
 
-    _wheels.geometry.updateBuffer(1, _modelsCarWheelsMatrices);
+    _wheels.geometry.updateOrAllocateBuffer(1, _modelsCarWheelsMatrices);
     _wheels.geometry.setInstancedCount(_modelsCarWheelsMatrices.size());
     _wheels.geometry.render();
   }

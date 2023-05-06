@@ -33,15 +33,13 @@ void renderProgressBar(
   sstr << uint32_t(progressValue * 100.0f) << "%";
   const std::string str = sstr.str();
 
-  textRenderer.pushText(
-    inCenter,
-    str,
-    inTextColor,
-    inTextScale,
-    inTextDepth,
-    inTextOutlineColor,
-    TextRenderer::TextAlign::center
-  );
+  textRenderer.setMainColor(inTextColor);
+  textRenderer.setOutlineColor(inTextOutlineColor);
+  textRenderer.setScale(inTextScale);
+  textRenderer.setDepth(inTextDepth);
+  textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+
+  textRenderer.pushText(inCenter, str);
 
   const glm::vec2 progressBarCenter = { inCenter.x, inCenter.y + textHScale};
 
