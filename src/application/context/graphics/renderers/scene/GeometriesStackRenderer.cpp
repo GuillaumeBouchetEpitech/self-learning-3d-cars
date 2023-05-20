@@ -2,7 +2,10 @@
 #include "GeometriesStackRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/graphicsAliases.hpp"
+#include "geronimo/graphics/GeometryBuilder.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
+
+using namespace gero::graphics;
 
 namespace {
 
@@ -30,10 +33,49 @@ apply_quat_to_vec3(const glm::vec3& position, const glm::quat& q) {
 
 void
 GeometriesStackRenderer::initialize() {
-  auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader = resourceManager.getShader(
-    gero::asValue(ShadersAliases::geometriesStackRenderer));
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
+
+  const std::string basePath = "./assets/graphics/shaders/scene/";
+
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "geometriesStackRenderer.glsl.vert")
+    .setFragmentFilename(basePath + "geometriesStackRenderer.glsl.frag")
+
+    .addAttribute("a_vertex_position")
+    // .addAttribute("a_vertex_normal")
+
+    .addAttribute("a_offset_position")
+    .addAttribute("a_offset_orientation")
+    .addAttribute("a_offset_scale")
+    .addAttribute("a_offset_color")
+    .addAttribute("a_offset_outlineValue")
+
+    .addUniform("u_composedMatrix")
+    // .addUniform("u_ambiantCoef")
+    // .addUniform("u_lightPos")
+    ;
+
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+
+  geometryBuilder.reset()
+    .setShader(*_shader)
+    .setPrimitiveType(Geometry::PrimitiveType::triangles)
+    .addVbo()
+    .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+    // .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+    .addIgnoredVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+    .addVbo()
+    .setVboAsInstanced()
+    .setVboAsDynamic()
+    .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
+    .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
+    .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
+
+  _geoDef = geometryBuilder.getDefinition();
 }
 
 void
@@ -45,15 +87,12 @@ GeometriesStackRenderer::setMatricesData(
 void
 GeometriesStackRenderer::createAlias(
   int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices) {
-  auto& resourceManager = Context::get().graphic.resourceManager;
 
   auto newAlias = std::make_shared<AliasedGeometry>();
 
   newAlias->instanceVertices.reserve(256); // pre-allocate
 
-  auto geoDef = resourceManager.getGeometryDefinition(
-    gero::asValue(GeometriesAliases::geometriesStackRenderer));
-  newAlias->geometry.initialize(*_shader, geoDef);
+  newAlias->geometry.initialize(*_shader, _geoDef);
   newAlias->geometry.allocateBuffer(0, vertices);
   newAlias->geometry.preAllocateBufferFromCapacity(
     1, newAlias->instanceVertices);

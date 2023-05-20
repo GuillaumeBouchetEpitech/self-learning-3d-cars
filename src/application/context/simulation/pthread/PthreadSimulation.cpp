@@ -385,6 +385,7 @@ PthreadSimulation::_updateCarResult() {
 
     const bool carWasAlive = carData.isAlive;
     carData.isAlive = currAgent.isAlive();
+    carData.isDying = currAgent.isDying();
     carData.life = currAgent.getLife();
     carData.fitness = currAgent.getFitness();
     carData.totalUpdates = currAgent.getTotalUpdates();

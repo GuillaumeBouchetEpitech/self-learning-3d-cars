@@ -38,6 +38,7 @@ private: // attributes
   Sensor _groundSensor;
 
   int _groundIndex;
+  bool _isDying;
 
   NeuralNetworkOutput _output;
 
@@ -63,6 +64,7 @@ public: // setter(s)/getter(s)
   const Sensor& getGroundSensor() const;
   float getFitness() const;
   bool isAlive() const;
+  bool isDying() const;
   int getGroundIndex() const;
   const NeuralNetworkOutput& getNeuralNetworkOutput() const;
   const gero::physics::BodyWeakRef getBody() const;

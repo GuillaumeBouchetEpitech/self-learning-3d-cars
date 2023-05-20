@@ -103,30 +103,73 @@ ThirdPersonCamera::update(float elapsedTime) {
 
     if (auto leaderData = leaderCar.leaderData()) {
       const auto& chassis = leaderData->liveTransforms.chassis;
-      const glm::vec3 carOrigin =
-        chassis.position +
-        glm::mat3_cast(chassis.orientation) * glm::vec3(0.0f, 0.0f, 2.5f);
-      const glm::vec3 carUpAxis =
-        glm::mat3_cast(chassis.orientation) * glm::vec3(0.0f, 0.0f, 1.0f);
 
-      if (
-        // do not update the third person gero::graphics::Camera if too close
-        // from the target
-        glm::distance(carOrigin, _eye) > 0.25f) {
+      if (leaderData->isDying)
+      {
+
+        // simple lerp to setup the third person gero::graphics::Camera
+        const float lerpRatio = 0.3f * 60.0f * elapsedTime;
+
+        const float k_desiredDistance = 6.0f;
+
+        const glm::vec3 desiredTarget = chassis.position;
+        // const glm::vec3 desiredUpAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+        // const glm::vec3 desiredEye = chassis.position + glm::vec3(-k_desiredDistance * 2.0f, -k_desiredDistance * 2.0f, k_desiredDistance * 1.25f);
+        // const glm::vec3 desiredEye = chassis.position + glm::vec3(-k_desiredDistance * 2.0f, -k_desiredDistance * 2.0f, k_desiredDistance * 1.25f);
+        const glm::vec3 desiredEye = _eye + (desiredTarget - _target);
+
+        const float currDistance = glm::distance(desiredTarget, _eye);
+
+        float mode = 0.0f;
+        if (currDistance > k_desiredDistance + 0.20f) {
+          mode = 1.0f;
+        } else if (currDistance < k_desiredDistance - 0.20f) {
+          mode = -1.0f;
+        }
+
+        _eye += (desiredEye - _eye) * lerpRatio * mode;
+        _target += (desiredTarget - _target) * lerpRatio;
+        // _upAxis += (desiredUpAxis - _upAxis) * lerpRatio;
+
+        _camera.setSize(_layout.size.x, _layout.size.y);
+        _camera.setPerspective(70.0f, 0.1f, 1500.0f);
+        _camera.lookAt(_eye, _target, _upAxis);
+        _camera.computeMatrices();
+
+      }
+      else
+      {
+        const glm::mat3 orientation = glm::mat3_cast(chassis.orientation);
+
         // simple lerp to setup the third person gero::graphics::Camera
         const float lerpRatio = 0.1f * 60.0f * elapsedTime;
-        _eye += (carOrigin - _eye) * lerpRatio;
-        _upAxis += (carUpAxis - _upAxis) * lerpRatio;
+
+        const float k_desiredDistance = 2.75f;
+
+        const glm::vec3 desiredTarget = chassis.position + orientation * glm::vec3(0.0f, 0.0f, 2.5f);
+        const glm::vec3 desiredUpAxis = orientation * glm::vec3(0.0f, 0.0f, 1.0f);
+        const glm::vec3 desiredEye = chassis.position + orientation * glm::vec3(0.0f, -k_desiredDistance * 2.0f, k_desiredDistance * 1.25f);
+
+        const float currDistance = glm::distance(desiredTarget, _eye);
+
+        float mode = 0.0f;
+        if (currDistance > k_desiredDistance + 0.20f) {
+          mode = 1.0f;
+        } else if (currDistance < k_desiredDistance - 0.20f) {
+          mode = -1.0f;
+        }
+
+        _eye += (desiredEye - _eye) * lerpRatio * mode;
+        _target += (desiredTarget - _target) * lerpRatio;
+        _upAxis += (desiredUpAxis - _upAxis) * lerpRatio;
+
+        _camera.setSize(_layout.size.x, _layout.size.y);
+        _camera.setPerspective(70.0f, 0.1f, 1500.0f);
+        _camera.lookAt(_eye, _target, _upAxis);
+        _camera.computeMatrices();
+
       }
 
-      const glm::vec3 eye = _eye;
-      const glm::vec3 target = carOrigin;
-      const glm::vec3 upAxis = _upAxis;
-
-      _camera.setSize(_layout.size.x, _layout.size.y);
-      _camera.setPerspective(70.0f, 0.1f, 1500.0f);
-      _camera.lookAt(eye, target, upAxis);
-      _camera.computeMatrices();
     }
   }
 }

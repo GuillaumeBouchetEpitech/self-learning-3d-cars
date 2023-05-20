@@ -92,8 +92,7 @@ CarTailsRenderer::render() {
         const int startIndex = 3;
 
         const int totalSize = currWheel.size();
-        const int currSize =
-          std::min(totalSize - startIndex, maxSize - startIndex);
+        const int currSize = std::min(totalSize, maxSize) - startIndex;
 
         const float* dataPointer =
           &currWheel.at(totalSize - currSize - startIndex).x;

@@ -27,6 +27,8 @@ private:
   std::shared_ptr<gero::graphics::ShaderProgram> _shader = nullptr;
   gero::graphics::Camera::MatricesData _matricesData;
 
+  gero::graphics::Geometry::Definition _geoDef;
+
 private:
   struct AliasedGeometry {
     gero::graphics::Geometry geometry;

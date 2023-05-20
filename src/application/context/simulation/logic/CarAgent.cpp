@@ -46,12 +46,17 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   _updateSensors();
   _collideEyeSensors();
 
-  bool hasHitGround = _collideGroundSensor();
+  const bool hasHitGround = _collideGroundSensor();
+
+  if (hasHitGround == false) {
+    _isDying = true;
+  }
+
 
   // reduce the health over time
   // => reduce more if the car does not touch the ground
   // => faster discard of a most probably dying genome
-  _health -= (hasHitGround ? 1.0f : 2.0f) * elapsedTime;
+  _health -= (_isDying ? 1.0f : 2.0f) * elapsedTime;
 
   if (_health <= 0.0f) {
     _physicWorld->getPhysicVehicleManager().removeVehicle(_physicVehicle);
@@ -82,17 +87,18 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   // speed coef: forward/backward
   _output.speed = output.at(1); // [0..+1]
 
-  _physicVehicle->setSteeringValue(
-    0, _output.steer * constants::steeringMaxValue);
-  _physicVehicle->setSteeringValue(
-    1, _output.steer * constants::steeringMaxValue);
+  const float steerVal = _output.steer * constants::steeringMaxValue;
+  _physicVehicle->setSteeringValue(0, steerVal);
+  _physicVehicle->setSteeringValue(1, steerVal);
 
   // const float engineFore = gero::easing::GenericEasing<4>()
   auto engineEasing =
     gero::easing::GenericEasing<5>()
+      // reverse
       .push(0.0f, -constants::speedMaxValue)
+      // neutral
       .push(0.5f, 0.0f)
-      // fast initial acceleration
+      // 4 time faster initial acceleration, then linear acceleration
       .push(0.5f + 0.5f * 0.25f, constants::speedMaxValue * 4.0f)
       .push(0.5f + 0.5f * 0.50f, constants::speedMaxValue)
       .push(0.5f + 0.5f * 1.00f, constants::speedMaxValue);
@@ -360,6 +366,7 @@ CarAgent::reset(
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;
   _groundIndex = 0;
+  _isDying = false;
 
   _output.steer = 0.0f;
   _output.speed = 0.0f;
@@ -401,6 +408,11 @@ CarAgent::getFitness() const {
 bool
 CarAgent::isAlive() const {
   return _health > 0.0f;
+}
+
+bool
+CarAgent::isDying() const {
+  return _isDying;
 }
 
 int

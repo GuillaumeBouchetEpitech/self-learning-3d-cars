@@ -4,8 +4,8 @@
 #include "application/context/Context.hpp"
 
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
-#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/writeTime.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 
@@ -46,8 +46,6 @@ InformationTextRenderer::render() {
   auto& vSize = graphic.cameraData.viewportSize;
   // auto& stackRenderers = graphic.hud.stackRenderers;
 
-  auto& performanceProfiler = context.logic.metrics.performanceProfiler;
-
   const glm::vec4 textColor = glm::vec4(0.8f, 0.8f, 0.8f, _alpha);
   const glm::vec4 textOutlineColor = glm::vec4(0.2f, 0.2f, 0.2f, _alpha);
   constexpr float k_textScale = 16.0f;
@@ -67,9 +65,10 @@ InformationTextRenderer::render() {
 
     textRenderer.pushText(textPos, logic.hudText.header);
 
-    helpers::renderTextBackground(
+    gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
 
   } // top-center header text
 
@@ -100,9 +99,10 @@ InformationTextRenderer::render() {
 
       textRenderer.pushText(textPos, str);
 
-      helpers::renderTextBackground(
+      gero::graphics::helpers::renderTextBackground(
         k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
+        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
+        graphic.hud.stackRenderers, textRenderer);
     }
 
     helpers::renderProgressBar(
@@ -113,6 +113,9 @@ InformationTextRenderer::render() {
       glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
       glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f));
   }
+
+#if 0
+  auto& performanceProfiler = context.logic.metrics.performanceProfiler;
 
   { // top-left performance stats
 
@@ -137,11 +140,11 @@ InformationTextRenderer::render() {
           sstr << currName << ":";
           sstr << std::endl;
 
-          writeTime(sstr, timeData.getLatestDuration(), 0);
+          gero::graphics::helpers::writeTime(sstr, timeData.getLatestDuration(), 0);
           sstr << std::endl;
           if (timeData.getAverageDuration() > 0) {
             sstr << "~";
-            writeTime(sstr, timeData.getAverageDuration(), 0);
+            gero::graphics::helpers::writeTime(sstr, timeData.getAverageDuration(), 0);
             sstr << std::endl;
           }
           sstr << std::endl;
@@ -162,9 +165,10 @@ InformationTextRenderer::render() {
 
     textRenderer.pushText(textPos, str);
 
-    helpers::renderTextBackground(
+    gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
 
   } // top-left performance stats
 
@@ -191,11 +195,11 @@ InformationTextRenderer::render() {
         sstr << "Frame:";
         sstr << std::endl;
 
-        writeTime(sstr, timeData.getLatestDuration(), 0);
+        gero::graphics::helpers::writeTime(sstr, timeData.getLatestDuration(), 0);
         sstr << std::endl;
         if (timeData.getAverageDuration() > 0) {
           sstr << "~";
-          writeTime(sstr, timeData.getAverageDuration(), 0);
+          gero::graphics::helpers::writeTime(sstr, timeData.getAverageDuration(), 0);
           sstr << std::endl;
         }
         sstr << std::endl;
@@ -240,10 +244,13 @@ InformationTextRenderer::render() {
         gero::graphics::TextRenderer::State(textColor),
         gero::graphics::TextRenderer::State(glm::vec4(activeColor, _alpha)));
 
-      helpers::renderTextBackground(
+      gero::graphics::helpers::renderTextBackground(
         k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
-        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f);
+        glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
+        graphic.hud.stackRenderers, textRenderer);
     }
 
   } // top-right performance stats
+#endif
+
 }

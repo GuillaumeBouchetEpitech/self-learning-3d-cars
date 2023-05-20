@@ -49,6 +49,8 @@ void
 Application::_onUpdate(uint32_t deltaTime) {
 
   auto& perfProfiler = Context::get().logic.metrics.performanceProfiler;
+  perfProfiler.stop("Complete Frame");
+  perfProfiler.start("Complete Frame");
   perfProfiler.start("Update");
 
   const float elapsedTime = float(deltaTime) / 1000.0f;

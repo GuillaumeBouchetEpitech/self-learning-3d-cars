@@ -4,7 +4,7 @@
 #include "application/context/Context.hpp"
 
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/BSpline.hpp"
@@ -333,8 +333,9 @@ FitnessDataRenderer::renderHudText() {
       gero::graphics::TextRenderer::State(textColor, bestFitnessColor),
       gero::graphics::TextRenderer::State(textColor, carLeftColor));
 
-    helpers::renderTextBackground(
+    gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f);
+      glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
   }
 }

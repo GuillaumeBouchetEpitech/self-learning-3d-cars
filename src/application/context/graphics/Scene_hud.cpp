@@ -3,10 +3,10 @@
 
 #include "application/states/StateManager.hpp"
 
-#include "renderers/hud/helpers/renderTextBackground.hpp"
 #include "renderers/hud/widgets/NewLeaderRenderer.hpp"
 
 #include "geronimo/graphics/GlContext.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/math/clamp.hpp"
@@ -72,9 +72,10 @@ Scene::_renderHUD_ortho() {
 
       textRenderer.pushText(textPos, message);
 
-      helpers::renderTextBackground(
+      gero::graphics::helpers::renderTextBackground(
         depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f);
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f,
+        stackRenderers, textRenderer);
     }
 
 #endif
@@ -98,9 +99,10 @@ Scene::_renderHUD_ortho() {
 
       textRenderer.pushText(textPos, message);
 
-      helpers::renderTextBackground(
+      gero::graphics::helpers::renderTextBackground(
         depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f);
+        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f,
+        stackRenderers, textRenderer);
     }
 
   } // big titles

@@ -4,6 +4,8 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
+#include "geronimo/graphics/GeometryBuilder.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
@@ -19,12 +21,44 @@ AnimatedCircuitRenderer::initialize(
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
+  const std::string basePath = "./assets/graphics/shaders/scene/";
+
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
+
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "animatedCircuitGround.glsl.vert")
+    .setFragmentFilename(basePath + "animatedCircuitGround.glsl.frag")
+    .addAttribute("a_vertex_position")
+    .addAttribute("a_vertex_color")
+    .addAttribute("a_vertex_normal")
+    .addAttribute("a_vertex_animatedNormal")
+    .addAttribute("a_vertex_index")
+    .addUniform("u_composedMatrix")
+    .addUniform("u_lightPos")
+    .addUniform("u_viewPos")
+    .addUniform("u_alpha")
+    .addUniform("u_lowerLimit")
+    .addUniform("u_upperLimit");
+
+  _shaderCircuitLit = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "animatedCircuitWalls.glsl.vert")
+    .setFragmentFilename(basePath + "animatedCircuitWalls.glsl.frag")
+    .addAttribute("a_vertex_position")
+    .addAttribute("a_vertex_color")
+    .addAttribute("a_vertex_animatedNormal")
+    .addAttribute("a_vertex_index")
+    .addUniform("u_composedMatrix")
+    .addUniform("u_alpha")
+    .addUniform("u_lowerLimit")
+    .addUniform("u_upperLimit");
+
+  _shaderCircuit = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+
   _shaderWireFrame =
     resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
-  _shaderCircuitLit = resourceManager.getShader(
-    gero::asValue(ShadersAliases::animatedCircuitGround));
-  _shaderCircuit = resourceManager.getShader(
-    gero::asValue(ShadersAliases::animatedCircuitWalls));
 
   { // compute circuit skeleton wireFrame geometry
 
@@ -38,9 +72,17 @@ AnimatedCircuitRenderer::initialize(
 
   { // compute circuit ground geometries
 
-    auto geoDef = resourceManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::animatedCircuitGround));
-    _geometries.grounds.initialize(*_shaderCircuitLit, geoDef);
+    geometryBuilder.reset()
+      .setShader(*_shaderCircuitLit)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
+      .addVbo()
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
+
+    _geometries.grounds.initialize(*_shaderCircuitLit, geometryBuilder.getDefinition());
     _geometries.grounds.allocateBuffer(0, groundVertices);
     _geometries.grounds.setPrimitiveCount(groundVertices.size());
 
@@ -48,9 +90,17 @@ AnimatedCircuitRenderer::initialize(
 
   { // compute circuit walls geometries
 
-    auto geoDef = resourceManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::animatedCircuitWalls));
-    _geometries.walls.initialize(*_shaderCircuit, geoDef);
+    geometryBuilder.reset()
+      .setShader(*_shaderCircuit)
+      .setPrimitiveType(Geometry::PrimitiveType::triangles)
+      .addVbo()
+      .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
+      .addIgnoredVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
+
+    _geometries.walls.initialize(*_shaderCircuit, geometryBuilder.getDefinition());
     _geometries.walls.allocateBuffer(0, wallsVertices);
     _geometries.walls.setPrimitiveCount(wallsVertices.size());
 

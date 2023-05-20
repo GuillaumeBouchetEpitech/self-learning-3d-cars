@@ -21,7 +21,8 @@ private:
 
   PostProcess _postProcess;
 
-  glm::vec3 _eye = {0.0f, 0.0f, 0.0f};
+  glm::vec3 _eye = {1.0f, 0.0f, 0.0f};
+  glm::vec3 _target = {0.0f, 0.0f, 0.0f};
   glm::vec3 _upAxis = {0.0f, 0.0f, 1.0f};
   gero::graphics::Camera _camera;
 

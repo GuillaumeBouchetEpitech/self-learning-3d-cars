@@ -2,7 +2,7 @@
 #include "NewLeaderRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 
 void
 NewLeaderRenderer::compute() {
@@ -78,7 +78,7 @@ NewLeaderRenderer::renderHudText() {
 
   textRenderer.pushText(textPos, message.data());
 
-  helpers::renderTextBackground(
+  gero::graphics::helpers::renderTextBackground(
     depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-    3.0f, 6.0f);
+    3.0f, 6.0f, graphic.hud.stackRenderers, textRenderer);
 }

@@ -8,6 +8,7 @@
 
 struct CarData {
   bool isAlive = false;
+  bool isDying = false;
   float life = 0.0f;
   float fitness = 0.0f;
   unsigned int totalUpdates = 0;

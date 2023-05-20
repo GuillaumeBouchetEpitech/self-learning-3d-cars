@@ -4,6 +4,8 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
+#include "geronimo/graphics/GeometryBuilder.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
@@ -15,14 +17,33 @@ void
 ChessBoardFloorRenderer::initialize(
   const glm::vec3& center, const glm::vec3& size) {
 
-  auto& resourceManager = Context::get().graphic.resourceManager;
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
 
-  _shader =
-    resourceManager.getShader(gero::asValue(ShadersAliases::chessboardFloor));
+  const std::string basePath = "./assets/graphics/shaders/scene/";
 
-  auto geoDef = resourceManager.getGeometryDefinition(
-    gero::asValue(GeometriesAliases::chessboardFloor));
-  _geometry.initialize(*_shader, geoDef);
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "chessboardFloor.glsl.vert")
+    .setFragmentFilename(basePath + "chessboardFloor.glsl.frag")
+    .addAttribute("a_vertex_position")
+    .addAttribute("a_vertex_normal")
+    .addAttribute("a_vertex_texCoord")
+    .addUniform("u_composedMatrix")
+    .addUniform("u_texture")
+    .addUniform("u_lightPos")
+    .addUniform("u_viewPos");
+
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+
+  geometryBuilder.reset()
+    .setShader(*_shader)
+    .setPrimitiveType(Geometry::PrimitiveType::triangles)
+    .addVbo()
+    .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
+
+  _geometry.initialize(*_shader, geometryBuilder.getDefinition());
   _geometry.setPrimitiveCount(0);
 
   {

@@ -2,7 +2,8 @@
 #include "PostProcess.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/graphicsAliases.hpp"
+#include "geronimo/graphics/GeometryBuilder.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/system/asValue.hpp"
@@ -19,16 +20,31 @@ PostProcess::setMatricesData(
 void
 PostProcess::initialize(const glm::uvec2& frameSize) {
 
-  auto& resourceManager = Context::get().graphic.resourceManager;
+  const std::string basePath = "./assets/graphics/shaders/hud/";
 
-  _shader =
-    resourceManager.getShader(gero::asValue(ShadersAliases::postProcess));
+  ShaderProgramBuilder shaderProgramBuilder;
+  GeometryBuilder geometryBuilder;
 
-  auto geoDef =
-    // resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::postProcess));
-    resourceManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::simpleTexture));
-  _screenQuad.initialize(*_shader, geoDef);
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "postProcess.glsl.vert")
+    .setFragmentFilename(basePath + "postProcess.glsl.frag")
+    .addAttribute("a_vertex_position")
+    .addAttribute("a_vertex_texCoord")
+    .addUniform("u_composedMatrix")
+    .addUniform("u_colorTexture")
+    .addUniform("u_outlineTexture")
+    .addUniform("u_invResolution");
+
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+
+  geometryBuilder.reset()
+    .setShader(*_shader)
+    .setPrimitiveType(Geometry::PrimitiveType::triangles)
+    .addVbo()
+    .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
+
+  _screenQuad.initialize(*_shader, geometryBuilder.getDefinition());
   _screenQuad.setPrimitiveCount(0);
 
   resize(frameSize);

@@ -2,8 +2,9 @@
 #include "CoreUsageRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/renderers/hud/helpers/renderTextBackground.hpp"
-#include "application/context/graphics/renderers/hud/helpers/writeTime.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/helpers/writeTime.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/renderPerformanceProfilerMetrics.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/BSpline.hpp"
@@ -198,6 +199,23 @@ CoreUsageRenderer::renderWireFrame() {
 
   // }
 
+  const auto& performanceProfiler = context.logic.metrics.performanceProfiler;
+  if (auto timeDataRef = performanceProfiler.tryGetTimeData("Complete Frame")) {
+    const auto& timeData = timeDataRef->get();
+
+    // const glm::vec2 vSize = glm::vec2(graphic.cameraData.viewportSize);
+
+    const glm::vec2 k_size = glm::vec2(120, 60);
+    // const glm::vec3 k_pos = glm::vec3(vSize.x - k_size.x - 10, vSize.y - k_size.y - 10, 0);
+    const glm::vec3 k_pos = glm::vec3(_position.x, _position.y + 100.0f, 0.0f);
+
+    gero::graphics::widgets::renderPerformanceProfilerMetrics(
+      k_pos, k_size, timeData, stackRenderers, graphic.hud.textRenderer);
+
+    // graphic.stackRenderers.flush();
+    // graphic.hud.textRenderer.render();
+  }
+
   stackRenderers.flush();
 }
 
@@ -227,7 +245,7 @@ CoreUsageRenderer::renderHudText() {
 
     sstr << std::endl;
     sstr << "CPU time:" << std::endl;
-    writeTime(sstr, profileData.getLatestTotalDelta());
+    gero::graphics::helpers::writeTime(sstr, profileData.getLatestTotalDelta());
 
     std::string str = sstr.str();
 
@@ -242,8 +260,9 @@ CoreUsageRenderer::renderHudText() {
 
     textRenderer.pushText(textPos, str);
 
-    helpers::renderTextBackground(
+    gero::graphics::helpers::renderTextBackground(
       textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f);
+      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
   }
 }

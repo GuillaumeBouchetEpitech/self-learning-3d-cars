@@ -5,11 +5,15 @@
 #include "application/context/graphics/graphicsAliases.hpp"
 
 #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
+#include "geronimo/graphics/GeometryBuilder.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/containers/static_heap_grid_array.hpp"
 #include "geronimo/system/math/constants.hpp"
 #include "geronimo/system/rng/DeterministicRng.hpp"
+
+using namespace gero::graphics;
 
 constexpr float k_ringRadius = 500.0f;
 constexpr float k_tubeRadius = 100.0f;
@@ -73,9 +77,28 @@ generateTorusVertices(
 void
 BackGroundTorusRenderer::initialize() {
 
-  auto& rManager = Context::get().graphic.resourceManager;
+  gero::graphics::ShaderProgramBuilder shaderProgramBuilder;
+  gero::graphics::GeometryBuilder geometryBuilder;
 
-  _shader = rManager.getShader(gero::asValue(ShadersAliases::backGroundTorus));
+  const std::string basePath = "./assets/graphics/shaders/scene/";
+
+  shaderProgramBuilder.reset()
+    .setVertexFilename(basePath + "backGroundTorus.glsl.vert")
+    .setFragmentFilename(basePath + "backGroundTorus.glsl.frag")
+    .addAttribute("a_vertex_position")
+    .addAttribute("a_vertex_texCoord")
+    .addUniform("u_composedMatrix")
+    .addUniform("u_texture")
+    .addUniform("u_animationCoef");
+
+  _shader = std::make_shared<gero::graphics::ShaderProgram>(shaderProgramBuilder.getDefinition());
+
+  geometryBuilder.reset()
+    .setShader(*_shader)
+    .setPrimitiveType(Geometry::PrimitiveType::triangles)
+    .addVbo()
+    .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_vertex_texCoord", Geometry::AttrType::Vec2f);
 
   { // generate the gero::graphics::Texture
 
@@ -119,10 +142,7 @@ BackGroundTorusRenderer::initialize() {
     generateTorusVertices(
       l_ringQuality, k_tubeQuality, k_ringRadius, k_tubeRadius, vertices);
 
-    auto geoDef = rManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::backGroundTorus));
-
-    _geometry.initialize(*_shader, geoDef);
+    _geometry.initialize(*_shader, geometryBuilder.getDefinition());
     _geometry.allocateBuffer(0, vertices);
     _geometry.setPrimitiveCount(vertices.size());
   }
