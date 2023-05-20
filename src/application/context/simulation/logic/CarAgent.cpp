@@ -52,7 +52,6 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
     _isDying = true;
   }
 
-
   // reduce the health over time
   // => reduce more if the car does not touch the ground
   // => faster discard of a most probably dying genome

@@ -57,7 +57,8 @@ GeometriesStackRenderer::initialize() {
     // .addUniform("u_lightPos")
     ;
 
-  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader =
+    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)

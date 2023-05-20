@@ -5,8 +5,8 @@
 #include "application/context/graphics/graphicsAliases.hpp"
 
 #include "geronimo/graphics/GeometryBuilder.hpp"
-#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
+#include "geronimo/graphics/ShaderProgramBuilder.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
 
@@ -33,7 +33,8 @@ ChessBoardFloorRenderer::initialize(
     .addUniform("u_lightPos")
     .addUniform("u_viewPos");
 
-  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader =
+    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)

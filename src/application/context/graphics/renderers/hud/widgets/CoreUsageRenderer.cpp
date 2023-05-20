@@ -206,7 +206,8 @@ CoreUsageRenderer::renderWireFrame() {
     // const glm::vec2 vSize = glm::vec2(graphic.cameraData.viewportSize);
 
     const glm::vec2 k_size = glm::vec2(120, 60);
-    // const glm::vec3 k_pos = glm::vec3(vSize.x - k_size.x - 10, vSize.y - k_size.y - 10, 0);
+    // const glm::vec3 k_pos = glm::vec3(vSize.x - k_size.x - 10, vSize.y -
+    // k_size.y - 10, 0);
     const glm::vec3 k_pos = glm::vec3(_position.x, _position.y + 100.0f, 0.0f);
 
     gero::graphics::widgets::renderPerformanceProfilerMetrics(
@@ -262,7 +263,7 @@ CoreUsageRenderer::renderHudText() {
 
     gero::graphics::helpers::renderTextBackground(
       textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f,
-      graphic.hud.stackRenderers, textRenderer);
+      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, graphic.hud.stackRenderers,
+      textRenderer);
   }
 }

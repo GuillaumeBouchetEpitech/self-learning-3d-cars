@@ -4,9 +4,9 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
-#include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/ShaderProgramBuilder.hpp"
+#include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/containers/static_heap_grid_array.hpp"
@@ -91,7 +91,8 @@ BackGroundTorusRenderer::initialize() {
     .addUniform("u_texture")
     .addUniform("u_animationCoef");
 
-  _shader = std::make_shared<gero::graphics::ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader = std::make_shared<gero::graphics::ShaderProgram>(
+    shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)

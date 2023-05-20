@@ -252,5 +252,4 @@ InformationTextRenderer::render() {
 
   } // top-right performance stats
 #endif
-
 }

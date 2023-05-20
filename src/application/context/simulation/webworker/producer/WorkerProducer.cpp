@@ -121,8 +121,8 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
       const bool carWasAlive = currData.isAlive;
 
-      receivedMsg >> currData.isAlive >> currData.isDying >> currData.life >> currData.fitness >>
-        currData.totalUpdates >> currData.groundIndex;
+      receivedMsg >> currData.isAlive >> currData.isDying >> currData.life >>
+        currData.fitness >> currData.totalUpdates >> currData.groundIndex;
 
       if (carWasAlive && !currData.isAlive) {
         _currentLiveAgents -= 1;

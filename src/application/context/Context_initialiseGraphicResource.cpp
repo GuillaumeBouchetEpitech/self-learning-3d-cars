@@ -47,7 +47,6 @@ _initializeSceneStructures(ResourceManager& rManager) {
       gero::asValue(GeometriesAliases::wireFramesLineStrip),
       geometryBuilder.getDefinition(), true);
   }
-
 }
 
 } // namespace

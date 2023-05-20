@@ -35,7 +35,8 @@ PostProcess::initialize(const glm::uvec2& frameSize) {
     .addUniform("u_outlineTexture")
     .addUniform("u_invResolution");
 
-  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader =
+    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)

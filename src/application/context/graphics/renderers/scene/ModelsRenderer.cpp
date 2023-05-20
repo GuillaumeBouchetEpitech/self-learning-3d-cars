@@ -43,7 +43,8 @@ ModelsRenderer::initialize() {
 
   auto& context = Context::get();
 
-  const uint32_t totalCars = context.logic.carDataFrameHandler.getAllCarsData().size();
+  const uint32_t totalCars =
+    context.logic.carDataFrameHandler.getAllCarsData().size();
 
   _modelsCarChassisMatrices.reserve(totalCars);    // pre-allocate
   _modelsCarWheelsMatrices.reserve(totalCars * 4); // pre-allocate
@@ -73,7 +74,8 @@ ModelsRenderer::initialize() {
       .addUniform("u_lightPos")
       .addUniform("u_viewPos");
 
-    _chassis.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+    _chassis.shader =
+      std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*_chassis.shader)
@@ -91,10 +93,12 @@ ModelsRenderer::initialize() {
       .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
 
-    _chassis.geometry.initialize(*_chassis.shader, geometryBuilder.getDefinition());
+    _chassis.geometry.initialize(
+      *_chassis.shader, geometryBuilder.getDefinition());
     _chassis.geometry.allocateBuffer(0, modelVertices);
     _chassis.geometry.setPrimitiveCount(modelVertices.size());
-    _chassis.geometry.preAllocateBufferFromCapacity(1, _modelsCarChassisMatrices);
+    _chassis.geometry.preAllocateBufferFromCapacity(
+      1, _modelsCarChassisMatrices);
   }
 
   { // wheel gero::graphics::Geometry (instanced)
@@ -117,7 +121,8 @@ ModelsRenderer::initialize() {
       .addAttribute("a_offset_outlineValue")
       .addUniform("u_composedMatrix");
 
-    _wheels.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+    _wheels.shader =
+      std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*_wheels.shader)
@@ -135,7 +140,8 @@ ModelsRenderer::initialize() {
       .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
 
-    _wheels.geometry.initialize(*_wheels.shader, geometryBuilder.getDefinition());
+    _wheels.geometry.initialize(
+      *_wheels.shader, geometryBuilder.getDefinition());
     _wheels.geometry.allocateBuffer(0, modelVertices);
     _wheels.geometry.setPrimitiveCount(modelVertices.size());
     _wheels.geometry.preAllocateBufferFromCapacity(1, _modelsCarWheelsMatrices);

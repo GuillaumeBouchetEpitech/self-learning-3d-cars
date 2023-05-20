@@ -268,9 +268,10 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     //
     // core data
 
-    _messageToSend << currValue->dataIndex << currAgent.isAlive() << currAgent.isDying()
-                   << currAgent.getLife() << currAgent.getFitness()
-                   << currAgent.getTotalUpdates() << currAgent.getGroundIndex();
+    _messageToSend << currValue->dataIndex << currAgent.isAlive()
+                   << currAgent.isDying() << currAgent.getLife()
+                   << currAgent.getFitness() << currAgent.getTotalUpdates()
+                   << currAgent.getGroundIndex();
 
     //
     // transform history
