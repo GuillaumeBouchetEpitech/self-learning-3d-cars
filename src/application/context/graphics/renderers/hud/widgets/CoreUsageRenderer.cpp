@@ -33,9 +33,8 @@ void
 CoreUsageRenderer::fadeIn(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeOutCubic)
-                  .push(1.0f, k_faceInX);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, k_faceInX);
 
   _isVisible = true;
 }
@@ -44,9 +43,8 @@ void
 CoreUsageRenderer::fadeOut(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeInCubic)
-                  .push(1.0f, k_faceOutX);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, k_faceOutX);
 
   _isVisible = false;
 }
@@ -78,29 +76,24 @@ CoreUsageRenderer::renderWireFrame() {
   const glm::vec3 whiteColor(0.8f, 0.8f, 0.8f);
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
 
-  const glm::vec3 borderPos = {
-    _position.x, _position.y + k_textScale + k_textHScale, 0.1f};
+  const glm::vec3 borderPos = {_position.x, _position.y + k_textScale + k_textHScale, 0.1f};
   const glm::vec2 borderSize = {_size.x, _size.y - k_textScale * 3.0f};
 
   const auto& profileData = context.logic.cores.profileData;
 
   const uint32_t allTimeMaxDelta = profileData.getAllTimeMaxDelta();
 
-  const float verticalSize =
-    (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
+  const float verticalSize = (std::ceil(float(allTimeMaxDelta) / k_divider)) * k_divider;
 
   { // background
 
-    const glm::vec4 bgColor = allTimeMaxDelta > k_slowdownDelta
-                                ? glm::vec4(0.5f, 0.0f, 0.0f, 0.75f)
-                                : glm::vec4(0.0f, 0.0f, 0.0f, 0.75f);
+    const glm::vec4 bgColor =
+      allTimeMaxDelta > k_slowdownDelta ? glm::vec4(0.5f, 0.0f, 0.0f, 0.75f) : glm::vec4(0.0f, 0.0f, 0.0f, 0.75f);
 
     const glm::vec3 center = borderPos + glm::vec3(borderSize, 0) * 0.5f;
 
-    stackRenderers.getTrianglesStack().pushQuad(
-      center, borderSize, bgColor, -0.2f);
-    stackRenderers.getWireFramesStack().pushRectangle(
-      borderPos, borderSize, whiteColor, +0.1f);
+    stackRenderers.getTrianglesStack().pushQuad(center, borderSize, bgColor, -0.2f);
+    stackRenderers.getWireFramesStack().pushRectangle(borderPos, borderSize, whiteColor, +0.1f);
 
   } // background
 
@@ -109,14 +102,12 @@ CoreUsageRenderer::renderWireFrame() {
 
   { // dividers
 
-    for (float currDivider = k_divider; currDivider < verticalSize;
-         currDivider += k_divider) {
+    for (float currDivider = k_divider; currDivider < verticalSize; currDivider += k_divider) {
       const float ratio = currDivider / verticalSize;
 
       stackRenderers.getWireFramesStack().pushLine(
         borderPos + glm::vec3(0, borderSize.y * ratio, 0.0f),
-        borderPos + glm::vec3(borderSize.x, borderSize.y * ratio, 0.0f),
-        whiteColor * 0.5f);
+        borderPos + glm::vec3(borderSize.x, borderSize.y * ratio, 0.0f), whiteColor * 0.5f);
     }
 
   } // dividers
@@ -128,18 +119,14 @@ CoreUsageRenderer::renderWireFrame() {
 
     const float widthStep = borderSize.x / profileData.getMaxStateHistory();
 
-    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores();
-         ++coreIndex) {
+    for (std::size_t coreIndex = 0; coreIndex < profileData.getTotalCores(); ++coreIndex) {
 
-      float prevDelta =
-        float(profileData.getCoreHistoryData(coreIndex, 0).delta);
+      float prevDelta = float(profileData.getCoreHistoryData(coreIndex, 0).delta);
       float prevHeight = borderSize.y * prevDelta / verticalSize;
 
-      for (uint32_t statIndex = 1; statIndex < profileData.getMaxStateHistory();
-           ++statIndex) {
+      for (uint32_t statIndex = 1; statIndex < profileData.getMaxStateHistory(); ++statIndex) {
 
-        const float currDelta =
-          float(profileData.getCoreHistoryData(coreIndex, statIndex).delta);
+        const float currDelta = float(profileData.getCoreHistoryData(coreIndex, statIndex).delta);
         const float currHeight = borderSize.y * currDelta / verticalSize;
 
         stackRenderers.getWireFramesStack().pushLine(
@@ -262,8 +249,7 @@ CoreUsageRenderer::renderHudText() {
     textRenderer.pushText(textPos, str);
 
     gero::graphics::helpers::renderTextBackground(
-      textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-      glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, graphic.hud.stackRenderers,
-      textRenderer);
+      textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
   }
 }

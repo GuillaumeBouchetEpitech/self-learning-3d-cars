@@ -17,13 +17,11 @@
 namespace {
 
 D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
-D_ALIAS_FUNCTION(
-  _asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
+D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
 
 } // namespace
 
-WorkerConsumer::AgentValues::AgentValues(
-  uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
+WorkerConsumer::AgentValues::AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
   : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {
   transformsHistory.reserve(50); // TODO: hardcoded
 }
@@ -70,13 +68,11 @@ WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
 
 void
 WorkerConsumer::_sendBackToProducer() {
-  emscripten_worker_respond(
-    const_cast<char*>(_messageToSend.getData()), _messageToSend.getSize());
+  emscripten_worker_respond(const_cast<char*>(_messageToSend.getData()), _messageToSend.getSize());
 }
 
 void
-WorkerConsumer::_initializeSimulation(
-  gero::messaging::MessageView& receivedMsg) {
+WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg) {
 
   CircuitBuilder::Knots circuitKnots;
 
@@ -128,8 +124,7 @@ WorkerConsumer::_initializeSimulation(
 
   { // setup neural network topology
 
-    _neuralNetworkTopology.init(
-      layerInput, layerHidden, layerOutput, isUsingBias);
+    _neuralNetworkTopology.init(layerInput, layerHidden, layerOutput, isUsingBias);
 
   } // setup neural network topology
 
@@ -161,11 +156,9 @@ WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg) {
     receivedMsg >> dataIndex;
     receivedMsg.read(newWeightsRaw, byteWeightsSize);
 
-    auto newValues =
-      std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
+    auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
     newValues->neuralNet.setConnectionsWeights(newWeightsRaw, floatWeightsSize);
-    newValues->carAgent.reset(
-      _physicWorld.get(), _startTransform.position, _startTransform.quaternion);
+    newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion);
 
     _allAgentValues.emplace_back(newValues);
   }
@@ -224,8 +217,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
       }
     }
 
-    _frameProfiler.stop(
-      _physicWorld->getPhysicVehicleManager().totalLiveVehicles());
+    _frameProfiler.stop(_physicWorld->getPhysicVehicleManager().totalLiveVehicles());
   }
 
   //
@@ -268,10 +260,10 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     //
     // core data
 
-    _messageToSend << currValue->dataIndex << currAgent.isAlive()
-                   << currAgent.isDying() << currAgent.getLife()
-                   << currAgent.getFitness() << currAgent.getTotalUpdates()
-                   << currAgent.getGroundIndex();
+    _messageToSend << currValue->dataIndex;
+    _messageToSend << currAgent.isAlive() << currAgent.isDying();
+    _messageToSend << currAgent.getLife() << currAgent.getFitness();
+    _messageToSend << currAgent.getTotalUpdates() << currAgent.getGroundIndex();
 
     //
     // transform history
@@ -363,8 +355,7 @@ WorkerConsumer::_resetPhysic() {
     int groundIndex = 0;
 
     auto onNewGroundPatch = [&](
-                              const CircuitBuilder::Vec3Array& vertices,
-                              const CircuitBuilder::Vec3Array& colors,
+                              const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                               const CircuitBuilder::Vec3Array& normals,
                               const CircuitBuilder::Indices& indices) -> void {
       static_cast<void>(colors);  // <= unused
@@ -372,11 +363,9 @@ WorkerConsumer::_resetPhysic() {
 
       gero::physics::PhysicShapeDef shapeDef;
       shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-      shapeDef.data.staticMesh.verticesData =
-        const_cast<glm::vec3*>(vertices.data());
+      shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
       shapeDef.data.staticMesh.verticesLength = vertices.size();
-      shapeDef.data.staticMesh.indicesData =
-        const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
+      shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
       shapeDef.data.staticMesh.indicesLength = indices.size();
 
       gero::physics::PhysicBodyDef bodyDef;
@@ -385,27 +374,22 @@ WorkerConsumer::_resetPhysic() {
       bodyDef.group = gero::asValue(Groups::ground);
       bodyDef.mask = gero::asValue(Masks::ground);
 
-      auto body =
-        _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
+      auto body = _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
       body->setFriction(1.0f);
       body->setUserValue(groundIndex++);
     };
 
     auto onNewWallPatch = [&](
-                            const CircuitBuilder::Vec3Array& vertices,
-                            const CircuitBuilder::Vec3Array& colors,
-                            const CircuitBuilder::Vec3Array& normals,
-                            const CircuitBuilder::Indices& indices) -> void {
+                            const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                            const CircuitBuilder::Vec3Array& normals, const CircuitBuilder::Indices& indices) -> void {
       static_cast<void>(colors);  // <= unused
       static_cast<void>(normals); // <= unused
 
       gero::physics::PhysicShapeDef shapeDef;
       shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-      shapeDef.data.staticMesh.verticesData =
-        const_cast<glm::vec3*>(vertices.data());
+      shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
       shapeDef.data.staticMesh.verticesLength = vertices.size();
-      shapeDef.data.staticMesh.indicesData =
-        const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
+      shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
       shapeDef.data.staticMesh.indicesLength = indices.size();
 
       gero::physics::PhysicBodyDef bodyDef;

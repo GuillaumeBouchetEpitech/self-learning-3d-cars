@@ -22,8 +22,7 @@ _updateVerticesNormals(gero::graphics::loader::ModelVertices& vertices) {
     gero::graphics::loader::ModelVertex& vertexB = vertices.at(index + 1);
     gero::graphics::loader::ModelVertex& vertexC = vertices.at(index + 2);
 
-    const glm::vec3 normal = glm::cross(
-      vertexA.position - vertexB.position, vertexA.position - vertexC.position);
+    const glm::vec3 normal = glm::cross(vertexA.position - vertexB.position, vertexA.position - vertexC.position);
 
     vertexA.normal = normal;
     vertexB.normal = normal;
@@ -43,8 +42,7 @@ ModelsRenderer::initialize() {
 
   auto& context = Context::get();
 
-  const uint32_t totalCars =
-    context.logic.carDataFrameHandler.getAllCarsData().size();
+  const uint32_t totalCars = context.logic.carDataFrameHandler.getAllCarsData().size();
 
   _modelsCarChassisMatrices.reserve(totalCars);    // pre-allocate
   _modelsCarWheelsMatrices.reserve(totalCars * 4); // pre-allocate
@@ -54,8 +52,7 @@ ModelsRenderer::initialize() {
   { // chassis gero::graphics::Geometry (instanced)
 
     gero::graphics::loader::ModelVertices modelVertices;
-    gero::graphics::loader::loadObjModel(
-      modelBasePath + "CarNoWheels.obj", modelBasePath, modelVertices);
+    gero::graphics::loader::loadObjModel(modelBasePath + "CarNoWheels.obj", modelBasePath, modelVertices);
 
     _updateVerticesNormals(modelVertices);
 
@@ -71,17 +68,15 @@ ModelsRenderer::initialize() {
     {
       float minVal = +999999.0f;
       float maxVal = -999999.0f;
-      for (const auto& vertex : modelVertices)
-      {
+      for (const auto& vertex : modelVertices) {
         minVal = std::min(minVal, vertex.position.y);
         maxVal = std::max(maxVal, vertex.position.y);
       }
       float sizeVal = maxVal - minVal;
 
-      for (const auto& vertex : modelVertices)
-      {
+      for (const auto& vertex : modelVertices) {
         const float distance = 0.5f + vertex.position.y / sizeVal;
-        chassisVertices.push_back({ vertex.position, vertex.color, vertex.normal, distance });
+        chassisVertices.push_back({vertex.position, vertex.color, vertex.normal, distance});
       }
     }
 
@@ -100,11 +95,9 @@ ModelsRenderer::initialize() {
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
       .addUniform("u_viewPos")
-      .addUniform("u_alphaValue")
-      ;
+      .addUniform("u_alphaValue");
 
-    _chassis.shader =
-      std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+    _chassis.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*_chassis.shader)
@@ -121,22 +114,18 @@ ModelsRenderer::initialize() {
       .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_offset_color", Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_life", Geometry::AttrType::Float)
-      ;
+      .addVboAttribute("a_offset_life", Geometry::AttrType::Float);
 
-    _chassis.geometry.initialize(
-      *_chassis.shader, geometryBuilder.getDefinition());
+    _chassis.geometry.initialize(*_chassis.shader, geometryBuilder.getDefinition());
     _chassis.geometry.allocateBuffer(0, chassisVertices);
     _chassis.geometry.setPrimitiveCount(chassisVertices.size());
-    _chassis.geometry.preAllocateBufferFromCapacity(
-      1, _modelsCarChassisMatrices);
+    _chassis.geometry.preAllocateBufferFromCapacity(1, _modelsCarChassisMatrices);
   }
 
   { // wheel gero::graphics::Geometry (instanced)
 
     gero::graphics::loader::ModelVertices modelVertices;
-    gero::graphics::loader::loadObjModel(
-      modelBasePath + "CarWheel.obj", modelBasePath, modelVertices);
+    gero::graphics::loader::loadObjModel(modelBasePath + "CarWheel.obj", modelBasePath, modelVertices);
 
     struct WheelVertex {
       glm::vec3 position;
@@ -145,7 +134,7 @@ ModelsRenderer::initialize() {
     std::vector<WheelVertex> wheelVertices;
     wheelVertices.reserve(modelVertices.size());
     for (const auto& vertex : modelVertices)
-      wheelVertices.push_back({ vertex.position, vertex.color });
+      wheelVertices.push_back({vertex.position, vertex.color});
 
     shaderProgramBuilder.reset()
       .setVertexFilename(basePath + "modelsCarWheels.glsl.vert")
@@ -158,11 +147,9 @@ ModelsRenderer::initialize() {
       .addAttribute("a_offset_color")
       // .addAttribute("a_offset_life")
       .addUniform("u_composedMatrix")
-      .addUniform("u_alphaValue")
-      ;
+      .addUniform("u_alphaValue");
 
-    _wheels.shader =
-      std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+    _wheels.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*_wheels.shader)
@@ -177,11 +164,9 @@ ModelsRenderer::initialize() {
       .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_offset_color", Geometry::AttrType::Vec3f)
-      .addIgnoredVboAttribute("a_offset_life", Geometry::AttrType::Float)
-      ;
+      .addIgnoredVboAttribute("a_offset_life", Geometry::AttrType::Float);
 
-    _wheels.geometry.initialize(
-      *_wheels.shader, geometryBuilder.getDefinition());
+    _wheels.geometry.initialize(*_wheels.shader, geometryBuilder.getDefinition());
     _wheels.geometry.allocateBuffer(0, wheelVertices);
     _wheels.geometry.setPrimitiveCount(wheelVertices.size());
     _wheels.geometry.preAllocateBufferFromCapacity(1, _modelsCarWheelsMatrices);
@@ -247,8 +232,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     // 3d clipping
 
     const auto& chassis = carData.liveTransforms.chassis;
-    const glm::vec3 carOrigin =
-      chassis.position + glm::mat3_cast(chassis.orientation) * modelHeight;
+    const glm::vec3 carOrigin = chassis.position + glm::mat3_cast(chassis.orientation) * modelHeight;
 
     if (!frustumCulling.sphereInFrustum(carOrigin, 5.0f))
       continue;
@@ -267,22 +251,11 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     //
     // transforms
 
-    _modelsCarChassisMatrices.emplace_back(
-      chassis.position,
-      chassis.orientation,
-      k_scale,
-      color,
-      carData.life
-    );
+    _modelsCarChassisMatrices.emplace_back(chassis.position, chassis.orientation, k_scale, color, carData.life);
 
     for (const auto& wheelTransform : carData.liveTransforms.wheels) {
       _modelsCarWheelsMatrices.emplace_back(
-        wheelTransform.position,
-        wheelTransform.orientation,
-        k_scale,
-        color,
-        carData.life
-      );
+        wheelTransform.position, wheelTransform.orientation, k_scale, color, carData.life);
     }
   }
 
@@ -292,7 +265,6 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _chassis.shader->setUniform("u_lightPos", inCamera.getEye());
     _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
     _chassis.shader->setUniform("u_alphaValue", _colorAlpha);
-
 
     _chassis.geometry.updateOrAllocateBuffer(1, _modelsCarChassisMatrices);
     _chassis.geometry.setInstancedCount(_modelsCarChassisMatrices.size());

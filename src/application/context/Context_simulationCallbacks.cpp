@@ -68,27 +68,24 @@ Context::_initializeSimulationCallbacks() {
       auto& cores = logic.cores;
 
       cores.profileData.clearLatest();
-      for (unsigned int coreIndex = 0; coreIndex < simulation.getTotalCores();
-           ++coreIndex)
+      for (unsigned int coreIndex = 0; coreIndex < simulation.getTotalCores(); ++coreIndex)
         cores.profileData.addToLatest(simulation.getCoreState(coreIndex));
       cores.profileData.pushLatest();
 
     } // handle the core data
   });
 
-  logic.simulation->setOnGenomeDieCallback(
-    [this](unsigned int genomeIndex) -> void {
-      const auto& simulation = *logic.simulation;
+  logic.simulation->setOnGenomeDieCallback([this](unsigned int genomeIndex) -> void {
+    const auto& simulation = *logic.simulation;
 
-      const auto& carData = simulation.getCarResult(genomeIndex);
+    const auto& carData = simulation.getCarResult(genomeIndex);
 
-      const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
-      const auto& chassis = carData.liveTransforms.chassis;
-      glm::vec3 carPos =
-        chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
+    const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
+    const auto& chassis = carData.liveTransforms.chassis;
+    glm::vec3 carPos = chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
 
-      graphic.scene.particleManager.emitParticles(carPos, carData.velocity);
-    });
+    graphic.scene.particleManager.emitParticles(carPos, carData.velocity);
+  });
 
   logic.simulation->setOnGenerationEndCallback([this](bool isSmarter) -> void {
     logic.fitnessStats.update(logic.simulation->getBestGenome().getFitness());

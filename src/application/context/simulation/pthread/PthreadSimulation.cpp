@@ -16,13 +16,11 @@
 namespace {
 
 D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
-D_ALIAS_FUNCTION(
-  _asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
+D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
 
 } // namespace
 
-PthreadSimulation::AgentValues::AgentValues(
-  uint64_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
+PthreadSimulation::AgentValues::AgentValues(uint64_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
   : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {}
 
 PthreadSimulation::~PthreadSimulation() {
@@ -57,9 +55,7 @@ PthreadSimulation::initialize(const Definition& def) {
 
   gero::rng::RNG::ensureRandomSeed();
 
-  genAlgoDef.getRandomCallback = []() {
-    return gero::rng::RNG::getNormalisedValue();
-  };
+  genAlgoDef.getRandomCallback = []() { return gero::rng::RNG::getNormalisedValue(); };
 
   _geneticAlgorithm.initialize(genAlgoDef);
 
@@ -76,30 +72,25 @@ PthreadSimulation::initialize(const Definition& def) {
 
   {
 
-    auto onNewPhysicGroundPatch =
-      [&](
-        const CircuitBuilder::Vec3Array& vertices,
-        const CircuitBuilder::Vec3Array& colors,
-        const CircuitBuilder::Vec3Array& normals,
-        const CircuitBuilder::Indices& indices) -> void {
+    auto onNewPhysicGroundPatch = [&](
+                                    const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                    const CircuitBuilder::Vec3Array& normals,
+                                    const CircuitBuilder::Indices& indices) -> void {
       if (_def.onNewGroundPatch)
         _def.onNewGroundPatch(vertices, colors, normals, indices);
     };
 
-    auto onNewPhysicWallPatch =
-      [&](
-        const CircuitBuilder::Vec3Array& vertices,
-        const CircuitBuilder::Vec3Array& colors,
-        const CircuitBuilder::Vec3Array& normals,
-        const CircuitBuilder::Indices& indices) -> void {
+    auto onNewPhysicWallPatch = [&](
+                                  const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                  const CircuitBuilder::Vec3Array& normals,
+                                  const CircuitBuilder::Indices& indices) -> void {
       if (_def.onNewWallPatch)
         _def.onNewWallPatch(vertices, colors, normals, indices);
     };
 
     _circuitBuilder.parse(_def.filename);
     _circuitBuilder.generateWireFrameSkeleton(_def.onSkeletonPatch);
-    _circuitBuilder.generateCircuitGeometry(
-      onNewPhysicGroundPatch, onNewPhysicWallPatch);
+    _circuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewPhysicWallPatch);
     _startTransform = _circuitBuilder.getStartTransform();
   }
 
@@ -123,22 +114,18 @@ PthreadSimulation::_resetPhysic() {
     { // generate circuit
 
       int groundIndex = 0;
-      auto onNewPhysicGroundPatch =
-        [&](
-          const CircuitBuilder::Vec3Array& vertices,
-          const CircuitBuilder::Vec3Array& colors,
-          const CircuitBuilder::Vec3Array& normals,
-          const CircuitBuilder::Indices& indices) -> void {
+      auto onNewPhysicGroundPatch = [&](
+                                      const CircuitBuilder::Vec3Array& vertices,
+                                      const CircuitBuilder::Vec3Array& colors, const CircuitBuilder::Vec3Array& normals,
+                                      const CircuitBuilder::Indices& indices) -> void {
         static_cast<void>(colors);  // <= unused
         static_cast<void>(normals); // <= unused
 
         gero::physics::PhysicShapeDef shapeDef;
         shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-        shapeDef.data.staticMesh.verticesData =
-          const_cast<glm::vec3*>(vertices.data());
+        shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
         shapeDef.data.staticMesh.verticesLength = vertices.size();
-        shapeDef.data.staticMesh.indicesData =
-          const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
+        shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
         shapeDef.data.staticMesh.indicesLength = indices.size();
 
         gero::physics::PhysicBodyDef bodyDef;
@@ -154,22 +141,18 @@ PthreadSimulation::_resetPhysic() {
         groundIndex++;
       };
 
-      auto onNewPhysicWallPatch =
-        [&](
-          const CircuitBuilder::Vec3Array& vertices,
-          const CircuitBuilder::Vec3Array& colors,
-          const CircuitBuilder::Vec3Array& normals,
-          const CircuitBuilder::Indices& indices) -> void {
+      auto onNewPhysicWallPatch = [&](
+                                    const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                    const CircuitBuilder::Vec3Array& normals,
+                                    const CircuitBuilder::Indices& indices) -> void {
         static_cast<void>(colors);  // <= unused
         static_cast<void>(normals); // <= unused
 
         gero::physics::PhysicShapeDef shapeDef;
         shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-        shapeDef.data.staticMesh.verticesData =
-          const_cast<glm::vec3*>(vertices.data());
+        shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
         shapeDef.data.staticMesh.verticesLength = vertices.size();
-        shapeDef.data.staticMesh.indicesData =
-          const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
+        shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
         shapeDef.data.staticMesh.indicesLength = indices.size();
 
         gero::physics::PhysicBodyDef bodyDef;
@@ -181,8 +164,7 @@ PthreadSimulation::_resetPhysic() {
         bManager.createAndAddBody(bodyDef);
       };
 
-      _circuitBuilder.generateCircuitGeometry(
-        onNewPhysicGroundPatch, onNewPhysicWallPatch);
+      _circuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewPhysicWallPatch);
 
     } // generate circuit
 
@@ -239,8 +221,7 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
   for (std::size_t ii = 0; ii < _carsData.size(); ++ii)
     _carsData.at(ii).latestTransformsHistory.clear();
 
-  for (std::size_t threadIndex = 0; threadIndex < _allThreadsData.size();
-       ++threadIndex) {
+  for (std::size_t threadIndex = 0; threadIndex < _allThreadsData.size(); ++threadIndex) {
     auto taskCallback = [this, threadIndex, elapsedTime, totalSteps]() -> void {
       auto startTime = _getTime();
 
@@ -290,13 +271,11 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
               currWheel.orientation = vehicle->getWheelOrientation(jj);
             }
 
-            _carsData.at(currValues->dataIndex)
-              .latestTransformsHistory.push_back(newData);
+            _carsData.at(currValues->dataIndex).latestTransformsHistory.push_back(newData);
           }
         }
 
-        currData.frameProfiler.stop(
-          currPhysicWorlds.getPhysicVehicleManager().totalLiveVehicles());
+        currData.frameProfiler.stop(currPhysicWorlds.getPhysicVehicleManager().totalLiveVehicles());
       }
 
       //
@@ -417,10 +396,8 @@ PthreadSimulation::_updateCarResult() {
 
     // transformation matrix of the wheels
     for (std::size_t jj = 0; jj < carData.liveTransforms.wheels.size(); ++jj) {
-      carData.liveTransforms.wheels.at(jj).position =
-        vehicle->getWheelPosition(jj);
-      carData.liveTransforms.wheels.at(jj).orientation =
-        vehicle->getWheelOrientation(jj);
+      carData.liveTransforms.wheels.at(jj).position = vehicle->getWheelPosition(jj);
+      carData.liveTransforms.wheels.at(jj).orientation = vehicle->getWheelOrientation(jj);
     }
 
     carData.velocity = body->getLinearVelocity();
@@ -477,8 +454,7 @@ PthreadSimulation::_addCars() {
     auto& bestThreadData = *(_allThreadsData.at(bestWorldIndex));
     auto& physicWorld = bestThreadData.physicWorld;
 
-    const uint32_t totalLiveVehicles =
-      physicWorld.getPhysicVehicleManager().totalLiveVehicles();
+    const uint32_t totalLiveVehicles = physicWorld.getPhysicVehicleManager().totalLiveVehicles();
     if (totalLiveVehicles > 20) {
       if (_waitingAgentsValues.size() >= 10)
         break;
@@ -489,16 +465,13 @@ PthreadSimulation::_addCars() {
 
     // make the car live
 
-    auto newValue = std::make_shared<AgentValues>(
-      _currentAgentIndex, _def.neuralNetworkTopology);
-    newValue->carAgent.reset(
-      &physicWorld, _startTransform.position, _startTransform.quaternion);
+    auto newValue = std::make_shared<AgentValues>(_currentAgentIndex, _def.neuralNetworkTopology);
+    newValue->carAgent.reset(&physicWorld, _startTransform.position, _startTransform.quaternion);
     _waitingAgentsValues.push_back(newValue);
 
     const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
 
-    newValue->neuralNet.setConnectionsWeights(
-      currGenome.getConnectionsWeights());
+    newValue->neuralNet.setConnectionsWeights(currGenome.getConnectionsWeights());
 
     //
 
@@ -520,15 +493,13 @@ PthreadSimulation::_getTotalLiveAgents(const ThreadData& inThreadData) const {
 
   for (auto& currValues : _waitingAgentsValues) {
     const auto& currAgent = currValues->carAgent;
-    if (
-      currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
+    if (currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
       totalLiveAgents++;
   }
 
   for (auto& currValues : _allAgentValues) {
     const auto& currAgent = currValues->carAgent;
-    if (
-      currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
+    if (currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
       totalLiveAgents++;
   }
 
@@ -556,26 +527,22 @@ PthreadSimulation::getTotalCars() const {
 }
 
 void
-PthreadSimulation::setOnGenerationResetCallback(
-  AbstractSimulation::SimpleCallback callback) {
+PthreadSimulation::setOnGenerationResetCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onResetAndProcess = callback;
 }
 
 void
-PthreadSimulation::setOnGenerationStepCallback(
-  AbstractSimulation::SimpleCallback callback) {
+PthreadSimulation::setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onProcessStep = callback;
 }
 
 void
-PthreadSimulation::setOnGenomeDieCallback(
-  AbstractSimulation::GenomeDieCallback callback) {
+PthreadSimulation::setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) {
   _callbacks.onGenomeDie = callback;
 }
 
 void
-PthreadSimulation::setOnGenerationEndCallback(
-  AbstractSimulation::GenerationEndCallback callback) {
+PthreadSimulation::setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) {
   _callbacks.onGenerationEnd = callback;
 }
 

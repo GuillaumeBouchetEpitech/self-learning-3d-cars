@@ -29,10 +29,9 @@ private:
     float life;
 
     Attributes(
-      const glm::vec3& position, const glm::quat& orientation,
-      const glm::vec3& scale, const glm::vec3& color, float life)
-      : position(position), orientation(orientation), scale(scale),
-        color(color), life(life) {}
+      const glm::vec3& position, const glm::quat& orientation, const glm::vec3& scale, const glm::vec3& color,
+      float life)
+      : position(position), orientation(orientation), scale(scale), color(color), life(life) {}
   };
 
   std::vector<Attributes> _modelsCarChassisMatrices;

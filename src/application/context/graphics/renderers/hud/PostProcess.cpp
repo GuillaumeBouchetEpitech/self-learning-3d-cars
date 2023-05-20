@@ -12,8 +12,7 @@ using namespace gero::graphics;
 using namespace gero::graphics::GlContext;
 
 void
-PostProcess::setMatricesData(
-  const gero::graphics::Camera::MatricesData& matricesData) {
+PostProcess::setMatricesData(const gero::graphics::Camera::MatricesData& matricesData) {
   _matricesData = matricesData;
 }
 
@@ -35,8 +34,7 @@ PostProcess::initialize(const glm::uvec2& frameSize) {
     .addUniform("u_outlineTexture")
     .addUniform("u_invResolution");
 
-  _shader =
-    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)
@@ -74,8 +72,7 @@ PostProcess::render() {
 
   _shader->bind();
   _shader->setUniform("u_composedMatrix", _matricesData.composed);
-  _shader->setUniform(
-    "u_invResolution", 1.0f / float(_frameSize.x), 1.0f / float(_frameSize.y));
+  _shader->setUniform("u_invResolution", 1.0f / float(_frameSize.x), 1.0f / float(_frameSize.y));
 
   _shader->setUniform("u_colorTexture", 0);
   GlContext::Texture::active(0);
@@ -98,11 +95,9 @@ PostProcess::resize(const glm::uvec2& inFrameSize) {
   {
 
     _colorTexture.allocateBlankRgbaUBytes(
-      _frameSize, gero::graphics::Texture::Quality::pixelated,
-      gero::graphics::Texture::Pattern::clamped);
+      _frameSize, gero::graphics::Texture::Quality::pixelated, gero::graphics::Texture::Pattern::clamped);
     _outlineTexture.allocateBlankRgbaUBytes(
-      _frameSize, gero::graphics::Texture::Quality::pixelated,
-      gero::graphics::Texture::Pattern::clamped);
+      _frameSize, gero::graphics::Texture::Quality::pixelated, gero::graphics::Texture::Pattern::clamped);
     _depthRenderBuffer.allocateCompatibleDepth(_frameSize);
 
     gero::graphics::FrameBuffer::Definition def;
@@ -114,8 +109,7 @@ PostProcess::resize(const glm::uvec2& inFrameSize) {
 }
 
 void
-PostProcess::setGeometry(
-  const glm::vec2& inPos, const glm::vec2& inSize, float depth /*= 0.0f*/) {
+PostProcess::setGeometry(const glm::vec2& inPos, const glm::vec2& inSize, float depth /*= 0.0f*/) {
   struct Vertex {
     glm::vec3 position;
     glm::vec2 texCoord;
@@ -133,7 +127,6 @@ PostProcess::setGeometry(
   for (std::size_t index = 0; index < indices.size(); ++index)
     vertices.at(index) = quadVertices.at(indices.at(index));
 
-  _screenQuad.updateOrAllocateBuffer(
-    0, uint32_t(vertices.size() * sizeof(Vertex)), vertices.data());
+  _screenQuad.updateOrAllocateBuffer(0, uint32_t(vertices.size() * sizeof(Vertex)), vertices.data());
   _screenQuad.setPrimitiveCount(uint32_t(vertices.size()));
 }

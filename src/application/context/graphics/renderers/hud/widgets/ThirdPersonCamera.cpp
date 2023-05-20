@@ -40,9 +40,7 @@ ThirdPersonCamera::canActivate() const {
   // do not update the third person gero::graphics::Camera if not in a correct
   // state
   const StateManager::States currentState = StateManager::get()->getState();
-  if (
-    currentState == StateManager::States::Running ||
-    currentState == StateManager::States::StartGeneration) {
+  if (currentState == StateManager::States::Running || currentState == StateManager::States::StartGeneration) {
 
     // valid leading car?
     if (logic.isAccelerated || !leaderCar.hasLeader())
@@ -64,9 +62,7 @@ ThirdPersonCamera::fadeIn(float delay, float duration) {
   _layout.timer.start(delay, duration);
 
   _layout.moveEasing =
-    gero::easing::GenericEasing<2>()
-      .push(0.0f, _layout.position.x, gero::easing::easeOutCubic)
-      .push(1.0f, targetPos);
+    gero::easing::GenericEasing<2>().push(0.0f, _layout.position.x, gero::easing::easeOutCubic).push(1.0f, targetPos);
 
   _layout.isVisible = true;
 }
@@ -83,9 +79,7 @@ ThirdPersonCamera::fadeOut(float delay, float duration) {
   _layout.timer.start(delay, duration);
 
   _layout.moveEasing =
-    gero::easing::GenericEasing<2>()
-      .push(0.0f, _layout.position.x, gero::easing::easeInCubic)
-      .push(1.0f, targetPos);
+    gero::easing::GenericEasing<2>().push(0.0f, _layout.position.x, gero::easing::easeInCubic).push(1.0f, targetPos);
 
   _layout.isVisible = false;
 }
@@ -146,14 +140,10 @@ ThirdPersonCamera::update(float elapsedTime) {
 
         const float k_desiredDistance = 2.75f;
 
-        const glm::vec3 desiredTarget =
-          chassis.position + orientation * glm::vec3(0.0f, 0.0f, 2.5f);
-        const glm::vec3 desiredUpAxis =
-          orientation * glm::vec3(0.0f, 0.0f, 1.0f);
+        const glm::vec3 desiredTarget = chassis.position + orientation * glm::vec3(0.0f, 0.0f, 2.5f);
+        const glm::vec3 desiredUpAxis = orientation * glm::vec3(0.0f, 0.0f, 1.0f);
         const glm::vec3 desiredEye =
-          chassis.position + orientation * glm::vec3(
-                                             0.0f, -k_desiredDistance * 2.0f,
-                                             k_desiredDistance * 1.25f);
+          chassis.position + orientation * glm::vec3(0.0f, -k_desiredDistance * 2.0f, k_desiredDistance * 1.25f);
 
         const float currDistance = glm::distance(desiredTarget, _eye);
 
@@ -214,8 +204,7 @@ ThirdPersonCamera::render() {
 
     auto& stackRenderers = graphic.hud.stackRenderers;
     stackRenderers.getTrianglesStack().pushQuad(
-      _layout.position + _layout.size * 0.5f, _layout.size,
-      glm::vec4(0, 0, 0, 0.75f), -1.5f);
+      _layout.position + _layout.size * 0.5f, _layout.size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
     stackRenderers.getWireFramesStack().pushRectangle(
       _layout.position, _layout.size, glm::vec4(0.8f, 0.8f, 0.8f, 1), -0.1f);
   }

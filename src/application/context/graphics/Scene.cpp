@@ -110,22 +110,18 @@ Scene::updateMatrices() {
 
     const float cosPhi = std::cos(rotations.phi);
     const glm::vec3 cameraDir = {
-      cosPhi * std::cos(rotations.theta), cosPhi * std::sin(rotations.theta),
-      std::sin(rotations.phi)};
+      cosPhi * std::cos(rotations.theta), cosPhi * std::sin(rotations.theta), std::sin(rotations.phi)};
     const glm::vec3 eye = cameraData.center + cameraDir * cameraData.distance;
     const glm::vec3 upAxis = {0.0f, 0.0f, 1.0f};
 
-    cameraData.scene.setSize(
-      cameraData.viewportSize.x, cameraData.viewportSize.y);
+    cameraData.scene.setSize(cameraData.viewportSize.x, cameraData.viewportSize.y);
     cameraData.scene.lookAt(eye, cameraData.center, upAxis);
     cameraData.scene.computeMatrices();
 
     cameraData.hud.setOrthographic(
-      0.0f, float(cameraData.viewportSize.x), 0.0f,
-      float(cameraData.viewportSize.y), -10.0f, +10.0f);
+      0.0f, float(cameraData.viewportSize.x), 0.0f, float(cameraData.viewportSize.y), -10.0f, +10.0f);
 
-    cameraData.hud.lookAt(
-      glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    cameraData.hud.lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     cameraData.hud.computeMatrices();
 
   } // scene

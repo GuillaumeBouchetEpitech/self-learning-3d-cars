@@ -32,8 +32,7 @@ private:
   std::unordered_map<std::string, StrategyCallback> _commandsMap;
 
 private:
-  const std::string_view cmd_name_agent_start_transform =
-    "AGENTS_START_TRANSFORM";
+  const std::string_view cmd_name_agent_start_transform = "AGENTS_START_TRANSFORM";
   const std::string_view cmd_name_next_knots_states = "NEXT_KNOTS_STATES";
   const std::string_view cmd_name_push_knots = "PUSH_KNOTS";
 
@@ -45,75 +44,61 @@ private:
   glm::vec3 _currentColor = {0.0f, 0.0f, 0.0f};
 
 public:
-  CircuitParser(
-    CircuitBuilder::StartTransform& startTransform,
-    CircuitBuilder::Knots& rawKnots)
+  CircuitParser(CircuitBuilder::StartTransform& startTransform, CircuitBuilder::Knots& rawKnots)
     : _startTransform(startTransform), _rawKnots(rawKnots) {
     {
       // AGENTS_START_TRANSFORM
       //   position="{float},{float},{float}"
       //   quaternion="{float},{float},{float},{float}"
 
-      _commandsMap[std::string(cmd_name_agent_start_transform)] =
-        [this](std::istringstream& isstr) {
-          _regexpParser.setErrorHint(cmd_name_agent_start_transform);
-          _regexpParser.forEachArgs(
-            isstr.str(),
-            [this](const std::string_view key, const std::string_view value) {
-              if (key == "position") {
-                _startTransform.position =
-                  _regexpParser.get3F(value, -10000.0f, +10000.0f);
-              } else if (key == "quaternion") {
-                _startTransform.quaternion =
-                  _regexpParser.get4F(value, -10000.0f, +10000.0f);
-              }
-            });
-        };
+      _commandsMap[std::string(cmd_name_agent_start_transform)] = [this](std::istringstream& isstr) {
+        _regexpParser.setErrorHint(cmd_name_agent_start_transform);
+        _regexpParser.forEachArgs(isstr.str(), [this](const std::string_view key, const std::string_view value) {
+          if (key == "position") {
+            _startTransform.position = _regexpParser.get3F(value, -10000.0f, +10000.0f);
+          } else if (key == "quaternion") {
+            _startTransform.quaternion = _regexpParser.get4F(value, -10000.0f, +10000.0f);
+          }
+        });
+      };
     }
 
     {
       // NEXT_KNOTS_STATES
       //   size="{float}"
       //   color="{float},{float},{float}"
-      _commandsMap[std::string(cmd_name_next_knots_states)] =
-        [this](std::istringstream& isstr) {
-          _regexpParser.setErrorHint(cmd_name_next_knots_states);
-          _regexpParser.forEachArgs(
-            isstr.str(),
-            [this](const std::string_view key, const std::string_view value) {
-              if (key == "size") {
-                _currentKnotsSize =
-                  _regexpParser.get1F(value, 0.001f, +10000.0f);
-              } else if (key == "color") {
-                _currentColor = _regexpParser.get3F(value, 0.0f, +1.0f);
-              }
-            });
-        };
+      _commandsMap[std::string(cmd_name_next_knots_states)] = [this](std::istringstream& isstr) {
+        _regexpParser.setErrorHint(cmd_name_next_knots_states);
+        _regexpParser.forEachArgs(isstr.str(), [this](const std::string_view key, const std::string_view value) {
+          if (key == "size") {
+            _currentKnotsSize = _regexpParser.get1F(value, 0.001f, +10000.0f);
+          } else if (key == "color") {
+            _currentColor = _regexpParser.get3F(value, 0.0f, +1.0f);
+          }
+        });
+      };
     }
 
     {
       // PUSH_KNOTS
       //   left="{float},{float},{float}"
       //   right="{float},{float},{float}"
-      _commandsMap[std::string(cmd_name_push_knots)] =
-        [this](std::istringstream& isstr) {
-          glm::vec3 left = {0, 0, 0};
-          glm::vec3 right = {0, 0, 0};
+      _commandsMap[std::string(cmd_name_push_knots)] = [this](std::istringstream& isstr) {
+        glm::vec3 left = {0, 0, 0};
+        glm::vec3 right = {0, 0, 0};
 
-          _regexpParser.setErrorHint(cmd_name_push_knots);
-          _regexpParser.forEachArgs(
-            isstr.str(),
-            [this, &left,
-             &right](const std::string_view key, const std::string_view value) {
-              if (key == "left") {
-                left = _regexpParser.get3F(value, -10000.0, +10000.0f);
-              } else if (key == "right") {
-                right = _regexpParser.get3F(value, -10000.0, +10000.0f);
-              }
-            });
+        _regexpParser.setErrorHint(cmd_name_push_knots);
+        _regexpParser.forEachArgs(
+          isstr.str(), [this, &left, &right](const std::string_view key, const std::string_view value) {
+            if (key == "left") {
+              left = _regexpParser.get3F(value, -10000.0, +10000.0f);
+            } else if (key == "right") {
+              right = _regexpParser.get3F(value, -10000.0, +10000.0f);
+            }
+          });
 
-          _rawKnots.push_back({left, right, _currentKnotsSize, _currentColor});
-        };
+        _rawKnots.push_back({left, right, _currentKnotsSize, _currentColor});
+      };
     }
   }
 
@@ -192,9 +177,7 @@ CircuitBuilder::parse(const std::string_view& filename) {
 }
 
 void
-CircuitBuilder::load(
-  const CircuitBuilder::StartTransform& startTransform,
-  const CircuitBuilder::Knots& knots) {
+CircuitBuilder::load(const CircuitBuilder::StartTransform& startTransform, const CircuitBuilder::Knots& knots) {
   _startTransform = startTransform;
   _knots = knots;
 }
@@ -306,21 +289,14 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
   constexpr float step = 1.0f / maxIterations; // tiny steps
 
   for (float coef = 0.0f; coef <= 1.0f; coef += step) {
-    vertex.left.x =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftX));
-    vertex.left.y =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftY));
-    vertex.left.z =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftZ));
-    vertex.right.x =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightX));
-    vertex.right.y =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightY));
-    vertex.right.z =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightZ));
+    vertex.left.x = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftX));
+    vertex.left.y = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftY));
+    vertex.left.z = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::leftZ));
+    vertex.right.x = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightX));
+    vertex.right.y = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightY));
+    vertex.right.z = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightZ));
 
-    const float knotSize =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::size));
+    const float knotSize = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::size));
 
     if (!smoothedKnotsData.empty()) {
       // both left and right vertices must be far enough to be included
@@ -334,25 +310,19 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 
     // check for invalid values (it create graphic and physic artifacts)
     const float minLength = 0.001f;
-    if (
-      glm::length(vertex.left) < minLength ||
-      glm::length(vertex.right) < minLength)
+    if (glm::length(vertex.left) < minLength || glm::length(vertex.right) < minLength)
       continue; // TODO: fix it
 
-    vertex.color.r =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorR));
-    vertex.color.g =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorG));
-    vertex.color.b =
-      bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorB));
+    vertex.color.r = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorR));
+    vertex.color.g = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorG));
+    vertex.color.b = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorB));
 
     smoothedKnotsData.push_back(vertex);
   }
 }
 
 void
-CircuitBuilder::generateCircuitGeometry(
-  CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch) {
+CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch) {
   if (_knots.empty())
     D_THROW(std::runtime_error, "not initialized");
 
@@ -386,8 +356,7 @@ CircuitBuilder::generateCircuitGeometry(
   circuitPatchColors.reserve(512); // pre-allocate
 
   const unsigned int startIndex = 1;
-  for (std::size_t index = startIndex; index < smoothedKnotsData.size();
-       index += patchesPerKnot) {
+  for (std::size_t index = startIndex; index < smoothedKnotsData.size(); index += patchesPerKnot) {
     indices.clear();
     ground.vertices.clear();
     leftWall.vertices.clear();
@@ -400,8 +369,7 @@ CircuitBuilder::generateCircuitGeometry(
 
     int indicexIndex = 0;
 
-    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() &&
-                                        stepIndex < index + patchesPerKnot;
+    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() && stepIndex < index + patchesPerKnot;
          ++stepIndex) {
       const int currIndex = indicexIndex++ * 4;
       indices.push_back(currIndex + 0);
@@ -422,8 +390,7 @@ CircuitBuilder::generateCircuitGeometry(
       const glm::vec3& prevColor = prevKnot.color;
       const glm::vec3& currColor = currKnot.color;
 
-      const glm::vec3 currNormal =
-        glm::normalize(glm::cross(prevLeft - prevRight, prevRight - currRight));
+      const glm::vec3 currNormal = glm::normalize(glm::cross(prevLeft - prevRight, prevRight - currRight));
 
       // for the first time
       if (stepIndex == startIndex)
@@ -492,14 +459,11 @@ CircuitBuilder::generateCircuitGeometry(
     }
 
     if (onNewGroundPatch)
-      onNewGroundPatch(
-        ground.vertices, circuitPatchColors, ground.normals, indices);
+      onNewGroundPatch(ground.vertices, circuitPatchColors, ground.normals, indices);
 
     if (onNewWallPatch) {
-      onNewWallPatch(
-        leftWall.vertices, circuitPatchColors, leftWall.normals, indices);
-      onNewWallPatch(
-        rightWall.vertices, circuitPatchColors, rightWall.normals, indices);
+      onNewWallPatch(leftWall.vertices, circuitPatchColors, leftWall.normals, indices);
+      onNewWallPatch(rightWall.vertices, circuitPatchColors, rightWall.normals, indices);
     }
   }
 }

@@ -27,12 +27,10 @@ public:
   using CircuitVertex = Knot;
 
 public:
-  using CallbackNoNormals =
-    std::function<void(const Vec3Array& vertices, const Indices& indices)>;
+  using CallbackNoNormals = std::function<void(const Vec3Array& vertices, const Indices& indices)>;
 
   using CallbackNormals = std::function<void(
-    const Vec3Array& vertices, const Vec3Array& colors,
-    const Vec3Array& normals, const Indices& indices)>;
+    const Vec3Array& vertices, const Vec3Array& colors, const Vec3Array& normals, const Indices& indices)>;
 
 private:
   StartTransform _startTransform;
@@ -44,8 +42,7 @@ public:
 
 public:
   void generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch);
-  void generateCircuitGeometry(
-    CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch);
+  void generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch);
 
 private:
   void generateSmoothedKnotsData(Knots& smoothedVertices);

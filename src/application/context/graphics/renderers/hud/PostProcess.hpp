@@ -37,8 +37,7 @@ public:
   ~PostProcess() = default;
 
 public:
-  void
-  setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
+  void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
   void initialize(const glm::uvec2& frameSize);
   void dispose();
@@ -46,6 +45,5 @@ public:
   void stopRecording();
   void render();
   void resize(const glm::uvec2& frameSize);
-  void
-  setGeometry(const glm::vec2& pos, const glm::vec2& size, float depth = 0.0f);
+  void setGeometry(const glm::vec2& pos, const glm::vec2& size, float depth = 0.0f);
 };

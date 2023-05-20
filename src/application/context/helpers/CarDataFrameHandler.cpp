@@ -5,8 +5,7 @@
 #include "geronimo/system/math/clamp.hpp"
 
 void
-CarDataFrameHandler::initialize(
-  uint32_t totalGenomes, float logicFrameDuration) {
+CarDataFrameHandler::initialize(uint32_t totalGenomes, float logicFrameDuration) {
   _totalGenomes = totalGenomes;
   _logicFrameDuration = logicFrameDuration;
 
@@ -58,8 +57,7 @@ CarDataFrameHandler::update(float deltaTime) {
 
   // D_MYLOG("_interpolationValue " << _interpolationValue);
 
-  const float coef =
-    gero::math::clamp(_interpolationValue / _logicFrameDuration, 0.0f, 1.0f);
+  const float coef = gero::math::clamp(_interpolationValue / _logicFrameDuration, 0.0f, 1.0f);
 
   // D_MYLOG("coef " << coef);
 

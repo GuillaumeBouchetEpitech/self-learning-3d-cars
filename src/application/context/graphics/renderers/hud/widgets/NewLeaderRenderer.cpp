@@ -79,6 +79,6 @@ NewLeaderRenderer::renderHudText() {
   textRenderer.pushText(textPos, message.data());
 
   gero::graphics::helpers::renderTextBackground(
-    depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f),
-    3.0f, 6.0f, graphic.hud.stackRenderers, textRenderer);
+    depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, graphic.hud.stackRenderers,
+    textRenderer);
 }

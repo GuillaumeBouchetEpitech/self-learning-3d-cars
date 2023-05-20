@@ -8,8 +8,7 @@
 namespace {
 
 D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
-D_ALIAS_FUNCTION(
-  _asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
+D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
 
 } // namespace
 
@@ -21,8 +20,7 @@ FrameProfiler::start() {
 void
 FrameProfiler::stop(uint32_t totalLiveVehicles) {
   auto stopTime = _getTime();
-  const int32_t stepMilliSeconds =
-    _asMilliSeconds(stopTime - _startTime).count();
+  const int32_t stepMilliSeconds = _asMilliSeconds(stopTime - _startTime).count();
   set(totalLiveVehicles, stepMilliSeconds);
 }
 

@@ -8,8 +8,7 @@
 
 #include "application/defines.hpp"
 
-WorkerProducer::AgentData::AgentData(uint32_t inDataIndex)
-  : dataIndex(inDataIndex) {}
+WorkerProducer::AgentData::AgentData(uint32_t inDataIndex) : dataIndex(inDataIndex) {}
 
 WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
   _workerHandle = emscripten_create_worker(D_WORKER_SCRIPT_URL);
@@ -121,8 +120,9 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
       const bool carWasAlive = currData.isAlive;
 
-      receivedMsg >> currData.isAlive >> currData.isDying >> currData.life >>
-        currData.fitness >> currData.totalUpdates >> currData.groundIndex;
+      receivedMsg >> currData.isAlive >> currData.isDying;
+      receivedMsg >> currData.life >> currData.fitness;
+      receivedMsg >> currData.totalUpdates >> currData.groundIndex;
 
       if (carWasAlive && !currData.isAlive) {
         _currentLiveAgents -= 1;
@@ -211,9 +211,7 @@ WorkerProducer::_sendToConsumer() {
 
   em_worker_callback_func callback = WorkerProducer::_onMessageCallback;
 
-  emscripten_call_worker(
-    _workerHandle, D_WORKER_MAIN_STR, dataPointer, dataSize, callback,
-    (void*)this);
+  emscripten_call_worker(_workerHandle, D_WORKER_MAIN_STR, dataPointer, dataSize, callback, (void*)this);
 }
 
 void
@@ -265,8 +263,7 @@ WorkerProducer::_fillMessageWithAgentToAdd() {
 }
 
 bool
-WorkerProducer::addNewAgent(
-  uint32_t inDataIndex, const AbstractGenome& inGenome) {
+WorkerProducer::addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome) {
   const uint32_t totalLiveVehicles = getTotalLiveAgents();
 
   if (totalLiveVehicles > 20) {
@@ -330,8 +327,7 @@ const CarData&
 WorkerProducer::getCarDataByDataIndex(uint32_t inDataIndex) const {
   auto it = _agentsDataMap.find(inDataIndex);
   if (it == _agentsDataMap.end())
-    D_THROW(
-      std::invalid_argument, "data index not found, value -> " << inDataIndex);
+    D_THROW(std::invalid_argument, "data index not found, value -> " << inDataIndex);
 
   return it->second->carData;
 }

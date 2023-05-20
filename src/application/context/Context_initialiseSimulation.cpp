@@ -26,8 +26,7 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   circuitDimension.max = glm::vec3(-maxFloat, -maxFloat, -maxFloat);
 
   auto onSkeletonPatch = [&circuitDimension, &skeletonVertices](
-                           const CircuitBuilder::Vec3Array& vertices,
-                           const CircuitBuilder::Indices& indices) -> void {
+                           const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Indices& indices) -> void {
     for (int index : indices) {
       const glm::vec3& vertex = vertices.at(index);
 
@@ -46,12 +45,10 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   float maxUpperValue = 0.0f;
   constexpr float k_maxDeformation = 0.5f;
 
-  auto onGroundPatchCallback =
-    [&latestSize, &whiteColor, &groundVertices, &maxUpperValue](
-      const CircuitBuilder::Vec3Array& vertices,
-      const CircuitBuilder::Vec3Array& colors,
-      const CircuitBuilder::Vec3Array& normals,
-      const CircuitBuilder::Indices& indices) -> void {
+  auto onGroundPatchCallback = [&latestSize, &whiteColor, &groundVertices, &maxUpperValue](
+                                 const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                 const CircuitBuilder::Vec3Array& normals,
+                                 const CircuitBuilder::Indices& indices) -> void {
     // save it for "onWallPatch" bellow
     latestSize = float(groundVertices.size());
 
@@ -70,8 +67,7 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
 
       const glm::vec3 animNormal = (normals.at(index) + deformation) * 4.0f;
 
-      groundVertices.emplace_back(
-        vertices.at(index), color, normals.at(index), animNormal, limitValue);
+      groundVertices.emplace_back(vertices.at(index), color, normals.at(index), animNormal, limitValue);
 
       limitValue += limitStep;
     }
@@ -79,10 +75,8 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
     maxUpperValue += 1.0f;
   };
 
-  auto onWallPatchCallback = [&latestSize, &whiteColor, &greyColor,
-                              &wallsVertices](
-                               const CircuitBuilder::Vec3Array& vertices,
-                               const CircuitBuilder::Vec3Array& colors,
+  auto onWallPatchCallback = [&latestSize, &whiteColor, &greyColor, &wallsVertices](
+                               const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                                const CircuitBuilder::Vec3Array& normals,
                                const CircuitBuilder::Indices& indices) -> void {
     static_cast<void>(colors); // <= unused
@@ -102,8 +96,7 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
 
       const glm::vec3 animNormal = (normals.at(index) + deformation) * 4.0f;
 
-      wallsVertices.emplace_back(
-        vertices.at(index), color, normals.at(index), animNormal, limitValue);
+      wallsVertices.emplace_back(vertices.at(index), color, normals.at(index), animNormal, limitValue);
 
       limitValue += limitStep;
     }
@@ -130,13 +123,11 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
 
   logic.cores.profileData.initialize(simulationDef.totalCores, 60);
 
-  circuitDimension.center =
-    circuitDimension.min + (circuitDimension.max - circuitDimension.min) * 0.5f;
+  circuitDimension.center = circuitDimension.min + (circuitDimension.max - circuitDimension.min) * 0.5f;
 
   // graphic.cameraData.center = logic.simulation->getStartPosition();
   graphic.cameraData.center = {0, 0, 0};
   graphic.cameraData.distance = 200.0f;
 
-  graphic.scene.animatedCircuitRenderer.initialize(
-    skeletonVertices, groundVertices, wallsVertices, maxUpperValue);
+  graphic.scene.animatedCircuitRenderer.initialize(skeletonVertices, groundVertices, wallsVertices, maxUpperValue);
 }

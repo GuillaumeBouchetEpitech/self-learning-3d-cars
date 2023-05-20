@@ -11,11 +11,9 @@ CarTailsRenderer::initialize() {
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  _shader =
-    resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
+  _shader = resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
 
-  auto geoDef = resourceManager.getGeometryDefinition(
-    gero::asValue(GeometriesAliases::wireFramesLineStrip));
+  auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::wireFramesLineStrip));
   _geometries.leaderCarTrail.initialize(*_shader, geoDef);
   _geometries.leaderCarTrail.setPrimitiveCount(0);
 
@@ -27,8 +25,7 @@ CarTailsRenderer::initialize() {
 }
 
 void
-CarTailsRenderer::setMatricesData(
-  const gero::graphics::Camera::MatricesData& matricesData) {
+CarTailsRenderer::setMatricesData(const gero::graphics::Camera::MatricesData& matricesData) {
   _matricesData = matricesData;
 }
 
@@ -39,8 +36,7 @@ CarTailsRenderer::updateLatestTrail() {
 
   const auto& bestGenome = logic.simulation->getBestGenome();
 
-  const auto& bestWheelsTrailData =
-    logic.carWheelsTrails.getTrailById(bestGenome.getId());
+  const auto& bestWheelsTrailData = logic.carWheelsTrails.getTrailById(bestGenome.getId());
 
   auto& currCarNewTrail = _geometries.bestNewCarsTrails.at(_currentTrailIndex);
 
@@ -51,8 +47,7 @@ CarTailsRenderer::updateLatestTrail() {
   }
 
   // increase the currently used trail index (loop if too high)
-  _currentTrailIndex =
-    (_currentTrailIndex + 1) % _geometries.bestNewCarsTrails.size();
+  _currentTrailIndex = (_currentTrailIndex + 1) % _geometries.bestNewCarsTrails.size();
 }
 
 void
@@ -79,8 +74,7 @@ CarTailsRenderer::render() {
 
     if (logic.leaderCar.hasLeader() && !logic.carWheelsTrails.isEmpty()) {
 
-      const auto& trailData =
-        logic.carWheelsTrails.getTrailByIndex(logic.leaderCar.leaderIndex());
+      const auto& trailData = logic.carWheelsTrails.getTrailByIndex(logic.leaderCar.leaderIndex());
 
       // rely on only the 30 last positions recorded
       constexpr int maxSize = 30;
@@ -94,13 +88,10 @@ CarTailsRenderer::render() {
         const int totalSize = currWheel.size();
         const int currSize = std::min(totalSize, maxSize) - startIndex;
 
-        const float* dataPointer =
-          &currWheel.at(totalSize - currSize - startIndex).x;
-        const int dataSize =
-          currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
+        const float* dataPointer = &currWheel.at(totalSize - currSize - startIndex).x;
+        const int dataSize = currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
 
-        _geometries.leaderCarTrail.updateOrAllocateBuffer(
-          0, dataSize, dataPointer);
+        _geometries.leaderCarTrail.updateOrAllocateBuffer(0, dataSize, dataPointer);
         _geometries.leaderCarTrail.setPrimitiveCount(currSize);
         _geometries.leaderCarTrail.render();
       }

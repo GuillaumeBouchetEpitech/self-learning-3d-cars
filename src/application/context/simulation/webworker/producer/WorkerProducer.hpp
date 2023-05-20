@@ -38,12 +38,7 @@ private:
 
   uint32_t _currentLiveAgents = 0;
 
-  enum class Status : unsigned int {
-    WebWorkerLoaded = 0,
-    Processing,
-    Updated,
-    Count
-  };
+  enum class Status : unsigned int { WebWorkerLoaded = 0, Processing, Updated, Count };
 
   std::bitset<gero::asValue(Status::Count)> _flags;
 

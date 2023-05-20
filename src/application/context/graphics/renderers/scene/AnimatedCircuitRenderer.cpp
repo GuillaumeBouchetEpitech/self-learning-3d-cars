@@ -14,9 +14,8 @@ using namespace gero::graphics;
 
 void
 AnimatedCircuitRenderer::initialize(
-  const std::vector<glm::vec3>& skeletonVertices,
-  const AnimatedVertices& groundVertices, const AnimatedVertices& wallsVertices,
-  float maxUpperValue) {
+  const std::vector<glm::vec3>& skeletonVertices, const AnimatedVertices& groundVertices,
+  const AnimatedVertices& wallsVertices, float maxUpperValue) {
   _maxUpperValue = maxUpperValue;
 
   auto& resourceManager = Context::get().graphic.resourceManager;
@@ -41,8 +40,7 @@ AnimatedCircuitRenderer::initialize(
     .addUniform("u_lowerLimit")
     .addUniform("u_upperLimit");
 
-  _shaderCircuitLit =
-    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shaderCircuitLit = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   shaderProgramBuilder.reset()
     .setVertexFilename(basePath + "animatedCircuitWalls.glsl.vert")
@@ -56,16 +54,13 @@ AnimatedCircuitRenderer::initialize(
     .addUniform("u_lowerLimit")
     .addUniform("u_upperLimit");
 
-  _shaderCircuit =
-    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shaderCircuit = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
-  _shaderWireFrame =
-    resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
+  _shaderWireFrame = resourceManager.getShader(gero::asValue(ShadersAliases::wireFrames));
 
   { // compute circuit skeleton wireFrame geometry
 
-    auto geoDef = resourceManager.getGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireFrames));
+    auto geoDef = resourceManager.getGeometryDefinition(gero::asValue(GeometriesAliases::wireFrames));
     _geometries.skeleton.initialize(*_shaderWireFrame, geoDef);
     _geometries.skeleton.allocateBuffer(0, skeletonVertices);
     _geometries.skeleton.setPrimitiveCount(skeletonVertices.size());
@@ -84,8 +79,7 @@ AnimatedCircuitRenderer::initialize(
       .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
 
-    _geometries.grounds.initialize(
-      *_shaderCircuitLit, geometryBuilder.getDefinition());
+    _geometries.grounds.initialize(*_shaderCircuitLit, geometryBuilder.getDefinition());
     _geometries.grounds.allocateBuffer(0, groundVertices);
     _geometries.grounds.setPrimitiveCount(groundVertices.size());
 
@@ -103,8 +97,7 @@ AnimatedCircuitRenderer::initialize(
       .addVboAttribute("a_vertex_animatedNormal", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_vertex_index", Geometry::AttrType::Float);
 
-    _geometries.walls.initialize(
-      *_shaderCircuit, geometryBuilder.getDefinition());
+    _geometries.walls.initialize(*_shaderCircuit, geometryBuilder.getDefinition());
     _geometries.walls.allocateBuffer(0, wallsVertices);
     _geometries.walls.setPrimitiveCount(wallsVertices.size());
 
@@ -182,8 +175,7 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
 }
 
 void
-AnimatedCircuitRenderer::renderWireFrame(
-  const gero::graphics::Camera& inCamera) {
+AnimatedCircuitRenderer::renderWireFrame(const gero::graphics::Camera& inCamera) {
   if (!_shaderWireFrame)
     D_THROW(std::runtime_error, "shader not setup");
 

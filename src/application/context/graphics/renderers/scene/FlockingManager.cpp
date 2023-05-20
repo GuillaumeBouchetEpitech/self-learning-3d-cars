@@ -39,8 +39,7 @@ FlockingManager::Boid::separate(const glm::vec3& target, float coef) {
 }
 
 void
-FlockingManager::Boid::separate(
-  const std::vector<Boid>& boids, float radius, float coef) {
+FlockingManager::Boid::separate(const std::vector<Boid>& boids, float radius, float coef) {
   glm::vec3 total = {0, 0, 0};
   for (const Boid& other : boids) {
     if (*this == other)
@@ -69,8 +68,7 @@ FlockingManager::Boid::wander(float coef) {
 }
 
 void
-FlockingManager::Boid::applyAcceleration(
-  float maxAcceleration, float maxVelocity, float elapsedTime) {
+FlockingManager::Boid::applyAcceleration(float maxAcceleration, float maxVelocity, float elapsedTime) {
   // limitate acc
   const float accMagnitude = glm::length(acceleration);
   if (accMagnitude > maxAcceleration)
@@ -159,8 +157,7 @@ FlockingManager::render() {
   {
 
     GeometriesStackRenderer::GeometryInstance instance;
-    instance.position = glm::vec3(0.0f),
-    instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
+    instance.position = glm::vec3(0.0f), instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
     instance.scale = glm::vec3(0.4f);
     instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
     instance.outlineValue = 1.0f;
@@ -179,8 +176,7 @@ FlockingManager::render() {
 
     for (Boid& boid : _boids)
       for (std::size_t kk = 0; kk + 1 < boid.trail.size(); ++kk)
-        stackRenderer.pushThickTriangle3dLine(
-          boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
+        stackRenderer.pushThickTriangle3dLine(boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
 
     scene.stackRenderers.flush();
   }

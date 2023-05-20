@@ -20,9 +20,7 @@
 namespace {
 
 void
-_validateInputs(
-  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes,
-  uint32_t inTotalCores) {
+_validateInputs(uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes, uint32_t inTotalCores) {
   if (inWidth < 800)
     D_THROW(std::runtime_error, "argument 0 (width) cannot be < 800");
   if (inHeight < 600)
@@ -60,16 +58,14 @@ _processCommandLineArgs(Application::Definition& def, int argc, char** argv) {
   if (argc >= 4) {
     auto value = intValueParser.validate(argv[3]);
     if (!value)
-      D_THROW(
-        std::runtime_error, "argument 2 (total genomes) is not a valid number");
+      D_THROW(std::runtime_error, "argument 2 (total genomes) is not a valid number");
     def.totalGenomes = *value;
   }
 
   if (argc >= 5) {
     auto value = intValueParser.validate(argv[4]);
     if (!value)
-      D_THROW(
-        std::runtime_error, "argument 3 (total cores) is not a valid number");
+      D_THROW(std::runtime_error, "argument 3 (total cores) is not a valid number");
     def.totalCores = *value;
   }
 }
@@ -105,9 +101,7 @@ extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
 void
-startApplication(
-  uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes,
-  uint32_t inTotalCores) {
+startApplication(uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes, uint32_t inTotalCores) {
   if (myApplication)
     return;
 

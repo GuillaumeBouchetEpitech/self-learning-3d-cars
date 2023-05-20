@@ -35,8 +35,7 @@ public:
 
 public:
   void initialize();
-  void
-  setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
+  void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
 public:
   void updateLatestTrail();

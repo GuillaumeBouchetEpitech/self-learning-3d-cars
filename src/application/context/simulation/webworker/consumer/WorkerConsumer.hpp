@@ -30,9 +30,7 @@ private:
     NeuralNetwork neuralNet;
     std::vector<CarData::CarTransform> transformsHistory;
 
-    AgentValues(
-      uint32_t inDataIndex,
-      const NeuralNetworkTopology& inNeuralNetworkTopology);
+    AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology);
   };
 
 private:

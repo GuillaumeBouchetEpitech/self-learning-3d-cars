@@ -28,8 +28,7 @@ private:
   glm::vec3 _startPosition;
 
   std::vector<std::shared_ptr<WorkerProducer>> _workerProducers;
-  std::unordered_map<uint64_t, std::shared_ptr<WorkerProducer>>
-    _agentsWorkerMap;
+  std::unordered_map<uint64_t, std::shared_ptr<WorkerProducer>> _agentsWorkerMap;
 
   uint32_t _currentAgentIndex = 0;
 
@@ -68,22 +67,16 @@ private:
 
 public:
   virtual uint32_t getTotalCores() const override;
-  virtual const AbstractSimulation::CoreState&
-  getCoreState(uint32_t index) const override;
+  virtual const AbstractSimulation::CoreState& getCoreState(uint32_t index) const override;
   virtual const CarData& getCarResult(uint32_t index) const override;
   virtual uint32_t getTotalCars() const override;
 
 public:
-  virtual void setOnWorkersReadyCallback(
-    AbstractSimulation::SimpleCallback callback) override;
-  virtual void setOnGenerationResetCallback(
-    AbstractSimulation::SimpleCallback callback) override;
-  virtual void setOnGenerationStepCallback(
-    AbstractSimulation::SimpleCallback callback) override;
-  virtual void setOnGenomeDieCallback(
-    AbstractSimulation::GenomeDieCallback callback) override;
-  virtual void setOnGenerationEndCallback(
-    AbstractSimulation::GenerationEndCallback callback) override;
+  virtual void setOnWorkersReadyCallback(AbstractSimulation::SimpleCallback callback) override;
+  virtual void setOnGenerationResetCallback(AbstractSimulation::SimpleCallback callback) override;
+  virtual void setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) override;
+  virtual void setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) override;
+  virtual void setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) override;
 
 public:
   virtual std::size_t getWaitingGenomes() const override;

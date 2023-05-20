@@ -27,9 +27,8 @@ _initializeSceneStructures(ResourceManager& rManager) {
       .addUniform("u_composedMatrix")
       .addUniform("u_color");
 
-    auto shader = rManager.createShader(
-      gero::asValue(ShadersAliases::wireFrames),
-      shaderProgramBuilder.getDefinition());
+    auto shader =
+      rManager.createShader(gero::asValue(ShadersAliases::wireFrames), shaderProgramBuilder.getDefinition());
 
     geometryBuilder.reset()
       .setShader(*shader)
@@ -38,14 +37,12 @@ _initializeSceneStructures(ResourceManager& rManager) {
       .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireFrames),
-      geometryBuilder.getDefinition(), true);
+      gero::asValue(GeometriesAliases::wireFrames), geometryBuilder.getDefinition(), true);
 
     geometryBuilder.setPrimitiveType(Geometry::PrimitiveType::line_strip);
 
     rManager.createGeometryDefinition(
-      gero::asValue(GeometriesAliases::wireFramesLineStrip),
-      geometryBuilder.getDefinition(), true);
+      gero::asValue(GeometriesAliases::wireFramesLineStrip), geometryBuilder.getDefinition(), true);
   }
 }
 

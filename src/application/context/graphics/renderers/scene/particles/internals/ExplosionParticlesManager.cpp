@@ -24,8 +24,7 @@ std::array<const glm::vec3, 3> k_particleColors{{
 glm::vec3
 getRandomVec3(float radius) {
   return glm::vec3(
-    gero::rng::RNG::getRangedValue(-radius, radius),
-    gero::rng::RNG::getRangedValue(-radius, radius),
+    gero::rng::RNG::getRangedValue(-radius, radius), gero::rng::RNG::getRangedValue(-radius, radius),
     gero::rng::RNG::getRangedValue(-radius, radius));
 }
 
@@ -36,10 +35,8 @@ getRandomVec3(float radius) {
 //
 
 ExplosionParticlesManager::ExplosionParticle::ExplosionParticle(
-  const glm::vec3& position, const glm::vec3& linearVelocity,
-  const glm::vec3& color, float scale, float life)
-  : position(position), linearVelocity(linearVelocity), scale(scale),
-    color(color), life(life), maxLife(life) {}
+  const glm::vec3& position, const glm::vec3& linearVelocity, const glm::vec3& color, float scale, float life)
+  : position(position), linearVelocity(linearVelocity), scale(scale), color(color), life(life), maxLife(life) {}
 
 ExplosionParticlesManager::ExplosionParticlesManager() {
   _smallExplosionParticles.pre_allocate(256);
@@ -109,8 +106,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
   auto& scene = context.graphic.scene;
 
   GeometriesStackRenderer::GeometryInstance instance;
-  instance.position = glm::vec3(0.0f),
-  instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
+  instance.position = glm::vec3(0.0f), instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
   instance.scale = glm::vec3(0.2f);
   instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
   instance.outlineValue = 1.0f;
@@ -161,8 +157,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
 }
 
 void
-ExplosionParticlesManager::emitParticles(
-  const glm::vec3& position, const glm::vec3& velocity) {
+ExplosionParticlesManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity) {
 
   const unsigned int totalParticles = gero::rng::RNG::getRangedValue(5, 8);
 
@@ -178,19 +173,16 @@ ExplosionParticlesManager::emitParticles(
 
   for (unsigned int ii = 0; ii < totalParticles; ++ii) {
     const glm::vec3 particlePos = position + getRandomVec3(1.0f);
-    const glm::vec3 color =
-      k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
+    const glm::vec3 color = k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
 
     const float maxVelocity = gero::rng::RNG::getRangedValue(15.0f, 25.0f);
-    const glm::vec3 linearVelocity =
-      glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
+    const glm::vec3 linearVelocity = glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
 
     const float scale = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
 
     const float life = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
 
-    _smallExplosionParticles.emplace_back(
-      particlePos, linearVelocity, color, scale, life);
+    _smallExplosionParticles.emplace_back(particlePos, linearVelocity, color, scale, life);
   }
 
   for (unsigned int ii = 0; ii < 3; ++ii) {
@@ -205,7 +197,6 @@ ExplosionParticlesManager::emitParticles(
 
     const float life = gero::rng::RNG::getRangedValue(0.25f, 0.75f);
 
-    _bigExplosionParticles.emplace_back(
-      particlePos, linearVelocity, color, scale, life);
+    _bigExplosionParticles.emplace_back(particlePos, linearVelocity, color, scale, life);
   }
 }

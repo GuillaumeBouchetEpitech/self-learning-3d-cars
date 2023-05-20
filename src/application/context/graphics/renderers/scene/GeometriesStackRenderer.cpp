@@ -25,8 +25,7 @@ quat_from_axis_angle(const glm::vec3& axis, float angle) {
 glm::vec3
 apply_quat_to_vec3(const glm::vec3& position, const glm::quat& q) {
   const glm::vec3 axis(q.x, q.y, q.z);
-  return position +
-         2.0f * glm::cross(axis, glm::cross(axis, position) + q.w * position);
+  return position + 2.0f * glm::cross(axis, glm::cross(axis, position) + q.w * position);
 }
 
 } // namespace
@@ -57,8 +56,7 @@ GeometriesStackRenderer::initialize() {
     // .addUniform("u_lightPos")
     ;
 
-  _shader =
-    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)
@@ -80,14 +78,12 @@ GeometriesStackRenderer::initialize() {
 }
 
 void
-GeometriesStackRenderer::setMatricesData(
-  const gero::graphics::Camera::MatricesData& matricesData) {
+GeometriesStackRenderer::setMatricesData(const gero::graphics::Camera::MatricesData& matricesData) {
   _matricesData = matricesData;
 }
 
 void
-GeometriesStackRenderer::createAlias(
-  int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices) {
+GeometriesStackRenderer::createAlias(int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices) {
 
   auto newAlias = std::make_shared<AliasedGeometry>();
 
@@ -95,8 +91,7 @@ GeometriesStackRenderer::createAlias(
 
   newAlias->geometry.initialize(*_shader, _geoDef);
   newAlias->geometry.allocateBuffer(0, vertices);
-  newAlias->geometry.preAllocateBufferFromCapacity(
-    1, newAlias->instanceVertices);
+  newAlias->geometry.preAllocateBufferFromCapacity(1, newAlias->instanceVertices);
   newAlias->geometry.setPrimitiveStart(0);
   newAlias->geometry.setPrimitiveCount(uint32_t(vertices.size()));
 
@@ -122,22 +117,17 @@ GeometriesStackRenderer::clearAlias(int32_t alias) {
 
 void
 GeometriesStackRenderer::pushAlias(
-  int32_t alias, const GeometryInstance& newInstance,
-  float inForwardOffset /*= 0.0f*/) {
+  int32_t alias, const GeometryInstance& newInstance, float inForwardOffset /*= 0.0f*/) {
   auto it = _aliasedGeometriesMap.find(alias);
   if (it == _aliasedGeometriesMap.end())
     D_THROW(std::runtime_error, "alias not found: " << alias);
 
   GeometryInstance copyInstance = newInstance;
 
-  glm::vec3 axis = glm::vec3(
-    copyInstance.orientation.x, copyInstance.orientation.y,
-    copyInstance.orientation.z);
-  copyInstance.orientation =
-    quat_from_axis_angle(axis, copyInstance.orientation.w);
+  glm::vec3 axis = glm::vec3(copyInstance.orientation.x, copyInstance.orientation.y, copyInstance.orientation.z);
+  copyInstance.orientation = quat_from_axis_angle(axis, copyInstance.orientation.w);
 
-  const glm::vec3 dir =
-    apply_quat_to_vec3(glm::vec3(1, 0, 0), copyInstance.orientation);
+  const glm::vec3 dir = apply_quat_to_vec3(glm::vec3(1, 0, 0), copyInstance.orientation);
 
   copyInstance.position += dir * inForwardOffset;
 

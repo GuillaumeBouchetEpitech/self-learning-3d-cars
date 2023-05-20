@@ -73,8 +73,7 @@ Scene::_renderHUD_ortho() {
       textRenderer.pushText(textPos, message);
 
       gero::graphics::helpers::renderTextBackground(
-        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f, stackRenderers,
+        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f, stackRenderers,
         textRenderer);
     }
 
@@ -100,8 +99,7 @@ Scene::_renderHUD_ortho() {
       textRenderer.pushText(textPos, message);
 
       gero::graphics::helpers::renderTextBackground(
-        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f, stackRenderers,
+        depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 50.0f, 60.0f, stackRenderers,
         textRenderer);
     }
 

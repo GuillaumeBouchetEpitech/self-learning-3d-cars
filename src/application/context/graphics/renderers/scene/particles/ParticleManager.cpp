@@ -15,8 +15,7 @@ ParticleManager::render(const gero::graphics::Camera& inCamera) {
 }
 
 void
-ParticleManager::emitParticles(
-  const glm::vec3& position, const glm::vec3& velocity) {
+ParticleManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity) {
 
   _explosionParticlesManager.emitParticles(position, velocity);
   _trailsParticleManager.emitParticles(position, velocity);

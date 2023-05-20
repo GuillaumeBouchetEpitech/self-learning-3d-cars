@@ -30,8 +30,7 @@ private:
     void separate(const std::vector<Boid>& boids, float radius, float coef);
     void wander(float coef);
 
-    void applyAcceleration(
-      float maxAcceleration, float maxVelocity, float elapsedTime);
+    void applyAcceleration(float maxAcceleration, float maxVelocity, float elapsedTime);
 
     bool operator==(const Boid& other) const;
   };

@@ -14,8 +14,7 @@ using namespace gero::graphics;
 using namespace gero::graphics::GlContext;
 
 void
-ChessBoardFloorRenderer::initialize(
-  const glm::vec3& center, const glm::vec3& size) {
+ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& size) {
 
   ShaderProgramBuilder shaderProgramBuilder;
   GeometryBuilder geometryBuilder;
@@ -33,8 +32,7 @@ ChessBoardFloorRenderer::initialize(
     .addUniform("u_lightPos")
     .addUniform("u_viewPos");
 
-  _shader =
-    std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
+  _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)
@@ -53,21 +51,18 @@ ChessBoardFloorRenderer::initialize(
     auto pixelsPtr = std::make_unique<uint8_t[]>(size.x * size.y * 4);
     uint8_t* rawPixels = pixelsPtr.get();
 
-    const auto setPixel =
-      [&size, rawPixels](int x, int y, uint8_t grey, uint8_t alpha) {
-        const uint32_t pixelPos = y * 4 * size.x + x * 4;
+    const auto setPixel = [&size, rawPixels](int x, int y, uint8_t grey, uint8_t alpha) {
+      const uint32_t pixelPos = y * 4 * size.x + x * 4;
 
-        rawPixels[pixelPos + 0] = grey;
-        rawPixels[pixelPos + 1] = grey;
-        rawPixels[pixelPos + 2] = grey;
-        rawPixels[pixelPos + 3] = alpha;
-      };
+      rawPixels[pixelPos + 0] = grey;
+      rawPixels[pixelPos + 1] = grey;
+      rawPixels[pixelPos + 2] = grey;
+      rawPixels[pixelPos + 3] = alpha;
+    };
 
     for (int32_t yy = 0; yy < size.y; ++yy)
       for (int32_t xx = 0; xx < size.x; ++xx) {
-        if (
-          (xx < size.x * 0.5f && yy < size.y * 0.5f) ||
-          (xx > size.x * 0.5f && yy > size.y * 0.5f)) {
+        if ((xx < size.x * 0.5f && yy < size.y * 0.5f) || (xx > size.x * 0.5f && yy > size.y * 0.5f)) {
           setPixel(xx, yy, 32, 220);
         } else {
           setPixel(xx, yy, 100, 255);
@@ -75,8 +70,7 @@ ChessBoardFloorRenderer::initialize(
       }
 
     _texture.allocateBlankRgbaUBytes(
-      size, gero::graphics::Texture::Quality::smoothed,
-      gero::graphics::Texture::Pattern::repeat, rawPixels);
+      size, gero::graphics::Texture::Quality::smoothed, gero::graphics::Texture::Pattern::repeat, rawPixels);
   }
 
   { // compute chessboard ground

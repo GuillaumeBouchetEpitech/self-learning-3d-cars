@@ -25,9 +25,7 @@ private:
     CarAgent carAgent;
     NeuralNetwork neuralNet;
 
-    AgentValues(
-      uint64_t inDataIndex,
-      const NeuralNetworkTopology& inNeuralNetworkTopology);
+    AgentValues(uint64_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology);
   };
 
 private:
@@ -91,20 +89,15 @@ private:
 
 public:
   virtual uint32_t getTotalCores() const override;
-  virtual const AbstractSimulation::CoreState&
-  getCoreState(uint32_t index) const override;
+  virtual const AbstractSimulation::CoreState& getCoreState(uint32_t index) const override;
   virtual const CarData& getCarResult(uint32_t index) const override;
   virtual uint32_t getTotalCars() const override;
 
 public:
-  virtual void setOnGenerationResetCallback(
-    AbstractSimulation::SimpleCallback callback) override;
-  virtual void setOnGenerationStepCallback(
-    AbstractSimulation::SimpleCallback callback) override;
-  virtual void setOnGenomeDieCallback(
-    AbstractSimulation::GenomeDieCallback callback) override;
-  virtual void setOnGenerationEndCallback(
-    AbstractSimulation::GenerationEndCallback callback) override;
+  virtual void setOnGenerationResetCallback(AbstractSimulation::SimpleCallback callback) override;
+  virtual void setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) override;
+  virtual void setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) override;
+  virtual void setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) override;
 
 public:
   virtual std::size_t getWaitingGenomes() const override;

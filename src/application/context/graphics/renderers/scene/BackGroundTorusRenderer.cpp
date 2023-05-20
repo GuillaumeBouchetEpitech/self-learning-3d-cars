@@ -27,13 +27,12 @@ struct RealVertex {
 
 void
 generateTorusVertices(
-  uint32_t ringQuality, uint32_t tubeQuality, float ringRadius,
-  float tubeRadius, std::vector<RealVertex>& outVertices) {
+  uint32_t ringQuality, uint32_t tubeQuality, float ringRadius, float tubeRadius,
+  std::vector<RealVertex>& outVertices) {
 
   gero::graphics::MakeGeometries::Vertices tmpVertices;
   tmpVertices.reserve(2048);
-  gero::graphics::MakeGeometries::makeTorus(
-    tmpVertices, ringQuality, tubeQuality, ringRadius, tubeRadius);
+  gero::graphics::MakeGeometries::makeTorus(tmpVertices, ringQuality, tubeQuality, ringRadius, tubeRadius);
 
   outVertices.reserve(tmpVertices.size());
   for (int ringIndex = 0; ringIndex + 1 < int(ringQuality); ++ringIndex) {
@@ -91,8 +90,7 @@ BackGroundTorusRenderer::initialize() {
     .addUniform("u_texture")
     .addUniform("u_animationCoef");
 
-  _shader = std::make_shared<gero::graphics::ShaderProgram>(
-    shaderProgramBuilder.getDefinition());
+  _shader = std::make_shared<gero::graphics::ShaderProgram>(shaderProgramBuilder.getDefinition());
 
   geometryBuilder.reset()
     .setShader(*_shader)
@@ -103,14 +101,11 @@ BackGroundTorusRenderer::initialize() {
 
   { // generate the gero::graphics::Texture
 
-    constexpr gero::graphics::Texture::Quality quality =
-      gero::graphics::Texture::Quality::smoothedAndMipMapped;
-    constexpr gero::graphics::Texture::Pattern pattern =
-      gero::graphics::Texture::Pattern::repeat;
+    constexpr gero::graphics::Texture::Quality quality = gero::graphics::Texture::Quality::smoothedAndMipMapped;
+    constexpr gero::graphics::Texture::Pattern pattern = gero::graphics::Texture::Pattern::repeat;
 
     const glm::ivec2 texSize = {32, 32};
-    auto pixelsPtr =
-      std::make_unique<unsigned char[]>(texSize.x * texSize.y * 4);
+    auto pixelsPtr = std::make_unique<unsigned char[]>(texSize.x * texSize.y * 4);
     unsigned char* rawPixels = pixelsPtr.get();
 
     gero::rng::DeterministicRng rng;
@@ -140,8 +135,7 @@ BackGroundTorusRenderer::initialize() {
     constexpr uint32_t l_ringQuality = 128;
     constexpr uint32_t k_tubeQuality = 64;
 
-    generateTorusVertices(
-      l_ringQuality, k_tubeQuality, k_ringRadius, k_tubeRadius, vertices);
+    generateTorusVertices(l_ringQuality, k_tubeQuality, k_ringRadius, k_tubeRadius, vertices);
 
     _geometry.initialize(*_shader, geometryBuilder.getDefinition());
     _geometry.allocateBuffer(0, vertices);
@@ -174,8 +168,7 @@ BackGroundTorusRenderer::render(const gero::graphics::Camera& inCamera) {
   _shader->bind();
 
   glm::mat4 model = glm::identity<glm::mat4>();
-  model = glm::translate(
-    model, inCamera.getTarget() + glm::vec3(0, k_ringRadius * 1.0f, 0));
+  model = glm::translate(model, inCamera.getTarget() + glm::vec3(0, k_ringRadius * 1.0f, 0));
   model = glm::rotate(model, gero::math::hpi, glm::vec3(0, 0, 1));
   model = glm::scale(model, glm::vec3(1, 2, 1));
 

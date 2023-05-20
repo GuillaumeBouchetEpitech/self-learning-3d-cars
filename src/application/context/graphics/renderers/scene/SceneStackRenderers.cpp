@@ -21,11 +21,8 @@ SceneStackRenderers::initialize() {
   geometryBuilder.reset()
     .addVbo()
     .setVboAsDynamic()
-    .addVboAttribute(
-      "a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
-    .addVboAttribute(
-      "a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
+    .addVboAttribute("a_vertex_position", gero::graphics::Geometry::AttrType::Vec3f)
+    .addVboAttribute("a_vertex_color", gero::graphics::Geometry::AttrType::Vec4f);
 
-  StackRenderers::initialize(
-    shaderProgramBuilder.getDefinition(), geometryBuilder.getDefinition(false));
+  StackRenderers::initialize(shaderProgramBuilder.getDefinition(), geometryBuilder.getDefinition(false));
 }

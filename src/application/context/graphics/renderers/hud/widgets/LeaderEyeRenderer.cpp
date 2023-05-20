@@ -36,9 +36,8 @@ LeaderEyeRenderer::fadeIn(float delay, float duration) {
   const auto& vSize = graphic.cameraData.viewportSize;
   const float targetPos = vSize.x - k_sizeX + k_faceInX;
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeOutCubic)
-                  .push(1.0f, targetPos);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, targetPos);
 
   _isVisible = true;
 }
@@ -53,9 +52,8 @@ LeaderEyeRenderer::fadeOut(float delay, float duration) {
   const auto& vSize = graphic.cameraData.viewportSize;
   const float targetPos = vSize.x - k_sizeX + k_faceOutX;
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeInCubic)
-                  .push(1.0f, targetPos);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, targetPos);
 
   _isVisible = false;
 }
@@ -113,8 +111,7 @@ LeaderEyeRenderer::render() {
   //
   //
 
-  const unsigned int totalInputs =
-    context.logic.annTopology.getInputLayerSize();
+  const unsigned int totalInputs = context.logic.annTopology.getInputLayerSize();
   const unsigned int layerSize = 5; // <= hardcoded :(
   const unsigned int layerCount = totalInputs / layerSize;
 
@@ -147,10 +144,8 @@ LeaderEyeRenderer::render() {
   }
 
   for (const auto& position : allPositions) {
-    stackRenderers.getWireFramesStack().pushRectangle(
-      position - eyeSize * 0.5f, eyeSize, whiteColor, 0.5f);
+    stackRenderers.getWireFramesStack().pushRectangle(position - eyeSize * 0.5f, eyeSize, whiteColor, 0.5f);
   }
 
-  stackRenderers.getWireFramesStack().pushRectangle(
-    position, size, whiteColor, 0.5f);
+  stackRenderers.getWireFramesStack().pushRectangle(position, size, whiteColor, 0.5f);
 }

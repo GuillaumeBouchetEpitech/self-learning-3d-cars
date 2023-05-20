@@ -29,9 +29,7 @@ const std::array<float, 3> eyeElevations = {
   -eyeElevation,
 };
 
-const std::array<float, 5> eyeAngles = {
-  -eyeWidthStep * 2.0f, -eyeWidthStep, 0.0f, +eyeWidthStep,
-  +eyeWidthStep * 2.0f};
+const std::array<float, 5> eyeAngles = {-eyeWidthStep * 2.0f, -eyeWidthStep, 0.0f, +eyeWidthStep, +eyeWidthStep * 2.0f};
 
 constexpr float groundMaxRange = 10.0f; // <= ground sensor
 constexpr float groundHeight = 1.0f;
@@ -91,16 +89,15 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   _physicVehicle->setSteeringValue(1, steerVal);
 
   // const float engineFore = gero::easing::GenericEasing<4>()
-  auto engineEasing =
-    gero::easing::GenericEasing<5>()
-      // reverse
-      .push(0.0f, -constants::speedMaxValue)
-      // neutral
-      .push(0.5f, 0.0f)
-      // 4 time faster initial acceleration, then linear acceleration
-      .push(0.5f + 0.5f * 0.25f, constants::speedMaxValue * 4.0f)
-      .push(0.5f + 0.5f * 0.50f, constants::speedMaxValue)
-      .push(0.5f + 0.5f * 1.00f, constants::speedMaxValue);
+  auto engineEasing = gero::easing::GenericEasing<5>()
+                        // reverse
+                        .push(0.0f, -constants::speedMaxValue)
+                        // neutral
+                        .push(0.5f, 0.0f)
+                        // 4 time faster initial acceleration, then linear acceleration
+                        .push(0.5f + 0.5f * 0.25f, constants::speedMaxValue * 4.0f)
+                        .push(0.5f + 0.5f * 0.50f, constants::speedMaxValue)
+                        .push(0.5f + 0.5f * 1.00f, constants::speedMaxValue);
 
   const float engineForce = engineEasing.get(_output.speed);
 
@@ -129,8 +126,7 @@ CarAgent::_createVehicle() {
     {
       // elevate the chassis
       childShape.transform = glm::identity<glm::mat4>();
-      childShape.transform =
-        glm::translate(childShape.transform, glm::vec3(0.0f, 0.0f, 0.9f));
+      childShape.transform = glm::translate(childShape.transform, glm::vec3(0.0f, 0.0f, 0.9f));
     }
     {
       childShape.shape = std::make_shared<gero::physics::PhysicShapeDef>();
@@ -152,9 +148,8 @@ CarAgent::_createVehicle() {
   //
   //
 
-  const glm::vec3 wheelDirectionCS0 = {
-    0.0f, 0.0f, -1.0f}; // down axis: -Z (toward the ground)
-  const glm::vec3 wheelAxleCS = {1.0f, 0.0f, 0.0f}; // rotation axis: +X
+  const glm::vec3 wheelDirectionCS0 = {0.0f, 0.0f, -1.0f}; // down axis: -Z (toward the ground)
+  const glm::vec3 wheelAxleCS = {1.0f, 0.0f, 0.0f};        // rotation axis: +X
   const float wheelRadius = 0.5f;
   const float wheelWidth = 0.2f;
   const float wheelSide = wheelWidth * 0.3f;
@@ -208,19 +203,18 @@ CarAgent::_createVehicle() {
     bool isFrontWheel;
   };
 
-  std::array<WheelPosition, 4> wheelPositions{
-    {// front right
-     {{+chassisHSize.x - wheelSide, +chassisHSize.y - wheelRadius, 0.5f},
-      /*isFrontWheel = */ true},
-     // front left
-     {{-chassisHSize.x + wheelSide, +chassisHSize.y - wheelRadius, 0.5f},
-      /*isFrontWheel = */ true},
-     // rear right
-     {{+chassisHSize.x - wheelSide, -chassisHSize.y + wheelRadius, 0.5f},
-      /*isFrontWheel = */ false},
-     // rear left
-     {{-chassisHSize.x + wheelSide, -chassisHSize.y + wheelRadius, 0.5f},
-      /*isFrontWheel = */ false}}};
+  std::array<WheelPosition, 4> wheelPositions{{// front right
+                                               {{+chassisHSize.x - wheelSide, +chassisHSize.y - wheelRadius, 0.5f},
+                                                /*isFrontWheel = */ true},
+                                               // front left
+                                               {{-chassisHSize.x + wheelSide, +chassisHSize.y - wheelRadius, 0.5f},
+                                                /*isFrontWheel = */ true},
+                                               // rear right
+                                               {{+chassisHSize.x - wheelSide, -chassisHSize.y + wheelRadius, 0.5f},
+                                                /*isFrontWheel = */ false},
+                                               // rear left
+                                               {{-chassisHSize.x + wheelSide, -chassisHSize.y + wheelRadius, 0.5f},
+                                                /*isFrontWheel = */ false}}};
 
   for (auto& wheelPos : wheelPositions) {
     gero::physics::PhysicVehicleDef::WheelStats wheelStats;
@@ -252,8 +246,7 @@ CarAgent::_updateSensors() {
 
   { // eye sensor
 
-    glm::vec4 newNearValue =
-      vehicleTransform * glm::vec4(0, 0, constants::eyeHeight, 1);
+    glm::vec4 newNearValue = vehicleTransform * glm::vec4(0, 0, constants::eyeHeight, 1);
 
     int sensorIndex = 0;
 
@@ -262,8 +255,7 @@ CarAgent::_updateSensors() {
         CarAgent::Sensor& eyeSensor = _eyeSensors.at(sensorIndex++);
 
         const glm::vec4 newFarValue(
-          constants::eyeMaxRange * std::sin(eyeAngle),
-          constants::eyeMaxRange * std::cos(eyeAngle),
+          constants::eyeMaxRange * std::sin(eyeAngle), constants::eyeMaxRange * std::cos(eyeAngle),
           constants::eyeHeight + eyeElevation, 1.0f);
 
         eyeSensor.near = newNearValue;
@@ -274,11 +266,8 @@ CarAgent::_updateSensors() {
 
   { // ground sensor
 
-    _groundSensor.near =
-      vehicleTransform * glm::vec4(0, 0, constants::groundHeight, 1);
-    _groundSensor.far =
-      vehicleTransform *
-      glm::vec4(0, 0, constants::groundHeight - constants::groundMaxRange, 1);
+    _groundSensor.near = vehicleTransform * glm::vec4(0, 0, constants::groundHeight, 1);
+    _groundSensor.far = vehicleTransform * glm::vec4(0, 0, constants::groundHeight - constants::groundMaxRange, 1);
 
   } // ground sensor
 }
@@ -290,8 +279,7 @@ CarAgent::_collideEyeSensors() {
 
     // eye sensors collide ground + walls
     gero::physics::Raycaster::RaycastParams params(
-      sensor.near, sensor.far, 0, gero::asValue(Groups::sensor),
-      gero::asValue(Masks::eyeSensor));
+      sensor.near, sensor.far, 0, gero::asValue(Groups::sensor), gero::asValue(Masks::eyeSensor));
 
     gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
 
@@ -302,8 +290,7 @@ CarAgent::_collideEyeSensors() {
 
     sensor.far = result.allImpactsData.front().impactPoint;
 
-    sensor.value =
-      glm::length(sensor.far - sensor.near) / constants::eyeMaxRange;
+    sensor.value = glm::length(sensor.far - sensor.near) / constants::eyeMaxRange;
   }
 }
 
@@ -313,8 +300,7 @@ CarAgent::_collideGroundSensor() {
 
   // ground sensor collide only ground
   gero::physics::Raycaster::RaycastParams params(
-    _groundSensor.near, _groundSensor.far, 0, gero::asValue(Groups::sensor),
-    gero::asValue(Masks::groundSensor));
+    _groundSensor.near, _groundSensor.far, 0, gero::asValue(Groups::sensor), gero::asValue(Masks::groundSensor));
 
   gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
 
@@ -326,8 +312,7 @@ CarAgent::_collideGroundSensor() {
 
   _groundSensor.far = result.allImpactsData.front().impactPoint;
 
-  _groundSensor.value = glm::length(_groundSensor.far - _groundSensor.near) /
-                        constants::groundMaxRange;
+  _groundSensor.value = glm::length(_groundSensor.far - _groundSensor.near) / constants::groundMaxRange;
 
   if (_isDying == true) {
     return true;
@@ -363,9 +348,7 @@ CarAgent::_collideGroundSensor() {
 }
 
 void
-CarAgent::reset(
-  gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position,
-  const glm::vec4& quaternion) {
+CarAgent::reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion) {
   _fitness = 0;
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;
@@ -389,8 +372,7 @@ CarAgent::reset(
 }
 
 bool
-CarAgent::isOwnedByPhysicWorld(
-  const gero::physics::PhysicWorld* inPhysicWorld) const {
+CarAgent::isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const {
   return _physicWorld == inPhysicWorld;
 }
 

@@ -24,8 +24,7 @@ std::array<const glm::vec3, 3> k_particleColors{{
 glm::vec3
 getRandomVec3(float radius) {
   return glm::vec3(
-    gero::rng::RNG::getRangedValue(-radius, radius),
-    gero::rng::RNG::getRangedValue(-radius, radius),
+    gero::rng::RNG::getRangedValue(-radius, radius), gero::rng::RNG::getRangedValue(-radius, radius),
     gero::rng::RNG::getRangedValue(-radius, radius));
 }
 
@@ -36,18 +35,14 @@ getRandomVec3(float radius) {
 //
 
 TrailsParticleManager::TrailParticle::TrailParticle(
-  const glm::vec3& position, const glm::vec3& linearVelocity,
-  const glm::vec3& color, float scale, float life)
-  : position(position), linearVelocity(linearVelocity), scale(scale),
-    color(color), life(life), maxLife(life) {
+  const glm::vec3& position, const glm::vec3& linearVelocity, const glm::vec3& color, float scale, float life)
+  : position(position), linearVelocity(linearVelocity), scale(scale), color(color), life(life), maxLife(life) {
   // initialize the particle's trail
   for (auto& trailPos : trail)
     trailPos = position;
 }
 
-TrailsParticleManager::TrailsParticleManager() {
-  _trailParticles.pre_allocate(2048);
-}
+TrailsParticleManager::TrailsParticleManager() { _trailParticles.pre_allocate(2048); }
 
 void
 TrailsParticleManager::update(float delta) {
@@ -101,26 +96,22 @@ TrailsParticleManager::render(const gero::graphics::Camera& inCamera) {
         continue;
 
       // update scale
-      const float localScale =
-        trailParticle.life / trailParticle.maxLife * trailParticle.scale;
+      const float localScale = trailParticle.life / trailParticle.maxLife * trailParticle.scale;
 
       const glm::vec4 particleColor = glm::vec4(trailParticle.color, 1);
 
       const auto& trail = trailParticle.trail;
 
       for (std::size_t ii = 0; ii + 1 < trail.size(); ++ii) {
-        stackRenderer.pushThickTriangle3dLine(
-          trail.at(ii + 0), trail.at(ii + 1), localScale * 0.5f, particleColor);
+        stackRenderer.pushThickTriangle3dLine(trail.at(ii + 0), trail.at(ii + 1), localScale * 0.5f, particleColor);
       }
-      stackRenderer.pushThickTriangle3dLine(
-        trailParticle.position, trail.at(0), localScale * 0.5f, particleColor);
+      stackRenderer.pushThickTriangle3dLine(trailParticle.position, trail.at(0), localScale * 0.5f, particleColor);
     }
   }
 }
 
 void
-TrailsParticleManager::emitParticles(
-  const glm::vec3& position, const glm::vec3& velocity) {
+TrailsParticleManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity) {
   const unsigned int totalParticles = gero::rng::RNG::getRangedValue(5, 8);
 
   const float maxVelLength = 10.0f;
@@ -135,10 +126,8 @@ TrailsParticleManager::emitParticles(
 
   for (unsigned int ii = 0; ii < totalParticles; ++ii) {
     const float maxVelocity = gero::rng::RNG::getRangedValue(15.0f, 25.0f);
-    const glm::vec3 particleVel =
-      glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
-    const glm::vec3 color =
-      k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
+    const glm::vec3 particleVel = glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
+    const glm::vec3 color = k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
     const float scale = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
     const float life = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
 

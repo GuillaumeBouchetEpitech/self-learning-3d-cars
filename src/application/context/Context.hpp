@@ -60,14 +60,10 @@ private:
   ~Context();
 
 private:
-  void _initialize(
-    uint32_t width, uint32_t height, uint32_t totalGenomes,
-    uint32_t totalCores);
+  void _initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
 
 public:
-  static void create(
-    uint32_t width, uint32_t height, uint32_t totalGenomes,
-    uint32_t totalCores);
+  static void create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores);
   static void destroy();
   static Context& get();
 

@@ -36,12 +36,9 @@ void
 FitnessDataRenderer::fadeIn(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeOutCubic)
-                  .push(1.0f, k_faceInX);
-  _alphaEasing = gero::easing::GenericEasing<2>()
-                   .push(0.0f, _alpha, gero::easing::easeOutCubic)
-                   .push(1.0f, 1.0f);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, k_faceInX);
+  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeOutCubic).push(1.0f, 1.0f);
 
   _isVisible = true;
 }
@@ -50,12 +47,9 @@ void
 FitnessDataRenderer::fadeOut(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing = gero::easing::GenericEasing<2>()
-                  .push(0.0f, _position.x, gero::easing::easeInCubic)
-                  .push(1.0f, k_faceOutX);
-  _alphaEasing = gero::easing::GenericEasing<2>()
-                   .push(0.0f, _alpha, gero::easing::easeInCubic)
-                   .push(1.0f, 0.0f);
+  _moveEasing =
+    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, k_faceOutX);
+  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeInCubic).push(1.0f, 0.0f);
 
   _isVisible = false;
 }
@@ -102,11 +96,9 @@ FitnessDataRenderer::renderWireFrame() {
 
   {
     stackRenderers.getTrianglesStack().pushQuad(
-      glm::vec2(_position + _size * 0.5f), _size, glm::vec4(0, 0, 0, 0.75f),
-      -0.5f);
+      glm::vec2(_position + _size * 0.5f), _size, glm::vec4(0, 0, 0, 0.75f), -0.5f);
 
-    stackRenderers.getWireFramesStack().pushRectangle(
-      _position, _size, whiteColor, 0.5f);
+    stackRenderers.getWireFramesStack().pushRectangle(_position, _size, whiteColor, 0.5f);
   }
 
   {
@@ -129,8 +121,7 @@ FitnessDataRenderer::renderWireFrame() {
 
       // horizontal data curve
       stackRenderers.getWireFramesStack().pushLine(
-        glm::vec3(_position + prevPos, 0.0f),
-        glm::vec3(_position + currPos, 0.0f), whiteColor * 0.6f);
+        glm::vec3(_position + prevPos, 0.0f), glm::vec3(_position + currPos, 0.0f), whiteColor * 0.6f);
 
       // vertical delimiter
       stackRenderers.getWireFramesStack().pushLine(
@@ -154,13 +145,11 @@ FitnessDataRenderer::renderWireFrame() {
         (currData / maxFitness) * _size.y,
       };
 
-      const glm::vec3& currColor =
-        localBestFitness < maxFitness ? redColor : greenColor;
+      const glm::vec3& currColor = localBestFitness < maxFitness ? redColor : greenColor;
 
       // horizontal data curve
       stackRenderers.getWireFramesStack().pushLine(
-        glm::vec3(_position + prevPos, 0.0f),
-        glm::vec3(_position + currPos, 0.0f), currColor);
+        glm::vec3(_position + prevPos, 0.0f), glm::vec3(_position + currPos, 0.0f), currColor);
 
       // vertical delimiter
       stackRenderers.getWireFramesStack().pushLine(
@@ -207,8 +196,7 @@ FitnessDataRenderer::renderWireFrame() {
         const float mainY = _position.y + float(ii + 1) * stepHeight;
 
         stackRenderers.getWireFramesStack().pushLine(
-          glm::vec3(x1, mainY, values.zValue),
-          glm::vec3(x2, mainY, values.zValue), values.color);
+          glm::vec3(x1, mainY, values.zValue), glm::vec3(x2, mainY, values.zValue), values.color);
       }
     }
   }
@@ -308,15 +296,12 @@ FitnessDataRenderer::renderHudText() {
     if (bestFitness == 0.0f) {
       bestFitnessCoef = localBestFitness > 0.0f ? 1.0f : 0.5f;
     } else {
-      bestFitnessCoef =
-        gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
+      bestFitnessCoef = gero::math::clamp(localBestFitness / bestFitness, 0.0f, 1.0f);
     }
 
-    const glm::vec4 bestFitnessColor =
-      glm::mix(colorRed, colorGreen, bestFitnessCoef);
+    const glm::vec4 bestFitnessColor = glm::mix(colorRed, colorGreen, bestFitnessCoef);
 
-    const float carLeftCoef =
-      1.0f - gero::math::clamp(float(agentsLeft) / totalCars, 0.0f, 1.0f);
+    const float carLeftCoef = 1.0f - gero::math::clamp(float(agentsLeft) / totalCars, 0.0f, 1.0f);
 
     const glm::vec4 carLeftColor = glm::mix(colorGreen, colorRed, carLeftCoef);
 
@@ -334,8 +319,7 @@ FitnessDataRenderer::renderHudText() {
       gero::graphics::TextRenderer::State(textColor, carLeftColor));
 
     gero::graphics::helpers::renderTextBackground(
-      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha),
-      glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f,
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha), glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f,
       graphic.hud.stackRenderers, textRenderer);
   }
 }

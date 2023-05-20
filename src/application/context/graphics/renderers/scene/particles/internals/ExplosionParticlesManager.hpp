@@ -33,8 +33,7 @@ private:
     float maxLife;
 
     ExplosionParticle(
-      const glm::vec3& position, const glm::vec3& linearVelocity,
-      const glm::vec3& color, float scale, float life);
+      const glm::vec3& position, const glm::vec3& linearVelocity, const glm::vec3& color, float scale, float life);
   };
 
   using ExplosionParticles = gero::dynamic_heap_array<ExplosionParticle>;

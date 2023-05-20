@@ -35,8 +35,7 @@ private:
     InstanceVertices instanceVertices;
   };
 
-  std::unordered_map<int32_t, std::shared_ptr<AliasedGeometry>>
-    _aliasedGeometriesMap;
+  std::unordered_map<int32_t, std::shared_ptr<AliasedGeometry>> _aliasedGeometriesMap;
 
 public:
   GeometriesStackRenderer() = default;
@@ -44,17 +43,13 @@ public:
 
 public:
   void initialize();
-  void
-  setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
+  void setMatricesData(const gero::graphics::Camera::MatricesData& matricesData);
 
 public:
-  void createAlias(
-    int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices);
+  void createAlias(int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices);
   void deleteAlias(int32_t alias);
   void clearAlias(int32_t alias);
-  void pushAlias(
-    int32_t alias, const GeometryInstance& newInstance,
-    float inForwardOffset = 0.0f);
+  void pushAlias(int32_t alias, const GeometryInstance& newInstance, float inForwardOffset = 0.0f);
 
 public:
   void clearAll();

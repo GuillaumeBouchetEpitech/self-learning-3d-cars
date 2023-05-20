@@ -22,10 +22,9 @@ public:
     AnimatedVertex() = default;
 
     AnimatedVertex(
-      const glm::vec3& postion, const glm::vec3& color, const glm::vec3& normal,
-      const glm::vec3& animatedNormal, float limitId)
-      : postion(postion), color(color), normal(normal),
-        animatedNormal(animatedNormal), limitId(limitId) {}
+      const glm::vec3& postion, const glm::vec3& color, const glm::vec3& normal, const glm::vec3& animatedNormal,
+      float limitId)
+      : postion(postion), color(color), normal(normal), animatedNormal(animatedNormal), limitId(limitId) {}
   };
 
   using AnimatedVertices = std::vector<AnimatedVertex>;
@@ -36,8 +35,7 @@ public:
 
 public:
   void initialize(
-    const std::vector<glm::vec3>& skeletonVertices,
-    const AnimatedVertices& groundVertices,
+    const std::vector<glm::vec3>& skeletonVertices, const AnimatedVertices& groundVertices,
     const AnimatedVertices& wallsVertices, float maxUpperValue);
 
 public:

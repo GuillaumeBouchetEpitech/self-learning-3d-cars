@@ -231,17 +231,14 @@ State_AbstractSimulation::_updateCameraTracking(float elapsedTime) {
 
   {
     constexpr float k_maxDistance = 200.0f;
-    const float distanceToTarget =
-      glm::distance(cameraNextCenter, cameraData.center);
-    const float moveLerpRatio =
-      gero::easing::GenericEasing<2>()
-        .push(0.0f, 3.0f, gero::easing::easeInOutCubic)
-        .push(1.0f, 1.0f)
-        .get(distanceToTarget / k_maxDistance) *
-      elapsedTime;
+    const float distanceToTarget = glm::distance(cameraNextCenter, cameraData.center);
+    const float moveLerpRatio = gero::easing::GenericEasing<2>()
+                                  .push(0.0f, 3.0f, gero::easing::easeInOutCubic)
+                                  .push(1.0f, 1.0f)
+                                  .get(distanceToTarget / k_maxDistance) *
+                                elapsedTime;
 
     cameraData.center += (cameraNextCenter - cameraData.center) * moveLerpRatio;
-    cameraData.distance +=
-      (cameraNextDistance - cameraData.distance) * 1.0f * elapsedTime;
+    cameraData.distance += (cameraNextDistance - cameraData.distance) * 1.0f * elapsedTime;
   }
 }

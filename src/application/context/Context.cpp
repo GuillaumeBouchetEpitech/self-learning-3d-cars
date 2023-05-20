@@ -24,17 +24,14 @@ Context* Context::_instance = nullptr;
 Context::~Context() {}
 
 void
-Context::_initialize(
-  uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
+Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
   {
     graphic.cameraData.viewportSize = {width, height};
 
     graphic.cameraData.scene.setPerspective(70.0f, 0.1f, 1500.0f);
 
-    graphic.cameraData.hud.setOrthographic(
-      0.0f, float(width), 0.0f, float(height), -10.0f, +10.0f);
-    graphic.cameraData.hud.lookAt(
-      glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    graphic.cameraData.hud.setOrthographic(0.0f, float(width), 0.0f, float(height), -10.0f, +10.0f);
+    graphic.cameraData.hud.lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     graphic.cameraData.hud.computeMatrices();
   }
 
@@ -102,20 +99,16 @@ Context::_initialize(
     graphic.scene.carTailsRenderer.initialize();
     const auto& dimension = logic.circuitDimension;
     const glm::vec3 boundariesSize = dimension.max - dimension.min;
-    graphic.scene.chessBoardFloorRenderer.initialize(
-      dimension.center, boundariesSize);
+    graphic.scene.chessBoardFloorRenderer.initialize(dimension.center, boundariesSize);
     graphic.scene.backGroundTorusRenderer.initialize();
     graphic.scene.geometriesStackRenderer.initialize();
 
-    graphic.hud.stackRenderers.initialize(
-      "./thirdparties/dependencies/geronimo/src");
+    graphic.hud.stackRenderers.initialize("./thirdparties/dependencies/geronimo/src");
 
-    graphic.hud.textRenderer.initialize(
-      "./thirdparties/dependencies/geronimo/src");
+    graphic.hud.textRenderer.initialize("./thirdparties/dependencies/geronimo/src");
 
     graphic.hud.postProcess.initialize({width, height});
-    graphic.hud.postProcess.setGeometry(
-      glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
+    graphic.hud.postProcess.setGeometry(glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
 
     graphic.hud.widgets.topologyRenderer.initialize();
     graphic.hud.widgets.thirdPersonCamera.initialize();
@@ -145,8 +138,7 @@ Context::_initialize(
 //
 
 void
-Context::create(
-  uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
+Context::create(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
   if (_instance)
     D_THROW(std::runtime_error, "Context singleton already initialized");
 

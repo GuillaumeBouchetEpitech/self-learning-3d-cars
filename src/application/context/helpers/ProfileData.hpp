@@ -33,8 +33,7 @@ public:
 
 public:
   const AbstractSimulation::CoreState& getCoreData(uint32_t index) const;
-  const AbstractSimulation::CoreState&
-  getCoreHistoryData(uint32_t coreIndex, uint32_t dataIndex) const;
+  const AbstractSimulation::CoreState& getCoreHistoryData(uint32_t coreIndex, uint32_t dataIndex) const;
 
   uint32_t getLatestTotalDelta() const;
   uint32_t getAllTimeMaxDelta() const;

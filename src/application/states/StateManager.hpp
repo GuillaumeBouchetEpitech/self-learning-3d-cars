@@ -47,10 +47,7 @@ public:
   };
 
 private:
-  // using StateInstances = std::array<IState*, gero::asValue(States::Total)>;
-  using StateInstances =
-    std::array<std::unique_ptr<IState>, gero::asValue(States::Total)>;
-  StateInstances _states;
+  std::array<std::unique_ptr<IState>, gero::asValue(States::Total)> _states;
 
   States _currentState;
   States _previousState;

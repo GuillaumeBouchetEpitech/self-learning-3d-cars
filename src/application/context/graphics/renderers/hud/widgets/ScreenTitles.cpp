@@ -13,25 +13,20 @@ constexpr float k_timeAnimDivider = 0.3f;
 
 gero::graphics::TextRenderer::State
 _getColor(
-  const glm::vec4& inBaseOutlineColor, const glm::vec4& inAnimOutlineColor,
-  float currVal, int step, int maxSteps) {
+  const glm::vec4& inBaseOutlineColor, const glm::vec4& inAnimOutlineColor, float currVal, int step, int maxSteps) {
   const float midVal = float(step) / float(maxSteps);
   const float minVal = midVal - k_timeAnimDivider;
   const float maxVal = midVal + k_timeAnimDivider;
 
   if (currVal > minVal && currVal < maxVal) {
     if (currVal < midVal) {
-      const float subCoef =
-        1.0f - (currVal - minVal) * (1.0f / k_timeAnimDivider);
+      const float subCoef = 1.0f - (currVal - minVal) * (1.0f / k_timeAnimDivider);
       return gero::graphics::TextRenderer::State(
-        std::nullopt,
-        glm::mix(inAnimOutlineColor, inBaseOutlineColor, subCoef));
+        std::nullopt, glm::mix(inAnimOutlineColor, inBaseOutlineColor, subCoef));
     } else if (currVal >= midVal) {
-      const float subCoef =
-        1.0f - ((currVal - midVal) * (1.0f / k_timeAnimDivider));
+      const float subCoef = 1.0f - ((currVal - midVal) * (1.0f / k_timeAnimDivider));
       return gero::graphics::TextRenderer::State(
-        std::nullopt,
-        glm::mix(inBaseOutlineColor, inAnimOutlineColor, subCoef));
+        std::nullopt, glm::mix(inBaseOutlineColor, inAnimOutlineColor, subCoef));
     }
   }
   return gero::graphics::TextRenderer::State(std::nullopt, inBaseOutlineColor);
@@ -47,24 +42,16 @@ ScreenTitles::fadeIn(float delay, float duration) {
   constexpr float step2 = 0.50f;
   constexpr float step3 = 0.75f;
 
-  _backgroundEasing = gero::easing::GenericEasing<2>()
-                        .push(0.00f, _backgroundAlpha)
-                        .push(step1, 1.0f);
+  _backgroundEasing = gero::easing::GenericEasing<2>().push(0.00f, _backgroundAlpha).push(step1, 1.0f);
 
   _mainTitleAlphaEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step1, _mainTitleAlpha, gero::easing::easeOutCubic)
-      .push(step2, 1.0f);
+    gero::easing::GenericEasing<2>().push(step1, _mainTitleAlpha, gero::easing::easeOutCubic).push(step2, 1.0f);
 
   _fitnessTitleAlphaEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step2, _fitnessTitleAlpha, gero::easing::easeOutCubic)
-      .push(step3, 1.0f);
+    gero::easing::GenericEasing<2>().push(step2, _fitnessTitleAlpha, gero::easing::easeOutCubic).push(step3, 1.0f);
 
   _commentTitleAlphaEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step3, _commentTitleAlpha, gero::easing::easeOutCubic)
-      .push(1.00f, 1.0f);
+    gero::easing::GenericEasing<2>().push(step3, _commentTitleAlpha, gero::easing::easeOutCubic).push(1.00f, 1.0f);
 
   //
   //
@@ -75,14 +62,11 @@ ScreenTitles::fadeIn(float delay, float duration) {
   constexpr float k_minVal = 0.0f - k_timeAnimDivider;
   constexpr float k_maxVal = 1.0f + k_timeAnimDivider;
 
-  _mainTitleAnimEasing =
-    gero::easing::GenericEasing<2>().push(step1, k_minVal).push(1.0f, k_maxVal);
+  _mainTitleAnimEasing = gero::easing::GenericEasing<2>().push(step1, k_minVal).push(1.0f, k_maxVal);
 
-  _fitnessTitleAnimEasing =
-    gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
+  _fitnessTitleAnimEasing = gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
 
-  _commentTitleAnimEasing =
-    gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
+  _commentTitleAnimEasing = gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
 
   //
   //
@@ -97,24 +81,16 @@ ScreenTitles::fadeOut(float delay, float duration) {
   constexpr float step2 = 0.4f;
   constexpr float step3 = 0.6f;
 
-  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>()
-                            .push(0.00f, _mainTitleAlpha)
-                            .push(step1, 0.0f);
+  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>().push(0.00f, _mainTitleAlpha).push(step1, 0.0f);
 
   _fitnessTitleAlphaEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step1, _fitnessTitleAlpha, gero::easing::easeInCubic)
-      .push(step2, 0.0f);
+    gero::easing::GenericEasing<2>().push(step1, _fitnessTitleAlpha, gero::easing::easeInCubic).push(step2, 0.0f);
 
   _commentTitleAlphaEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step2, _commentTitleAlpha, gero::easing::easeInCubic)
-      .push(step3, 0.0f);
+    gero::easing::GenericEasing<2>().push(step2, _commentTitleAlpha, gero::easing::easeInCubic).push(step3, 0.0f);
 
   _backgroundEasing =
-    gero::easing::GenericEasing<2>()
-      .push(step3, _backgroundAlpha, gero::easing::easeInCubic)
-      .push(1.00f, 0.0f);
+    gero::easing::GenericEasing<2>().push(step3, _backgroundAlpha, gero::easing::easeInCubic).push(1.00f, 0.0f);
 }
 
 void
@@ -145,8 +121,7 @@ ScreenTitles::render() {
   if (_backgroundAlpha > 0.0f) {
 
     graphic.hud.stackRenderers.getTrianglesStack().pushQuad(
-      glm::vec2(vSize * 0.5f), vSize,
-      glm::vec4(0, 0, 0, _backgroundAlpha * 0.5f), 0.4f);
+      glm::vec2(vSize * 0.5f), vSize, glm::vec4(0, 0, 0, _backgroundAlpha * 0.5f), 0.4f);
   }
 
   const float animTimeVal = _titleAnimTimer.getCoefElapsed();
@@ -165,10 +140,8 @@ ScreenTitles::render() {
     const std::string message = sstr.str();
 
     const glm::vec4 color = glm::vec4(glm::vec3(0.7f), _mainTitleAlpha);
-    const glm::vec4 outlineColor =
-      glm::vec4(glm::vec3(0.2f, 0.2f, 0.2f), _mainTitleAlpha);
-    const glm::vec4 outlineColorTitleAnim =
-      glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _mainTitleAlpha);
+    const glm::vec4 outlineColor = glm::vec4(glm::vec3(0.2f, 0.2f, 0.2f), _mainTitleAlpha);
+    const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _mainTitleAlpha);
 
     constexpr float k_scale = 50.0f;
 
@@ -219,17 +192,14 @@ ScreenTitles::render() {
         std::string message = sstr.str();
 
         const glm::vec4 color = glm::vec4(0.8f, 0.8f, 0.8f, _fitnessTitleAlpha);
-        const glm::vec4 outlineColor =
-          glm::vec4(0.2f, 0.2f, 0.2f, _fitnessTitleAlpha);
-        const glm::vec4 outlineColorTitleAnim =
-          glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
+        const glm::vec4 outlineColor = glm::vec4(0.2f, 0.2f, 0.2f, _fitnessTitleAlpha);
+        const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
 
         textRenderer.setMainColor(color);
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(
-          gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
 
         textRenderer.pushText(
           currPos, message.data(),
@@ -268,11 +238,9 @@ ScreenTitles::render() {
         const std::string message = sstr.str();
 
         const glm::vec4 color = glm::vec4(0.8f, 0.8f, 0.8f, _commentTitleAlpha);
-        const glm::vec4 outlineColorTitleAnim =
-          glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
+        const glm::vec4 outlineColorTitleAnim = glm::vec4(glm::vec3(0.7f, 0.7f, 0.7f), _fitnessTitleAlpha);
 
-        glm::vec4 outlineColor =
-          glm::vec4(0.0f, 0.0f, 0.0f, _commentTitleAlpha);
+        glm::vec4 outlineColor = glm::vec4(0.0f, 0.0f, 0.0f, _commentTitleAlpha);
         if (currFitness > prevFitness)
           outlineColor.y = 0.5f;
         else if (currFitness < prevFitness)
@@ -282,8 +250,7 @@ ScreenTitles::render() {
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(
-          gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
 
         textRenderer.pushText(
           currPos, message,
@@ -301,8 +268,7 @@ ScreenTitles::render() {
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 9, 12),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 10, 12),
           _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 11, 12),
-          _getColor(
-            outlineColor, outlineColorTitleAnim, animEasingVal, 12, 12));
+          _getColor(outlineColor, outlineColorTitleAnim, animEasingVal, 12, 12));
       }
     }
   }

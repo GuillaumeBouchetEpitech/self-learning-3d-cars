@@ -43,9 +43,7 @@ WebWorkersSimulation::initialize(const Definition& def) {
 
   gero::rng::RNG::ensureRandomSeed();
 
-  genAlgoDef.getRandomCallback = []() {
-    return gero::rng::RNG::getNormalisedValue();
-  };
+  genAlgoDef.getRandomCallback = []() { return gero::rng::RNG::getNormalisedValue(); };
 
   _geneticAlgorithm.initialize(genAlgoDef);
 
@@ -171,8 +169,7 @@ WebWorkersSimulation::isGenerationComplete() const {
 }
 
 void
-WebWorkersSimulation::_processSimulation(
-  float elapsedTime, uint32_t totalSteps) {
+WebWorkersSimulation::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   for (auto workerProducer : _workerProducers)
     workerProducer->processSimulation(elapsedTime, totalSteps);
 
@@ -180,8 +177,7 @@ WebWorkersSimulation::_processSimulation(
 }
 
 void
-WebWorkersSimulation::_resetAndProcessSimulation(
-  float elapsedTime, uint32_t totalSteps) {
+WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t totalSteps) {
   _currentAgentIndex = 0;
   _agentsWorkerMap.clear();
 
@@ -246,32 +242,27 @@ WebWorkersSimulation::getTotalCars() const {
 }
 
 void
-WebWorkersSimulation::setOnWorkersReadyCallback(
-  AbstractSimulation::SimpleCallback callback) {
+WebWorkersSimulation::setOnWorkersReadyCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onWorkersReady = callback;
 }
 
 void
-WebWorkersSimulation::setOnGenerationResetCallback(
-  AbstractSimulation::SimpleCallback callback) {
+WebWorkersSimulation::setOnGenerationResetCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onGenerationReset = callback;
 }
 
 void
-WebWorkersSimulation::setOnGenerationStepCallback(
-  AbstractSimulation::SimpleCallback callback) {
+WebWorkersSimulation::setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onGenerationStep = callback;
 }
 
 void
-WebWorkersSimulation::setOnGenomeDieCallback(
-  AbstractSimulation::GenomeDieCallback callback) {
+WebWorkersSimulation::setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) {
   _callbacks.onGenomeDie = callback;
 }
 
 void
-WebWorkersSimulation::setOnGenerationEndCallback(
-  AbstractSimulation::GenerationEndCallback callback) {
+WebWorkersSimulation::setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) {
   _callbacks.onGenerationEnd = callback;
 }
 
