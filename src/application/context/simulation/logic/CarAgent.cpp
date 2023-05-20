@@ -55,7 +55,7 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   // reduce the health over time
   // => reduce more if the car does not touch the ground
   // => faster discard of a most probably dying genome
-  _health -= (_isDying ? 1.0f : 2.0f) * elapsedTime;
+  _health -= (_isDying ? 2.0f : 1.0f) * elapsedTime;
 
   if (_health <= 0.0f) {
     _physicWorld->getPhysicVehicleManager().removeVehicle(_physicVehicle);
@@ -320,13 +320,18 @@ CarAgent::_collideGroundSensor() {
 
   _physicWorld->getRaycaster().raycast(params, result);
 
-  if (!result.hasHit)
+  if (!result.hasHit) {
     return false;
+  }
 
   _groundSensor.far = result.allImpactsData.front().impactPoint;
 
   _groundSensor.value = glm::length(_groundSensor.far - _groundSensor.near) /
                         constants::groundMaxRange;
+
+  if (_isDying == true) {
+    return true;
+  }
 
   // int hitGroundIndex = params.result.impactIndex;
   const int hitGroundIndex = result.allImpactsData.front().body->getUserValue();

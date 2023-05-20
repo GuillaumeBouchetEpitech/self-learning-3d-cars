@@ -59,20 +59,49 @@ ModelsRenderer::initialize() {
 
     _updateVerticesNormals(modelVertices);
 
+    struct ChassisVertex {
+      glm::vec3 position;
+      glm::vec3 color;
+      glm::vec3 normal;
+      float distanceToOrigin;
+    };
+    std::vector<ChassisVertex> chassisVertices;
+    chassisVertices.reserve(modelVertices.size());
+
+    {
+      float minVal = +999999.0f;
+      float maxVal = -999999.0f;
+      for (const auto& vertex : modelVertices)
+      {
+        minVal = std::min(minVal, vertex.position.y);
+        maxVal = std::max(maxVal, vertex.position.y);
+      }
+      float sizeVal = maxVal - minVal;
+
+      for (const auto& vertex : modelVertices)
+      {
+        const float distance = 0.5f + vertex.position.y / sizeVal;
+        chassisVertices.push_back({ vertex.position, vertex.color, vertex.normal, distance });
+      }
+    }
+
     shaderProgramBuilder.reset()
       .setVertexFilename(basePath + "modelsCarChassis.glsl.vert")
       .setFragmentFilename(basePath + "modelsCarChassis.glsl.frag")
       .addAttribute("a_vertex_position")
       .addAttribute("a_vertex_color")
       .addAttribute("a_vertex_normal")
+      .addAttribute("a_vertex_lifeValue")
       .addAttribute("a_offset_position")
       .addAttribute("a_offset_orientation")
       .addAttribute("a_offset_scale")
       .addAttribute("a_offset_color")
-      .addAttribute("a_offset_outlineValue")
+      .addAttribute("a_offset_life")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
-      .addUniform("u_viewPos");
+      .addUniform("u_viewPos")
+      .addUniform("u_alphaValue")
+      ;
 
     _chassis.shader =
       std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
@@ -84,19 +113,21 @@ ModelsRenderer::initialize() {
       .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_vertex_lifeValue", Geometry::AttrType::Float)
       .addVbo()
       .setVboAsInstanced()
       .setVboAsDynamic()
       .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec3f)
+      .addVboAttribute("a_offset_life", Geometry::AttrType::Float)
+      ;
 
     _chassis.geometry.initialize(
       *_chassis.shader, geometryBuilder.getDefinition());
-    _chassis.geometry.allocateBuffer(0, modelVertices);
-    _chassis.geometry.setPrimitiveCount(modelVertices.size());
+    _chassis.geometry.allocateBuffer(0, chassisVertices);
+    _chassis.geometry.setPrimitiveCount(chassisVertices.size());
     _chassis.geometry.preAllocateBufferFromCapacity(
       1, _modelsCarChassisMatrices);
   }
@@ -107,7 +138,14 @@ ModelsRenderer::initialize() {
     gero::graphics::loader::loadObjModel(
       modelBasePath + "CarWheel.obj", modelBasePath, modelVertices);
 
-    _updateVerticesNormals(modelVertices); // TODO: useful?
+    struct WheelVertex {
+      glm::vec3 position;
+      glm::vec3 color;
+    };
+    std::vector<WheelVertex> wheelVertices;
+    wheelVertices.reserve(modelVertices.size());
+    for (const auto& vertex : modelVertices)
+      wheelVertices.push_back({ vertex.position, vertex.color });
 
     shaderProgramBuilder.reset()
       .setVertexFilename(basePath + "modelsCarWheels.glsl.vert")
@@ -118,8 +156,10 @@ ModelsRenderer::initialize() {
       .addAttribute("a_offset_orientation")
       .addAttribute("a_offset_scale")
       .addAttribute("a_offset_color")
-      .addAttribute("a_offset_outlineValue")
-      .addUniform("u_composedMatrix");
+      // .addAttribute("a_offset_life")
+      .addUniform("u_composedMatrix")
+      .addUniform("u_alphaValue")
+      ;
 
     _wheels.shader =
       std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
@@ -130,20 +170,20 @@ ModelsRenderer::initialize() {
       .addVbo()
       .addVboAttribute("a_vertex_position", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_vertex_color", Geometry::AttrType::Vec3f)
-      .addIgnoredVboAttribute("a_vertex_normal", Geometry::AttrType::Vec3f)
       .addVbo()
       .setVboAsInstanced()
       .setVboAsDynamic()
       .addVboAttribute("a_offset_position", Geometry::AttrType::Vec3f)
       .addVboAttribute("a_offset_orientation", Geometry::AttrType::Vec4f)
       .addVboAttribute("a_offset_scale", Geometry::AttrType::Vec3f)
-      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec4f)
-      .addVboAttribute("a_offset_outlineValue", Geometry::AttrType::Float);
+      .addVboAttribute("a_offset_color", Geometry::AttrType::Vec3f)
+      .addIgnoredVboAttribute("a_offset_life", Geometry::AttrType::Float)
+      ;
 
     _wheels.geometry.initialize(
       *_wheels.shader, geometryBuilder.getDefinition());
-    _wheels.geometry.allocateBuffer(0, modelVertices);
-    _wheels.geometry.setPrimitiveCount(modelVertices.size());
+    _wheels.geometry.allocateBuffer(0, wheelVertices);
+    _wheels.geometry.setPrimitiveCount(wheelVertices.size());
     _wheels.geometry.preAllocateBufferFromCapacity(1, _modelsCarWheelsMatrices);
   }
 }
@@ -194,13 +234,8 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
 
   const glm::vec3 modelHeight(0.0f, 0.0f, 0.2f);
 
-  const glm::vec4 k_outlineColor(1, 1, 1, _outlineColoralpha);
-  const glm::vec4 k_whiteColor(1, 1, 1, _colorAlpha);
-  const glm::vec4 k_greenColor(0, 1, 0, _colorAlpha);
-  const glm::vec4 k_redColor(1, 0, 0, _colorAlpha);
-  const glm::vec4& leaderColor = k_whiteColor;
-  const glm::vec4& lifeColor = k_greenColor;
-  const glm::vec4& deathColor = k_redColor;
+  const glm::vec3 k_defaultColor = glm::vec3(0.75f, 0.75f, 1.0f);
+  const glm::vec3 k_leaderColor = glm::vec3(0, 1, 0);
 
   for (uint32_t ii = 0; ii < totalCars; ++ii) {
     const auto& carData = logic.carDataFrameHandler.getAllCarsData().at(ii);
@@ -222,8 +257,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     // color
 
     const bool isLeader = (logic.leaderCar.leaderIndex() == int(ii));
-    const glm::vec4 targetColor = isLeader ? leaderColor : lifeColor;
-    const glm::vec4 color = glm::mix(deathColor, targetColor, carData.life);
+    const glm::vec3& color = isLeader ? k_leaderColor : k_defaultColor;
 
     //
     //
@@ -234,12 +268,22 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     // transforms
 
     _modelsCarChassisMatrices.emplace_back(
-      chassis.position, chassis.orientation, k_scale, color);
+      chassis.position,
+      chassis.orientation,
+      k_scale,
+      color,
+      carData.life
+    );
 
-    for (const auto& wheelTransform : carData.liveTransforms.wheels)
+    for (const auto& wheelTransform : carData.liveTransforms.wheels) {
       _modelsCarWheelsMatrices.emplace_back(
-        wheelTransform.position, wheelTransform.orientation, k_scale,
-        k_whiteColor);
+        wheelTransform.position,
+        wheelTransform.orientation,
+        k_scale,
+        color,
+        carData.life
+      );
+    }
   }
 
   if (!_modelsCarChassisMatrices.empty()) {
@@ -247,6 +291,8 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _chassis.shader->setUniform("u_composedMatrix", matricesData.composed);
     _chassis.shader->setUniform("u_lightPos", inCamera.getEye());
     _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
+    _chassis.shader->setUniform("u_alphaValue", _colorAlpha);
+
 
     _chassis.geometry.updateOrAllocateBuffer(1, _modelsCarChassisMatrices);
     _chassis.geometry.setInstancedCount(_modelsCarChassisMatrices.size());
@@ -256,6 +302,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
   if (!_modelsCarWheelsMatrices.empty()) {
     _wheels.shader->bind();
     _wheels.shader->setUniform("u_composedMatrix", matricesData.composed);
+    _wheels.shader->setUniform("u_alphaValue", _colorAlpha);
 
     _wheels.geometry.updateOrAllocateBuffer(1, _modelsCarWheelsMatrices);
     _wheels.geometry.setInstancedCount(_modelsCarWheelsMatrices.size());

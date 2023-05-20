@@ -10,11 +10,9 @@ in vec3 a_vertex_color;
 in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
-in vec4 a_offset_color;
-in float a_offset_outlineValue;
+in vec3 a_offset_color;
 
-out vec4 v_color;
-flat out float v_outlineValue;
+out vec3 v_color;
 
 #include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
@@ -28,6 +26,5 @@ void main(void)
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
-	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineValue = a_offset_outlineValue;
+	v_color = a_vertex_color * a_offset_color;
 }

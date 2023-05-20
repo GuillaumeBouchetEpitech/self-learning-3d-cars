@@ -25,14 +25,14 @@ private:
     glm::vec3 position;
     glm::quat orientation;
     glm::vec3 scale;
-    glm::vec4 color;
-    float outlineValue = 1.0f;
+    glm::vec3 color;
+    float life;
 
     Attributes(
       const glm::vec3& position, const glm::quat& orientation,
-      const glm::vec3& scale, const glm::vec4& color)
+      const glm::vec3& scale, const glm::vec3& color, float life)
       : position(position), orientation(orientation), scale(scale),
-        color(color) {}
+        color(color), life(life) {}
   };
 
   std::vector<Attributes> _modelsCarChassisMatrices;

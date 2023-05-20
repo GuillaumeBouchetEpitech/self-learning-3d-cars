@@ -7,15 +7,17 @@ uniform mat4 u_composedMatrix;
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
 in vec3 a_vertex_normal;
+in float a_vertex_lifeValue;
 
 in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
-in vec4 a_offset_color;
-in float a_offset_outlineValue;
+in vec3 a_offset_color;
+in float a_offset_life;
 
-out vec4 v_color;
-flat out float v_outlineValue;
+flat out vec3 v_modelColor;
+flat out vec3 v_offsetColor;
+out float v_colorMixValue;
 out vec3 v_worldSpacePosition;
 out vec3 v_worldSpaceNormal;
 
@@ -32,8 +34,9 @@ void main(void)
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
-	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineValue = a_offset_outlineValue;
+	v_modelColor = a_vertex_color;
+	v_offsetColor = a_offset_color;
+	v_colorMixValue = a_offset_life - a_vertex_lifeValue;
 	v_worldSpacePosition = worldSpacePosition;
 	v_worldSpaceNormal = worldSpaceNormal;
 }
