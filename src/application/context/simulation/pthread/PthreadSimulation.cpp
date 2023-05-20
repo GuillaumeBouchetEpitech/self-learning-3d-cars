@@ -459,7 +459,8 @@ PthreadSimulation::_addCars() {
       if (_waitingAgentsValues.size() >= 10)
         break;
 
-      if (bestThreadData.frameProfiler.getMaxDelta(totalLiveVehicles) >= 30)
+      // simulation too slow, not adding more cars
+      if (bestThreadData.frameProfiler.getMaxDelta(totalLiveVehicles) >= 25)
         break;
     }
 

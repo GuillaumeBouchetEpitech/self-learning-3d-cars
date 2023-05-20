@@ -1,10 +1,13 @@
 
 #include "CarData.hpp"
 
+#include "geronimo/system/math/clamp.hpp"
+#include "geronimo/system/math/lerp.hpp"
+
 void
 CarData::SingleTransform::lerp(const CarData::SingleTransform& valA, const CarData::SingleTransform& valB, float coef) {
-  position = valA.position + (valB.position - valA.position) * coef;
-  orientation = glm::slerp(valA.orientation, valB.orientation, coef);
+  position = gero::math::lerp(valA.position, valB.position, coef);
+  orientation = gero::math::lerp(valA.orientation, valB.orientation, coef);
 }
 
 void
@@ -19,33 +22,37 @@ CarData::CarData() {
 }
 
 void
-CarData::lerp(const CarData& valA, const CarData& valB, float coef) {
+CarData::lerp(const CarData& valA, const CarData& valB, float inCoef) {
+
+  const float coef = gero::math::clamp(inCoef, 0.0f, 1.0f);
+
   liveTransforms.lerp(valA.liveTransforms, valB.liveTransforms, coef);
 
-  life = valA.life + (valB.life - valA.life) * coef;
-  fitness = valA.fitness + (valB.fitness - valA.fitness) * coef;
+  life = gero::math::lerp(valA.life, valB.life, coef);
+  life = gero::math::clamp(life, 0.0f, 1.0f);
 
-  velocity = valA.velocity + (valB.velocity - valA.velocity) * coef;
+  fitness = gero::math::lerp(valA.fitness, valB.fitness, coef);
+  velocity = gero::math::lerp(valA.velocity, valB.velocity, coef);
 
   for (std::size_t ii = 0; ii < eyeSensors.size(); ++ii) {
     auto& sensor = eyeSensors.at(ii);
     const auto& sensorA = valA.eyeSensors.at(ii);
     const auto& sensorB = valB.eyeSensors.at(ii);
 
-    sensor.near = sensorA.near + (sensorB.near - sensorA.near) * coef;
-    sensor.far = sensorA.far + (sensorB.far - sensorA.far) * coef;
-    sensor.value = sensorA.value + (sensorB.value - sensorA.value) * coef;
+    sensor.near = gero::math::lerp(sensorA.near, sensorB.near, coef);
+    sensor.far = gero::math::lerp(sensorA.far, sensorB.far, coef);
+    sensor.value = gero::math::lerp(sensorA.value, sensorB.value, coef);
   }
 
-  groundSensor.near = valA.groundSensor.near + (valB.groundSensor.near - valA.groundSensor.near) * coef;
-  groundSensor.far = valA.groundSensor.far + (valB.groundSensor.far - valA.groundSensor.far) * coef;
-  groundSensor.value = valA.groundSensor.value + (valB.groundSensor.value - valA.groundSensor.value) * coef;
+  groundSensor.near = gero::math::lerp(valA.groundSensor.near, valB.groundSensor.near, coef);
+  groundSensor.far = gero::math::lerp(valA.groundSensor.far, valB.groundSensor.far, coef);
+  groundSensor.value = gero::math::lerp(valA.groundSensor.value, valB.groundSensor.value, coef);
 
   for (std::size_t ii = 0; ii < neuronsValues.size(); ++ii) {
     auto& neuronValue = neuronsValues.at(ii);
     const auto& neuronValueA = valA.neuronsValues.at(ii);
     const auto& neuronValueB = valB.neuronsValues.at(ii);
 
-    neuronValue = neuronValueA + (neuronValueB - neuronValueA) * coef;
+    neuronValue = gero::math::lerp(neuronValueA, neuronValueB, coef);
   }
 }

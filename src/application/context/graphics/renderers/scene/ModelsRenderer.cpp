@@ -75,7 +75,7 @@ ModelsRenderer::initialize() {
       float sizeVal = maxVal - minVal;
 
       for (const auto& vertex : modelVertices) {
-        const float distance = 0.5f + vertex.position.y / sizeVal;
+        const float distance = 0.5f + vertex.position.y / sizeVal; // [0..1]
         chassisVertices.push_back({vertex.position, vertex.color, vertex.normal, distance});
       }
     }

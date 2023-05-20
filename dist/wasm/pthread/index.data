@@ -11055,11 +11055,15 @@ precision lowp float;
 
 uniform vec3 u_lightPos;
 uniform vec3 u_viewPos;
+uniform float u_alphaValue;
 
 const float k_ambiantCoef = 0.2;
+const vec3 k_yellowColor = vec3(1.0, 1.0, 0.0);
+const vec3 k_redColor = vec3(1.0, 0.0, 0.0);
 
-in vec4 v_color;
-flat in float v_outlineValue;
+flat in vec3 v_modelColor;
+flat in vec3 v_offsetColor;
+in float v_colorMixValue;
 in vec3 v_worldSpacePosition;
 in vec3 v_worldSpaceNormal;
 
@@ -11070,15 +11074,18 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
+	vec3 blendColor = v_colorMixValue < -0.07 ? k_yellowColor : v_colorMixValue > +0.07 ? v_offsetColor.rgb : k_redColor;
+	vec4 currColor = vec4(v_modelColor.rgb * blendColor, u_alphaValue);
+
   out_color = applyLighting(
     u_viewPos,
     u_lightPos,
-    v_color,
+    currColor,
     v_worldSpaceNormal,
     v_worldSpacePosition,
     k_ambiantCoef
   );
-  out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
+  out_outline = vec4(1.0, 0.0, 0.0, 1.0);
 }
 #version 300 es
 
@@ -11089,15 +11096,17 @@ uniform mat4 u_composedMatrix;
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
 in vec3 a_vertex_normal;
+in float a_vertex_lifeValue;
 
 in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
-in vec4 a_offset_color;
-in float a_offset_outlineValue;
+in vec3 a_offset_color;
+in float a_offset_life;
 
-out vec4 v_color;
-flat out float v_outlineValue;
+flat out vec3 v_modelColor;
+flat out vec3 v_offsetColor;
+out float v_colorMixValue;
 out vec3 v_worldSpacePosition;
 out vec3 v_worldSpaceNormal;
 
@@ -11114,8 +11123,9 @@ void main(void)
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
-	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineValue = a_offset_outlineValue;
+	v_modelColor = a_vertex_color;
+	v_offsetColor = a_offset_color;
+	v_colorMixValue = a_offset_life - a_vertex_lifeValue;
 	v_worldSpacePosition = worldSpacePosition;
 	v_worldSpaceNormal = worldSpaceNormal;
 }
@@ -11123,16 +11133,17 @@ void main(void)
 
 precision lowp float;
 
-in vec4 v_color;
-flat in float v_outlineValue;
+uniform float u_alphaValue;
+
+in vec3 v_color;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-  out_color = v_color;
-  out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
+  out_color = vec4(v_color, u_alphaValue);
+  out_outline = vec4(1.0, 0.0, 0.0, 1.0);
 }
 #version 300 es
 
@@ -11146,11 +11157,9 @@ in vec3 a_vertex_color;
 in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
 in vec3 a_offset_scale;
-in vec4 a_offset_color;
-in float a_offset_outlineValue;
+in vec3 a_offset_color;
 
-out vec4 v_color;
-flat out float v_outlineValue;
+out vec3 v_color;
 
 #include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
 
@@ -11164,8 +11173,7 @@ void main(void)
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
-	v_color = vec4(a_vertex_color * a_offset_color.rgb, a_offset_color.a);
-	v_outlineValue = a_offset_outlineValue;
+	v_color = a_vertex_color * a_offset_color;
 }
 #version 300 es
 
