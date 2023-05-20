@@ -126,7 +126,7 @@ sh sh_install_one_git_thirdparty.sh \
   "GERONIMO" \
   "geronimo" \
   "GuillaumeBouchetEpitech/geronimo" \
-  "v0.0.9" \
+  "v0.0.10" \
   "not-interactive"
 
 tree -L 1 $DIR_DEPENDENCIES
