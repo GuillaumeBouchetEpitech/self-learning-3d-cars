@@ -10620,42 +10620,12 @@ f 90 88 150 148 146 144 142 140 138 136 134 132 130 128 126 124 122 120 118 116 
 f 147 148 150 149
 f 149 150 88 87
 f 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149
-const vec3 k_specColor = vec3(1.0, 1.0, 1.0);
-
-vec4 applyLighting(vec3 viewPos, vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
+float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
 {
   normal = normalize(normal);
   vec3 lightDir = normalize(lightPos - worldPos);
 
-  float diffuseCoef = max(dot(lightDir, normal), 0.0);
-  float specularCoef = 0.0;
-
-  if (diffuseCoef > 0.0)
-  {
-    // lighting specular
-
-    vec3 reflectDir = reflect(-lightDir, normal);
-    vec3 viewDir = normalize(viewPos - worldPos);
-
-    float specAngle = max(dot(reflectDir, viewDir), 0.0);
-    specularCoef = pow(specAngle, 64.0);
-  }
-
-  // lighting output
-
-  return vec4(currentColor.xyz * (ambiantCoef + diffuseCoef) + k_specColor * specularCoef, currentColor.a);
-}
-
-vec4 applyLighting_no_specular(vec3 lightPos, vec4 currentColor, vec3 normal, vec3 worldPos, float ambiantCoef)
-{
-  normal = normalize(normal);
-  vec3 lightDir = normalize(lightPos - worldPos);
-
-  float diffuseCoef = max(dot(lightDir, normal), 0.0);
-
-  // lighting output
-
-  return vec4(currentColor.xyz * (ambiantCoef + diffuseCoef), currentColor.a);
+  return max(dot(lightDir, normal), 0.0);
 }
 
 vec4 quat_from_axis_angle(vec3 axis, float angle)
@@ -10734,31 +10704,15 @@ void main(void)
 
 precision lowp float;
 
-uniform vec3 u_lightPos;
-uniform vec3 u_viewPos;
-
-const float k_ambiantCoef = 0.2;
-
 in vec4 v_color;
-in vec3 v_worldSpaceNormal;
-in vec3 v_worldSpacePosition;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
-
 void main(void)
 {
-    out_color = applyLighting(
-        u_viewPos,
-        u_lightPos,
-        v_color,
-        v_worldSpaceNormal,
-        v_worldSpacePosition,
-        k_ambiantCoef
-    );
-    out_outline = vec4(0.0);
+  out_color = v_color;
+  out_outline = vec4(0.0);
 }
 #version 300 es
 
@@ -10768,6 +10722,10 @@ uniform mat4 u_composedMatrix;
 uniform float u_alpha;
 uniform float u_lowerLimit;
 uniform float u_upperLimit;
+uniform vec3 u_lightPos;
+
+const vec3 k_white = vec3(1.0);
+const float k_ambiantCoef = 0.2;
 
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
@@ -10776,14 +10734,14 @@ in vec3 a_vertex_animatedNormal;
 in float a_vertex_index;
 
 out vec4 v_color;
-out vec3 v_worldSpaceNormal;
-out vec3 v_worldSpacePosition;
 
-const vec3 k_white = vec3(1.0);
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
 	float deformationCoef = 0.0;
+
+	vec4 currColor;
 
 	if (a_vertex_index <= u_lowerLimit)
 	{
@@ -10806,20 +10764,26 @@ void main(void)
 	if (deformationCoef == 1.0)
 	{
 		// invisible
-		v_color = vec4(0.0);
+		currColor = vec4(0.0);
 	}
 	else
 	{
 		// modified color (normal color <-> white color)
-		v_color = vec4(mix(a_vertex_color, k_white, deformationCoef), u_alpha);
+		currColor = vec4(mix(a_vertex_color, k_white, deformationCoef), u_alpha);
 
 		// modified shape (normal shape <-> shattered shape)
 		position -= a_vertex_animatedNormal * deformationCoef;
 	}
 
-	v_worldSpaceNormal = a_vertex_normal;
-	v_worldSpacePosition = position;
 	gl_Position = u_composedMatrix * vec4(position, 1.0);
+
+  float diffuseLightRatio = getDiffuseLightingRatio(
+    u_lightPos,
+    a_vertex_normal,
+    position
+  );
+
+	v_color = currColor * (k_ambiantCoef + diffuseLightRatio);
 }
 #version 300 es
 
@@ -10832,8 +10796,8 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-    out_color = v_color;
-    out_outline = vec4(0.0);
+  out_color = v_color;
+  out_outline = vec4(0.0);
 }
 #version 300 es
 
@@ -10930,7 +10894,6 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 uniform vec3 u_lightPos;
-uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -10947,15 +10910,13 @@ void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
 
-  out_color = applyLighting(
-    u_viewPos,
-  // out_color = applyLighting_no_specular(
+  float diffuseLightRatio = getDiffuseLightingRatio(
     u_lightPos,
-    texColor,
     v_worldSpaceNormal,
-    v_worldSpacePosition,
-    k_ambiantCoef
+    v_worldSpacePosition
   );
+
+  out_color = vec4(texColor.rgb * (k_ambiantCoef + diffuseLightRatio), texColor.a);
 
   out_outline = vec4(0.0);
 }
@@ -10973,6 +10934,8 @@ out vec2 v_texCoord;
 out vec3 v_worldSpaceNormal;
 out vec3 v_worldSpacePosition;
 
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
+
 void main(void)
 {
 	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
@@ -10985,31 +10948,16 @@ void main(void)
 
 precision lowp float;
 
-// uniform float u_ambiantCoef;
-// uniform vec3 u_lightPos;
-
-// in vec3 v_worldSpacePosition;
-// in vec3 v_worldSpaceNormal;
 flat in vec4 v_color;
 flat in float v_outlineValue;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-// #include "./assets/graphics/shaders/_common/apply-lighting.glsl.frag"
-
 void main(void)
 {
 	out_color = v_color;
-	// out_color = applyLighting(
-	// 	u_lightPos,
-	// 	v_color,
-	// 	v_worldSpaceNormal,
-	// 	v_worldSpacePosition,
-	// 	u_ambiantCoef
-	// );
-
-    out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
+	out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
 }
 #version 300 es
 
@@ -11018,7 +10966,6 @@ precision highp float;
 uniform mat4 u_composedMatrix;
 
 in vec3 a_vertex_position;
-// in vec3 a_vertex_normal;
 
 in vec3 a_offset_position;
 in vec4 a_offset_orientation; // quaternion
@@ -11026,8 +10973,6 @@ in vec3 a_offset_scale;
 in vec4 a_offset_color;
 in float a_offset_outlineValue;
 
-// out vec3 v_worldSpacePosition;
-// out vec3 v_worldSpaceNormal;
 flat out vec4 v_color;
 flat out float v_outlineValue;
 
@@ -11040,12 +10985,9 @@ void main(void)
 
 	vec3 worldSpacePosition = a_offset_position;
 	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
-	// vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, angle, axis);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
-	// v_worldSpacePosition = worldSpacePosition;
-	// v_worldSpaceNormal = worldSpaceNormal;
 	v_color = a_offset_color;
 	v_outlineValue = a_offset_outlineValue;
 }
@@ -11053,38 +10995,26 @@ void main(void)
 
 precision lowp float;
 
-uniform vec3 u_lightPos;
-uniform vec3 u_viewPos;
 uniform float u_alphaValue;
 
-const float k_ambiantCoef = 0.2;
 const vec3 k_yellowColor = vec3(1.0, 1.0, 0.0);
 const vec3 k_redColor = vec3(1.0, 0.0, 0.0);
 
 flat in vec3 v_modelColor;
 flat in vec3 v_offsetColor;
 in float v_colorMixValue;
-in vec3 v_worldSpacePosition;
-in vec3 v_worldSpaceNormal;
+in float v_diffuseLightRatio;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
-
 void main(void)
 {
-	vec3 blendColor = v_colorMixValue < -0.07 ? k_yellowColor : v_colorMixValue > +0.07 ? v_offsetColor.rgb : k_redColor;
+	vec3 blendColor = v_colorMixValue < -0.05 ? k_yellowColor : v_colorMixValue > +0.05 ? v_offsetColor.rgb : k_redColor;
 	vec4 currColor = vec4(v_modelColor.rgb * blendColor, u_alphaValue);
 
-  out_color = applyLighting(
-    u_viewPos,
-    u_lightPos,
-    currColor,
-    v_worldSpaceNormal,
-    v_worldSpacePosition,
-    k_ambiantCoef
-  );
+  out_color = vec4(currColor.rgb * v_diffuseLightRatio, u_alphaValue);
+
   out_outline = vec4(1.0, 0.0, 0.0, 1.0);
 }
 #version 300 es
@@ -11092,6 +11022,9 @@ void main(void)
 precision highp float;
 
 uniform mat4 u_composedMatrix;
+uniform vec3 u_lightPos;
+
+const float k_ambiantCoef = 0.2;
 
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
@@ -11107,10 +11040,11 @@ in float a_offset_life;
 flat out vec3 v_modelColor;
 flat out vec3 v_offsetColor;
 out float v_colorMixValue;
-out vec3 v_worldSpacePosition;
-out vec3 v_worldSpaceNormal;
+out float v_diffuseLightRatio;
 
 #include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
+
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
@@ -11126,8 +11060,12 @@ void main(void)
 	v_modelColor = a_vertex_color;
 	v_offsetColor = a_offset_color;
 	v_colorMixValue = a_offset_life - a_vertex_lifeValue;
-	v_worldSpacePosition = worldSpacePosition;
-	v_worldSpaceNormal = worldSpaceNormal;
+
+  v_diffuseLightRatio = k_ambiantCoef + getDiffuseLightingRatio(
+    u_lightPos,
+    worldSpaceNormal,
+    worldSpacePosition
+  );
 }
 #version 300 es
 
