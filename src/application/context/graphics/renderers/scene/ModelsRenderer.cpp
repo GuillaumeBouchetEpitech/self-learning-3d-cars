@@ -9,8 +9,8 @@
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/easing/GenericEasing.hpp"
 #include "geronimo/system/easing/easingFunctions.hpp"
-#include "geronimo/system/rng/RandomNumberGenerator.hpp"
 #include "geronimo/system/math/compute-normal.hpp"
+#include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 using namespace gero::graphics;
 
@@ -27,7 +27,6 @@ _updateVerticesNormals(gero::graphics::loader::ModelVertices& vertices) {
     vertexA.normal = normal;
     vertexB.normal = normal;
     vertexC.normal = normal;
-
   }
 }
 
@@ -96,8 +95,7 @@ ModelsRenderer::initialize() {
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
       // .addUniform("u_viewPos")
-      .addUniform("u_alphaValue")
-      ;
+      .addUniform("u_alphaValue");
 
     _chassis.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 

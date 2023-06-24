@@ -6,9 +6,9 @@
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/math/BSpline.hpp"
+#include "geronimo/system/math/compute-normal.hpp"
 #include "geronimo/system/parser-utils/BasicRegexParser.hpp"
 #include "geronimo/system/string-utils/trim.hpp"
-#include "geronimo/system/math/compute-normal.hpp"
 
 #include <algorithm>
 #include <fstream>
