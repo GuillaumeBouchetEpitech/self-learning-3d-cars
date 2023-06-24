@@ -3,6 +3,9 @@
 precision highp float;
 
 uniform mat4 u_composedMatrix;
+uniform vec3 u_lightPos;
+
+const float k_ambiantCoef = 0.2;
 
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
@@ -18,10 +21,11 @@ in float a_offset_life;
 flat out vec3 v_modelColor;
 flat out vec3 v_offsetColor;
 out float v_colorMixValue;
-out vec3 v_worldSpacePosition;
-out vec3 v_worldSpaceNormal;
+out float v_diffuseLightRatio;
 
 #include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
+
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
@@ -37,6 +41,10 @@ void main(void)
 	v_modelColor = a_vertex_color;
 	v_offsetColor = a_offset_color;
 	v_colorMixValue = a_offset_life - a_vertex_lifeValue;
-	v_worldSpacePosition = worldSpacePosition;
-	v_worldSpaceNormal = worldSpaceNormal;
+
+  v_diffuseLightRatio = k_ambiantCoef + getDiffuseLightingRatio(
+    u_lightPos,
+    worldSpaceNormal,
+    worldSpacePosition
+  );
 }

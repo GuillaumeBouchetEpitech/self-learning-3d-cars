@@ -6,6 +6,10 @@ uniform mat4 u_composedMatrix;
 uniform float u_alpha;
 uniform float u_lowerLimit;
 uniform float u_upperLimit;
+uniform vec3 u_lightPos;
+
+const vec3 k_white = vec3(1.0);
+const float k_ambiantCoef = 0.2;
 
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
@@ -14,14 +18,14 @@ in vec3 a_vertex_animatedNormal;
 in float a_vertex_index;
 
 out vec4 v_color;
-out vec3 v_worldSpaceNormal;
-out vec3 v_worldSpacePosition;
 
-const vec3 k_white = vec3(1.0);
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
 
 void main(void)
 {
 	float deformationCoef = 0.0;
+
+	vec4 currColor;
 
 	if (a_vertex_index <= u_lowerLimit)
 	{
@@ -44,18 +48,24 @@ void main(void)
 	if (deformationCoef == 1.0)
 	{
 		// invisible
-		v_color = vec4(0.0);
+		currColor = vec4(0.0);
 	}
 	else
 	{
 		// modified color (normal color <-> white color)
-		v_color = vec4(mix(a_vertex_color, k_white, deformationCoef), u_alpha);
+		currColor = vec4(mix(a_vertex_color, k_white, deformationCoef), u_alpha);
 
 		// modified shape (normal shape <-> shattered shape)
 		position -= a_vertex_animatedNormal * deformationCoef;
 	}
 
-	v_worldSpaceNormal = a_vertex_normal;
-	v_worldSpacePosition = position;
 	gl_Position = u_composedMatrix * vec4(position, 1.0);
+
+  float diffuseLightRatio = getDiffuseLightingRatio(
+    u_lightPos,
+    a_vertex_normal,
+    position
+  );
+
+	v_color = currColor * (k_ambiantCoef + diffuseLightRatio);
 }

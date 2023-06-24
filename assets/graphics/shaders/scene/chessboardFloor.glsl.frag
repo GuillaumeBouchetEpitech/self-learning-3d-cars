@@ -4,7 +4,6 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 uniform vec3 u_lightPos;
-uniform vec3 u_viewPos;
 
 const float k_ambiantCoef = 0.2;
 
@@ -21,15 +20,13 @@ void main(void)
 {
   vec4 texColor = texture(u_texture, v_texCoord);
 
-  out_color = applyLighting(
-    u_viewPos,
-  // out_color = applyLighting_no_specular(
+  float diffuseLightRatio = getDiffuseLightingRatio(
     u_lightPos,
-    texColor,
     v_worldSpaceNormal,
-    v_worldSpacePosition,
-    k_ambiantCoef
+    v_worldSpacePosition
   );
+
+  out_color = vec4(texColor.rgb * (k_ambiantCoef + diffuseLightRatio), texColor.a);
 
   out_outline = vec4(0.0);
 }

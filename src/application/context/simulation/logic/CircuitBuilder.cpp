@@ -8,6 +8,7 @@
 #include "geronimo/system/math/BSpline.hpp"
 #include "geronimo/system/parser-utils/BasicRegexParser.hpp"
 #include "geronimo/system/string-utils/trim.hpp"
+#include "geronimo/system/math/compute-normal.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -390,7 +391,7 @@ CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, Callba
       const glm::vec3& prevColor = prevKnot.color;
       const glm::vec3& currColor = currKnot.color;
 
-      const glm::vec3 currNormal = glm::normalize(glm::cross(prevLeft - prevRight, prevRight - currRight));
+      const glm::vec3 currNormal = gero::math::computeNormal(prevLeft, prevRight, currRight);
 
       // for the first time
       if (stepIndex == startIndex)

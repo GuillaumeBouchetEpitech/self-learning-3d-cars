@@ -12,6 +12,8 @@ out vec2 v_texCoord;
 out vec3 v_worldSpaceNormal;
 out vec3 v_worldSpacePosition;
 
+#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
+
 void main(void)
 {
 	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);

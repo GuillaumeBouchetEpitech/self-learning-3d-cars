@@ -30,7 +30,8 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
     .addUniform("u_composedMatrix")
     .addUniform("u_texture")
     .addUniform("u_lightPos")
-    .addUniform("u_viewPos");
+    // .addUniform("u_viewPos")
+    ;
 
   _shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
@@ -63,9 +64,9 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
     for (int32_t yy = 0; yy < size.y; ++yy)
       for (int32_t xx = 0; xx < size.x; ++xx) {
         if ((xx < size.x * 0.5f && yy < size.y * 0.5f) || (xx > size.x * 0.5f && yy > size.y * 0.5f)) {
-          setPixel(xx, yy, 32, 220);
+          setPixel(xx, yy, 64, 200);
         } else {
-          setPixel(xx, yy, 100, 255);
+          setPixel(xx, yy, 128, 255);
         }
       }
 
@@ -130,7 +131,7 @@ ChessBoardFloorRenderer::render(const gero::graphics::Camera& inCamera) {
   const auto& matricesData = inCamera.getMatricesData();
   _shader->setUniform("u_composedMatrix", matricesData.composed);
   _shader->setUniform("u_lightPos", inCamera.getEye());
-  _shader->setUniform("u_viewPos", inCamera.getEye());
+  // _shader->setUniform("u_viewPos", inCamera.getEye());
 
   _texture.bind();
   _geometry.render();

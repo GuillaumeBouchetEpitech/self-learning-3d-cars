@@ -35,7 +35,7 @@ AnimatedCircuitRenderer::initialize(
     .addAttribute("a_vertex_index")
     .addUniform("u_composedMatrix")
     .addUniform("u_lightPos")
-    .addUniform("u_viewPos")
+    // .addUniform("u_viewPos")
     .addUniform("u_alpha")
     .addUniform("u_lowerLimit")
     .addUniform("u_upperLimit");
@@ -221,7 +221,7 @@ AnimatedCircuitRenderer::renderGround(const gero::graphics::Camera& inCamera) {
   _shaderCircuitLit->setUniform("u_upperLimit", _upperValue);
   _shaderCircuitLit->setUniform("u_alpha", 0.8f);
   _shaderCircuitLit->setUniform("u_lightPos", inCamera.getEye());
-  _shaderCircuitLit->setUniform("u_viewPos", inCamera.getEye());
+  // _shaderCircuitLit->setUniform("u_viewPos", inCamera.getEye());
 
   _geometries.grounds.render();
 }

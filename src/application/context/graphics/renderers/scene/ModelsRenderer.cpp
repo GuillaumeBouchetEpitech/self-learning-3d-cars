@@ -10,6 +10,7 @@
 #include "geronimo/system/easing/GenericEasing.hpp"
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/rng/RandomNumberGenerator.hpp"
+#include "geronimo/system/math/compute-normal.hpp"
 
 using namespace gero::graphics;
 
@@ -18,15 +19,15 @@ namespace {
 void
 _updateVerticesNormals(gero::graphics::loader::ModelVertices& vertices) {
   for (std::size_t index = 0; index < vertices.size(); index += 3) {
-    gero::graphics::loader::ModelVertex& vertexA = vertices.at(index + 0);
-    gero::graphics::loader::ModelVertex& vertexB = vertices.at(index + 1);
-    gero::graphics::loader::ModelVertex& vertexC = vertices.at(index + 2);
+    auto& vertexA = vertices.at(index + 0);
+    auto& vertexB = vertices.at(index + 1);
+    auto& vertexC = vertices.at(index + 2);
 
-    const glm::vec3 normal = glm::cross(vertexA.position - vertexB.position, vertexA.position - vertexC.position);
-
+    const glm::vec3 normal = gero::math::computeNormal(vertexA.position, vertexB.position, vertexC.position);
     vertexA.normal = normal;
     vertexB.normal = normal;
     vertexC.normal = normal;
+
   }
 }
 
@@ -94,8 +95,9 @@ ModelsRenderer::initialize() {
       .addAttribute("a_offset_life")
       .addUniform("u_composedMatrix")
       .addUniform("u_lightPos")
-      .addUniform("u_viewPos")
-      .addUniform("u_alphaValue");
+      // .addUniform("u_viewPos")
+      .addUniform("u_alphaValue")
+      ;
 
     _chassis.shader = std::make_shared<ShaderProgram>(shaderProgramBuilder.getDefinition());
 
@@ -263,7 +265,7 @@ ModelsRenderer::render(const gero::graphics::Camera& inCamera) {
     _chassis.shader->bind();
     _chassis.shader->setUniform("u_composedMatrix", matricesData.composed);
     _chassis.shader->setUniform("u_lightPos", inCamera.getEye());
-    _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
+    // _chassis.shader->setUniform("u_viewPos", inCamera.getEye());
     _chassis.shader->setUniform("u_alphaValue", _colorAlpha);
 
     _chassis.geometry.updateOrAllocateBuffer(1, _modelsCarChassisMatrices);
