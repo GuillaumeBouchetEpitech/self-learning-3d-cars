@@ -364,7 +364,7 @@ CarAgent::reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& posi
 
   // _physicVehicle->reset();
   _physicBody->setPosition(position);
-  _physicBody->setRotation(quaternion);
+  _physicBody->setOrientation(quaternion);
 
   _updateSensors();
 

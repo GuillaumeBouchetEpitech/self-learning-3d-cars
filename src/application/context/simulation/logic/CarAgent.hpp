@@ -2,7 +2,7 @@
 #pragma once
 
 #include "geronimo/physics/PhysicWorld.hpp"
-#include "geronimo/physics/vehicle/PhysicVehicle.hpp"
+#include "geronimo/physics/vehicle/AbstractPhysicVehicle.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 

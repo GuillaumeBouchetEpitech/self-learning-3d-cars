@@ -135,7 +135,7 @@ func_handle_third_parties() {
       "GERONIMO" \
       "geronimo" \
       "GuillaumeBouchetEpitech/geronimo" \
-      "v0.0.11" \
+      "v0.0.12" \
       "not-interactive"
 
     tree -L 1 $DIR_DEPENDENCIES
