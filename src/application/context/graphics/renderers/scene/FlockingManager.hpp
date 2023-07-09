@@ -17,18 +17,29 @@ constexpr std::size_t k_trailSize = 15;
 class FlockingManager {
 private:
   struct Boid {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
+    glm::vec3 position = {0,0,0};
+    glm::vec3 velocity = {0,0,0};
+    glm::vec3 acceleration = {0,0,0};
 
-    std::array<glm::vec3, k_trailSize> trail;
+    float horizontalAngle = 0.0f;
+    float verticalAngle = 0.0f;
+
+    struct TrailData
+    {
+      glm::vec3 position;
+    };
+
+    std::array<TrailData, k_trailSize> trail;
 
     Boid();
 
     void seek(const glm::vec3& target, float coef);
-    void separate(const glm::vec3& target, float coef);
+    void flee(const glm::vec3& target, float coef);
     void separate(const std::vector<Boid>& boids, float radius, float coef);
+    void strafe(const glm::vec3& target, float horizontalAngle, float verticalAngle, float coef);
     void wander(float coef);
+
+    void updateTrail();
 
     void applyAcceleration(float maxAcceleration, float maxVelocity, float elapsedTime);
 

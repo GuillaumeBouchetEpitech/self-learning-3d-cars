@@ -7,6 +7,11 @@
 #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/math/clamp.hpp"
+#include "geronimo/system/math/lerp.hpp"
+#include "geronimo/system/math/angles.hpp"
+#include "geronimo/system/math/constants.hpp"
+#include "geronimo/system/math/safe-normalize.hpp"
+#include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 FlockingManager::Boid::Boid() {
@@ -15,32 +20,27 @@ FlockingManager::Boid::Boid() {
   position.y += gero::rng::RNG::getRangedValue(-10.0f, +10.0f);
   position.z += gero::rng::RNG::getRangedValue(-10.0f, +10.0f);
 
-  acceleration = {0, 0, 0};
-  velocity = {0, 0, 0};
-
   for (auto& item : trail)
-    item = position;
+  {
+    item.position = position;
+  }
 }
 
 void
 FlockingManager::Boid::seek(const glm::vec3& target, float coef) {
-  glm::vec3 diff = target - position;
-  const float diffMagnitude = glm::length(diff);
-
-  if (diffMagnitude > 0.0f)
-    diff = diff / diffMagnitude;
-
-  acceleration += diff * coef;
+  glm::vec3 currentDirection = target - position;
+  gero::math::safeNormalize(currentDirection);
+  acceleration += currentDirection * coef;
 }
 
 void
-FlockingManager::Boid::separate(const glm::vec3& target, float coef) {
+FlockingManager::Boid::flee(const glm::vec3& target, float coef) {
   return seek(target, -coef);
 }
 
 void
 FlockingManager::Boid::separate(const std::vector<Boid>& boids, float radius, float coef) {
-  glm::vec3 total = {0, 0, 0};
+  glm::vec3 accumulatedDirections = {0, 0, 0};
   for (const Boid& other : boids) {
     if (*this == other)
       continue;
@@ -50,14 +50,37 @@ FlockingManager::Boid::separate(const std::vector<Boid>& boids, float radius, fl
     if (glm::length(diff) > radius)
       continue;
 
-    total += diff;
+    accumulatedDirections += diff;
   }
 
-  const float magnitude = glm::length(total);
-  if (magnitude > 0.0f)
-    total = total / magnitude;
+  gero::math::safeNormalize(accumulatedDirections);
 
-  acceleration += total * coef;
+  acceleration += accumulatedDirections * coef;
+}
+
+void
+FlockingManager::Boid::strafe(const glm::vec3& target, float inHorizontalAngle, float inVerticalAngle, float coef) {
+  glm::vec3 currentDirection = target - position;
+  const float magnitude = gero::math::safeNormalize(currentDirection);
+  if (magnitude == 0.0f)
+    return;
+
+  const float horizontalAngle = gero::math::getAngle(currentDirection.x, currentDirection.y);
+  const float verticalAngle = gero::math::getAngle(glm::length(glm::vec2(currentDirection.x, currentDirection.y)), currentDirection.z);
+  const float newHorizontalAngle = horizontalAngle + inHorizontalAngle;
+  const float newVerticalAngle = verticalAngle + inVerticalAngle;
+
+  const glm::vec2 horizontalDirection = gero::math::getDirection(newHorizontalAngle);
+  const glm::vec3 newLeftAxis = glm::vec3(horizontalDirection, 0);
+
+  const float upRadius = std::cos(newVerticalAngle);
+
+  glm::vec3 newUpAxis;
+  newUpAxis.z = std::sin(newVerticalAngle);
+  newUpAxis.x = upRadius * std::cos(newHorizontalAngle);
+  newUpAxis.y = upRadius * std::sin(newHorizontalAngle);
+
+  acceleration += newLeftAxis * coef + newUpAxis * coef;
 }
 
 void
@@ -65,6 +88,13 @@ FlockingManager::Boid::wander(float coef) {
   acceleration.x += gero::rng::RNG::getRangedValue(-coef, +coef);
   acceleration.y += gero::rng::RNG::getRangedValue(-coef, +coef);
   acceleration.z += gero::rng::RNG::getRangedValue(-coef, +coef);
+}
+
+void FlockingManager::Boid::updateTrail()
+{
+  for (std::size_t ii = trail.size() - 1; ii > 0; --ii)
+    trail.at(ii) = trail.at(ii - 1);
+  trail.at(0).position = position;
 }
 
 void
@@ -90,6 +120,14 @@ FlockingManager::Boid::operator==(const Boid& other) const {
 FlockingManager::FlockingManager() {
   constexpr std::size_t totalEntities = 16;
   _boids.resize(totalEntities);
+
+  for (std::size_t ii = 0; ii < _boids.size(); ++ii)
+  {
+    auto& currBoid = _boids.at(ii);
+    currBoid.horizontalAngle = gero::math::hpi * (((ii % 2) == 0) ? 1.0f : -1.0f);
+    currBoid.verticalAngle = gero::math::hpi * (((ii % 3) == 0) ? 1.0f : -1.0f);
+  }
+
 }
 
 void
@@ -108,40 +146,48 @@ FlockingManager::update(float elapsedTime) {
     }
   }
 
+  constexpr float k_timePerTrailUpdate = 1.0f / 60.0f;
+
   bool needTrailUpdate = false;
   if (_timeUntilTrailUpdate > 0.0f)
     _timeUntilTrailUpdate -= elapsedTime;
 
   if (_timeUntilTrailUpdate <= 0.0f) {
-    _timeUntilTrailUpdate = 1.0f / 30.0f;
+    _timeUntilTrailUpdate = k_timePerTrailUpdate;
     needTrailUpdate = true;
   }
 
   constexpr float maxAcc = 0.05f;
   constexpr float maxVel = 2.0f;
 
-  for (Boid& boid : _boids) {
-    boid.acceleration = {0, 0, 0};
+  for (Boid& currBoid : _boids) {
 
-    const float distance = glm::distance(boid.position, target);
+    currBoid.acceleration = {0, 0, 0};
 
-    if (distance > 20.0f)
-      boid.seek(target, 1.0f);
+    const float distanceToTarget = glm::distance(currBoid.position, target);
+
+    if (distanceToTarget > 30.0f)
+    {
+      currBoid.seek(target, 1.0f);
+    }
+    else if (distanceToTarget < 10.0f)
+    {
+      currBoid.flee(target, 3.0f);
+    }
     else
-      boid.separate(target, 3.0f);
+    {
+      currBoid.strafe(target, currBoid.horizontalAngle, currBoid.verticalAngle, 1.5f);
+    }
 
-    boid.separate(_boids, 1.5f, 2.0f);
-    boid.wander(0.5f);
+    currBoid.separate(_boids, 1.5f, 2.0f);
+    currBoid.wander(0.5f);
 
-    constexpr float k_maxDistance = 100.0f;
-    const float coef = 1.0f + 1.0f * distance / k_maxDistance;
-    boid.applyAcceleration(maxAcc * coef, maxVel * coef, elapsedTime);
+    constexpr float k_maxDistance = 60.0f;
+    const float coef = 1.0f + 1.0f * distanceToTarget / k_maxDistance;
+    currBoid.applyAcceleration(maxAcc * coef, maxVel * coef, elapsedTime);
 
     if (needTrailUpdate) {
-      // make a trail by reusing the previous positions N times
-      for (std::size_t ii = boid.trail.size() - 1; ii > 0; --ii)
-        boid.trail.at(ii) = boid.trail.at(ii - 1);
-      boid.trail.at(0) = boid.position;
+      currBoid.updateTrail();
     }
   }
 }
@@ -171,12 +217,22 @@ FlockingManager::render() {
   {
     auto& stackRenderer = scene.stackRenderers.getTrianglesStack();
 
-    // const glm::vec4 color = glm::vec4(0.6f, 0.6f, 0.0f, 0.2f);
-    const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
+    const glm::vec4 k_color = glm::vec4(0.8f, 0.8f, 0.8f, 0.4f);
 
-    for (Boid& boid : _boids)
-      for (std::size_t kk = 0; kk + 1 < boid.trail.size(); ++kk)
-        stackRenderer.pushThickTriangle3dLine(boid.trail.at(kk + 0), boid.trail.at(kk + 1), 0.2f, color);
+    for (Boid& currBoid : _boids)
+    {
+      for (std::size_t kk = 0; kk + 1 < currBoid.trail.size(); ++kk)
+      {
+        stackRenderer.pushThickTriangle3dLine(
+          currBoid.trail.at(kk + 0).position,
+          currBoid.trail.at(kk + 1).position,
+          0.2f,
+          0.2f,
+          k_color,
+          k_color
+        );
+      }
+    }
 
     scene.stackRenderers.flush();
   }
