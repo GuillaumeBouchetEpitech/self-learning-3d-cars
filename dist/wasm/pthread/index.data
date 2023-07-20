@@ -10,15 +10,14 @@ AGENTS_START_TRANSFORM    position="10.0,10.0,5.3"     quaternion="0.0,0.0,1.0,-
 #
 # departure straight
 
-# starting rewards
-NEXT_KNOTS_STATES   size="2" color="0.25,0.25,0.75"
+    # starting rewards
+    NEXT_KNOTS_STATES   size="2" color="0.25,0.25,0.75"
 
+    PUSH_KNOTS  left=" 5,15, 5"   right=" 5, 5, 5"
+    PUSH_KNOTS  left="90, 0, 0"   right="90, 0, 0"
 
-PUSH_KNOTS  left=" 5,15, 5"   right=" 5, 5, 5"
-PUSH_KNOTS  left="90, 0, 0"   right="90, 0, 0"
-
-# increase distance to next reward(s)
-NEXT_KNOTS_STATES   size="4"
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="6"
 
 # departure straight
 #
@@ -37,8 +36,14 @@ PUSH_KNOTS left="30,0,0"     right="30,0,7"
 
     NEXT_KNOTS_STATES   color="0.25,0.75,0.25"
 
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="5"
+
     PUSH_KNOTS  left="50,50,6"     right="60,60,6"
     PUSH_KNOTS  left="-50,50,6"    right="-60,60,6"
+
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="6"
 
     PUSH_KNOTS  left="-50,-50,6"   right="-60,-60,6"
     PUSH_KNOTS  left="50,-50,6"    right="60,-60,6"
@@ -60,19 +65,19 @@ PUSH_KNOTS       left="40,0,7"     right="40,0,0"
 #
 # horizontal loop (right)
 
-# increase distance to next reward(s)
-NEXT_KNOTS_STATES   size="6"
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="6"
 
-    NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
+        NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
 
-    PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
-    PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
+        PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
+        PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
 
-# increase distance to next reward(s)
-#NEXT_KNOTS_STATES   size="6"
+    # increase distance to next reward(s)
+    #NEXT_KNOTS_STATES   size="6"
 
-    PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
-    PUSH_KNOTS  left="60,60,6"     right="50,50,6"
+        PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
+        PUSH_KNOTS  left="60,60,6"     right="50,50,6"
 
 # /horizontal loop (right)
 #
@@ -10628,21 +10633,10 @@ float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
   return max(dot(lightDir, normal), 0.0);
 }
 
-vec4 quat_from_axis_angle(vec3 axis, float angle)
+vec3 apply_quat_to_vec3(vec3 position, vec4 q)
 {
-  vec4 qr;
-  float half_angle = (angle * 0.5);
-  float sin_val = sin(half_angle);
-  qr.x = axis.x * sin_val;
-  qr.y = axis.y * sin_val;
-  qr.z = axis.z * sin_val;
-  qr.w = cos(half_angle);
-  return qr;
-}
-
-vec3 apply_quat_to_vec3(vec3 pos, float angle, vec3 axis)
-{
-  return pos + 2.0 * cross(axis, cross(axis, pos) + angle * pos);
+  vec3 v = position.xyz;
+  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
 }
 #version 300 es
 
@@ -10957,7 +10951,7 @@ layout(location = 1) out vec4 out_outline;
 void main(void)
 {
 	out_color = v_color;
-	out_outline = vec4(v_outlineValue, 0.0, 0.0, 1.0);
+	out_outline = vec4(v_outlineValue, 0.0, 0.0, v_outlineValue);
 }
 #version 300 es
 
@@ -10980,11 +10974,8 @@ flat out float v_outlineValue;
 
 void main(void)
 {
-	float angle = a_offset_orientation.w;
-	vec3 axis = vec3(a_offset_orientation.x, a_offset_orientation.y, a_offset_orientation.z);
-
 	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
@@ -11048,12 +11039,9 @@ out float v_diffuseLightRatio;
 
 void main(void)
 {
-	float angle = a_offset_orientation.w;
-	vec3 axis = vec3(a_offset_orientation.xyz);
-
 	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
-	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, angle, axis);
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, a_offset_orientation);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
@@ -11103,11 +11091,8 @@ out vec3 v_color;
 
 void main(void)
 {
-	float angle = a_offset_orientation.w;
-	vec3 axis = a_offset_orientation.xyz;
-
 	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
