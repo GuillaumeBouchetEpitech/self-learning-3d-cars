@@ -7,29 +7,6 @@
 
 using namespace gero::graphics;
 
-namespace {
-
-glm::quat
-quat_from_axis_angle(const glm::vec3& axis, float angle) {
-  glm::quat qr;
-  // float half_angle = (angle * 0.5) * 3.14159 / 180.0;
-  const float half_angle = (angle * 0.5f);
-  const float sin_val = std::sin(half_angle);
-  qr.x = axis.x * sin_val;
-  qr.y = axis.y * sin_val;
-  qr.z = axis.z * sin_val;
-  qr.w = std::cos(half_angle);
-  return qr;
-}
-
-glm::vec3
-apply_quat_to_vec3(const glm::vec3& position, const glm::quat& q) {
-  const glm::vec3 axis(q.x, q.y, q.z);
-  return position + 2.0f * glm::cross(axis, glm::cross(axis, position) + q.w * position);
-}
-
-} // namespace
-
 void
 GeometriesStackRenderer::initialize() {
 
@@ -78,11 +55,6 @@ GeometriesStackRenderer::initialize() {
 }
 
 void
-GeometriesStackRenderer::setMatricesData(const gero::graphics::Camera::MatricesData& matricesData) {
-  _matricesData = matricesData;
-}
-
-void
 GeometriesStackRenderer::createAlias(int32_t alias, const gero::graphics::MakeGeometries::Vertices& vertices) {
 
   auto newAlias = std::make_shared<AliasedGeometry>();
@@ -124,12 +96,11 @@ GeometriesStackRenderer::pushAlias(
 
   GeometryInstance copyInstance = newInstance;
 
-  glm::vec3 axis = glm::vec3(copyInstance.orientation.x, copyInstance.orientation.y, copyInstance.orientation.z);
-  copyInstance.orientation = quat_from_axis_angle(axis, copyInstance.orientation.w);
+  copyInstance.orientation = copyInstance.orientation;
 
-  const glm::vec3 dir = apply_quat_to_vec3(glm::vec3(1, 0, 0), copyInstance.orientation);
-
-  copyInstance.position += dir * inForwardOffset;
+  if (inForwardOffset != 0.0f) {
+    copyInstance.position += glm::mat3_cast(copyInstance.orientation) * glm::vec3(inForwardOffset, 0, 0);
+  }
 
   it->second->instanceVertices.push_back(copyInstance);
 }
@@ -139,9 +110,8 @@ GeometriesStackRenderer::clearAll() {
   _aliasedGeometriesMap.clear();
 }
 
-// void GeometriesStackRenderer::renderAll(const glm::vec3& inLightPos)
 void
-GeometriesStackRenderer::renderAll() {
+GeometriesStackRenderer::renderAll(const gero::graphics::Camera& inCamera) {
   if (!_shader)
     D_THROW(std::runtime_error, "not initialized");
 
@@ -149,7 +119,7 @@ GeometriesStackRenderer::renderAll() {
     return;
 
   _shader->bind();
-  _shader->setUniform("u_composedMatrix", _matricesData.composed);
+  _shader->setUniform("u_composedMatrix", inCamera.getMatricesData().composed);
   // _shader->setUniform("u_ambiantCoef", 0.2f);
   // _shader->setUniform("u_lightPos", inLightPos.x, inLightPos.y,
   // inLightPos.z);

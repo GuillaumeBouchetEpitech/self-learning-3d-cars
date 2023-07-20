@@ -182,7 +182,7 @@ State_AbstractSimulation::_updateCommonLogic(float elapsedTime) {
 
   graphic.scene.particleManager.update(elapsedTime);
   graphic.scene.backGroundTorusRenderer.update(elapsedTime);
-  graphic.scene.flockingManager.update(elapsedTime);
+  graphic.scene.flockingManager->update(elapsedTime);
 
   graphic.hud.widgets.screenTitles.update(elapsedTime);
   graphic.hud.widgets.topologyRenderer.update(elapsedTime);

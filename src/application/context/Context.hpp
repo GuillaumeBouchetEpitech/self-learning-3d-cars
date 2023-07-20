@@ -25,11 +25,11 @@
 #include "graphics/renderers/scene/BackGroundTorusRenderer.hpp"
 #include "graphics/renderers/scene/CarTailsRenderer.hpp"
 #include "graphics/renderers/scene/ChessBoardFloorRenderer.hpp"
-#include "graphics/renderers/scene/FlockingManager.hpp"
-#include "graphics/renderers/scene/GeometriesStackRenderer.hpp"
+#include "graphics/renderers/scene/flocking/AbstractFlockingManager.hpp"
 #include "graphics/renderers/scene/ModelsRenderer.hpp"
 #include "graphics/renderers/scene/SceneStackRenderers.hpp"
 #include "graphics/renderers/scene/particles/ParticleManager.hpp"
+#include "graphics/renderers/scene/shape-stack-renderer/ShapeStackRenderer.hpp"
 
 #include "geronimo/graphics/ResourceManager.hpp"
 #include "geronimo/graphics/camera/Camera.hpp"
@@ -118,9 +118,9 @@ public:
       BackGroundTorusRenderer backGroundTorusRenderer;
       AnimatedCircuitRenderer animatedCircuitRenderer;
       ModelsRenderer modelsRenderer;
-      FlockingManager flockingManager;
+      std::unique_ptr<AbstractFlockingManager> flockingManager;
       CarTailsRenderer carTailsRenderer;
-      GeometriesStackRenderer geometriesStackRenderer;
+      ShapeStackRenderer shapeStackRenderer;
     } scene;
 
     gero::graphics::ResourceManager resourceManager;

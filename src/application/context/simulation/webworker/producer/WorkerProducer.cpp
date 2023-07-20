@@ -83,16 +83,8 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
     //
 
-    int32_t totalDeltasPerTotalAgents = 0;
-    receivedMsg >> totalDeltasPerTotalAgents;
-    for (int32_t ii = 0; ii < totalDeltasPerTotalAgents; ++ii) {
-      int32_t totalLiveVehicles = 0;
-      int32_t stepMilliSeconds = 0;
-
-      receivedMsg >> totalLiveVehicles >> stepMilliSeconds;
-
-      _frameProfiler.set(totalLiveVehicles, stepMilliSeconds);
-    }
+    receivedMsg >> _isReadyToAddMoreCars;
+    receivedMsg >> _maxDuration;
 
     //
 
@@ -264,15 +256,6 @@ WorkerProducer::_fillMessageWithAgentToAdd() {
 
 bool
 WorkerProducer::addNewAgent(uint32_t inDataIndex, const AbstractGenome& inGenome) {
-  const uint32_t totalLiveVehicles = getTotalLiveAgents();
-
-  if (totalLiveVehicles > 20) {
-    if (_waitingAgentsData.size() >= 10)
-      return false;
-
-    if (_frameProfiler.getMaxDelta(totalLiveVehicles) >= 30)
-      return false;
-  }
 
   auto newAgent = std::make_shared<AgentData>(inDataIndex);
 
@@ -350,4 +333,19 @@ WorkerProducer::getCoreState() const {
 uint32_t
 WorkerProducer::getTotalLiveAgents() const {
   return _currentLiveAgents + uint32_t(_waitingAgentsData.size());
+}
+
+uint32_t
+WorkerProducer::getWaitingAgents() const {
+  return uint32_t(_waitingAgentsData.size());
+}
+
+bool
+WorkerProducer::isReadyToAddMoreCars() const {
+  return _isReadyToAddMoreCars;
+}
+
+int32_t
+WorkerProducer::getMaxDuration() const {
+  return _maxDuration;
 }

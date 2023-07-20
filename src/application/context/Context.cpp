@@ -1,13 +1,6 @@
 
 #include "Context.hpp"
 
-#include "application/defines.hpp"
-#if defined D_WEB_WEBWORKER_BUILD
-#include "application/context/simulation/webworker/WebWorkersSimulation.hpp"
-#else
-#include "application/context/simulation/pthread/PthreadSimulation.hpp"
-#endif
-
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
@@ -41,15 +34,7 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
   //
   //
 
-#if defined D_WEB_WEBWORKER_BUILD
-
-  logic.simulation = std::make_unique<WebWorkersSimulation>();
-
-#else
-
-  logic.simulation = std::make_unique<PthreadSimulation>();
-
-#endif
+  logic.simulation = AbstractSimulation::create();
 
   constexpr float k_logicFrameDuration = 1.0f / 40.0f;
   logic.carDataFrameHandler.initialize(totalGenomes, k_logicFrameDuration);
@@ -93,6 +78,8 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
 
   {
 
+    graphic.scene.flockingManager = AbstractFlockingManager::create();
+
     graphic.scene.stackRenderers.initialize();
 
     graphic.scene.modelsRenderer.initialize();
@@ -101,7 +88,7 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
     const glm::vec3 boundariesSize = dimension.max - dimension.min;
     graphic.scene.chessBoardFloorRenderer.initialize(dimension.center, boundariesSize);
     graphic.scene.backGroundTorusRenderer.initialize();
-    graphic.scene.geometriesStackRenderer.initialize();
+    graphic.scene.shapeStackRenderer.initialize();
 
     graphic.hud.stackRenderers.initialize("./thirdparties/dependencies/geronimo/src");
 
@@ -113,25 +100,6 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
     graphic.hud.widgets.topologyRenderer.initialize();
     graphic.hud.widgets.thirdPersonCamera.initialize();
     graphic.hud.widgets.leaderEyeRenderer.initialize();
-  }
-
-  {
-
-    {
-      //
-      // sphere geometry
-      //
-
-      gero::graphics::MakeGeometries::Vertices vertices;
-
-      gero::graphics::MakeGeometries::makeSphere(vertices, 0, 0.5f);
-      // gero::graphics::MakeGeometries::convertToPerFacesNormals(vertices);
-      graphic.scene.geometriesStackRenderer.createAlias(1111, vertices);
-
-      gero::graphics::MakeGeometries::makeSphere(vertices, 1, 0.5f);
-      // gero::graphics::MakeGeometries::convertToPerFacesNormals(vertices);
-      graphic.scene.geometriesStackRenderer.createAlias(2222, vertices);
-    }
   }
 }
 

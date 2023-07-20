@@ -19,11 +19,8 @@ flat out float v_outlineValue;
 
 void main(void)
 {
-	float angle = a_offset_orientation.w;
-	vec3 axis = vec3(a_offset_orientation.x, a_offset_orientation.y, a_offset_orientation.z);
-
 	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 

@@ -1,27 +1,6 @@
 
 # Self Learning 3d Cars
 
-## Table of Contents
-- [Self Learning 3d Cars](#self-learning-3d-cars)
-  - [Table of Contents](#table-of-contents)
-  - [Online Demo Link](#online-demo-link)
-  - [Diagrams](#diagrams)
-    - [Main Logic](#main-logic)
-    - [Relationships](#relationships)
-    - [Mutilthreaded Producer Consumer Pattern](#mutilthreaded-producer-consumer-pattern)
-- [Dependencies](#dependencies)
-  - [Dependency: Emscripten 3.1.26 (for web-wasm build)](#dependency-emscripten-3126-for-web-wasm-build)
-  - [Dependency: SDL2, GLESv2 (for native build)](#dependency-sdl2-glesv2-for-native-build)
-  - [Dependency: Geronimo 0.0.12](#dependency-geronimo-0012)
-  - [Dependency: Basic Genetic Algorithm 0.0.7](#dependency-basic-genetic-algorithm-007)
-- [How to Build](#how-to-build)
-  - [Build Everything (will skip web-wasm if emscripten is absent)](#build-everything-will-skip-web-wasm-if-emscripten-is-absent)
-- [How to Run](#how-to-run)
-  - [Native Build](#native-build)
-  - [Web Wasm Build - without multithreading support: webworkers (mobile friendly)](#web-wasm-build---without-multithreading-support-webworkers-mobile-friendly)
-  - [Web Wasm Build - with multithreading support (desktop friendly)](#web-wasm-build---with-multithreading-support-desktop-friendly)
-- [Thanks for watching!](#thanks-for-watching)
-
 ## Online Demo Link
 
 **`/!\ important /!\`**
@@ -257,8 +236,7 @@ This dependency will be downloaded and built with the `Build Everything` method 
 ## Build Everything (will skip web-wasm if emscripten is absent)
 
 ```bash
-chmod +x ./sh_everything.sh
-./sh_everything.sh
+sh sh_everything.sh
 # will tell if a dependency is missing
 # will skip the web-wasm build if emscripten is not detected
 ```

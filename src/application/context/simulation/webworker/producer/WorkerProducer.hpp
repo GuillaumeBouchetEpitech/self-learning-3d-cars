@@ -4,7 +4,6 @@
 #include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/utilities/FrameProfiler.hpp"
 #include "application/context/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
@@ -57,7 +56,8 @@ private:
   std::vector<std::shared_ptr<AgentData>> _allAgentsData;
   std::unordered_map<uint32_t, std::shared_ptr<AgentData>> _agentsDataMap;
 
-  FrameProfiler _frameProfiler;
+  bool _isReadyToAddMoreCars = true;
+  int32_t _maxDuration = 0;
 
   gero::messaging::MessageBuffer _message;
 
@@ -98,4 +98,8 @@ public:
   const AbstractSimulation::CoreState& getCoreState() const;
 
   uint32_t getTotalLiveAgents() const;
+  uint32_t getWaitingAgents() const;
+  bool isReadyToAddMoreCars() const;
+  int32_t getMaxDuration() const;
+
 };

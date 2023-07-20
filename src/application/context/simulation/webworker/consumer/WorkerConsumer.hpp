@@ -4,7 +4,6 @@
 #include "application/context/simulation/logic/CarAgent.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/utilities/FrameProfiler.hpp"
 #include "application/context/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
@@ -14,6 +13,7 @@
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/messaging/MessageBuffer.hpp"
 #include "geronimo/system/messaging/MessageView.hpp"
+#include "geronimo/system/metrics/HistoricalTimeData.hpp"
 
 #include "application/defines.hpp"
 
@@ -45,7 +45,7 @@ private:
 
   gero::messaging::MessageBuffer _messageToSend;
 
-  FrameProfiler _frameProfiler;
+  gero::metrics::HistoricalTimeData _historicalTimeData;
 
 public:
   WorkerConsumer() = default;

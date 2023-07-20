@@ -29,12 +29,9 @@ out float v_diffuseLightRatio;
 
 void main(void)
 {
-	float angle = a_offset_orientation.w;
-	vec3 axis = vec3(a_offset_orientation.xyz);
-
 	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, angle, axis);
-	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, angle, axis);
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+	vec3 worldSpaceNormal = apply_quat_to_vec3(a_vertex_normal, a_offset_orientation);
 
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 

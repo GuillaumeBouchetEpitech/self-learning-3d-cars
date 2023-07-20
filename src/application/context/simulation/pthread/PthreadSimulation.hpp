@@ -4,13 +4,12 @@
 #include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarAgent.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/utilities/FrameProfiler.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
 #include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/multithreading/Producer.hpp"
-// #include "geronimo/system/containers/weak_ref_data_pool.hpp"
+#include "geronimo/system/metrics/HistoricalTimeData.hpp"
 
 #include <array>
 #include <list>
@@ -49,7 +48,7 @@ private:
      */
     gero::physics::PhysicWorld physicWorld;
 
-    FrameProfiler frameProfiler;
+    gero::metrics::HistoricalTimeData historicalTimeData;
   };
   std::vector<std::unique_ptr<ThreadData>> _allThreadsData;
 

@@ -130,11 +130,14 @@ SRC+=	\
 		$(DIR_SRC)/application/context/graphics/renderers/hud/helpers/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/widgets/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/flocking/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/flocking/internals/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/internals/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/*.cpp \
 		$(DIR_SRC)/application/context/simulation/*.cpp \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
-		$(DIR_SRC)/application/context/simulation/utilities/*.cpp \
 		)
 
 ifneq ($(build_platform),web-wasm-webworker)
@@ -155,7 +158,6 @@ SRC+=	\
 SRC_WEB_WASM_WORKER+=	\
 	$(wildcard \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
-		$(DIR_SRC)/application/context/simulation/utilities/*.cpp \
 		$(DIR_SRC)/application/context/simulation/webworker/consumer/*.cpp \
 		)
 

@@ -11,6 +11,7 @@
 #include "application/defines.hpp"
 
 #include <functional>
+#include <memory>
 
 class AbstractSimulation : public gero::NonCopyable {
 public:
@@ -74,4 +75,8 @@ public:
   virtual uint32_t getGenerationNumber() const = 0;
   virtual const glm::vec3& getStartPosition() const = 0;
   virtual const GeneticAlgorithm& getGeneticAlgorithm() const = 0;
+
+public:
+  static std::unique_ptr<AbstractSimulation> create();
+
 };

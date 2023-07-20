@@ -74,6 +74,8 @@ WorkerConsumer::_sendBackToProducer() {
 void
 WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg) {
 
+  _historicalTimeData.setSize(5);
+
   CircuitBuilder::Knots circuitKnots;
 
   bool isUsingBias = true;
@@ -162,6 +164,8 @@ WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg) {
 
     _allAgentValues.emplace_back(newValues);
   }
+
+  // _historicalTimeData.reset();
 }
 
 void
@@ -180,7 +184,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   CarData::CarTransform tmpCarTransform;
 
   for (uint32_t step = 0; step < totalSteps; ++step) {
-    _frameProfiler.start();
+    _historicalTimeData.start();
 
     constexpr uint32_t maxSubSteps = 0;
     _physicWorld->step(elapsedTime, maxSubSteps, elapsedTime);
@@ -217,7 +221,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
       }
     }
 
-    _frameProfiler.stop(_physicWorld->getPhysicVehicleManager().totalLiveVehicles());
+    _historicalTimeData.stop();
   }
 
   //
@@ -237,10 +241,9 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   _messageToSend << int8_t(Messages::FromConsumer::SimulationResult);
   _messageToSend << delta;
 
-  const auto& deltasMap = _frameProfiler.getDeltasMap();
-  _messageToSend << int32_t(deltasMap.size());
-  for (auto pair : deltasMap)
-    _messageToSend << int32_t(pair.first) << int32_t(pair.second);
+  const bool isReadyToAddMoreCars = _historicalTimeData.getTotalDurations() < _historicalTimeData.getSize();
+  _messageToSend << isReadyToAddMoreCars;
+  _messageToSend << int32_t(_historicalTimeData.getMaxDuration());
 
   uint32_t genomesAlive = 0;
   for (auto currValues : _allAgentValues)

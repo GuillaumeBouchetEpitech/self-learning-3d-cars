@@ -96,8 +96,6 @@ WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
     auto& oldData = _allCarsData.at(index);
 
     if (oldData.isAlive && !latestData.isAlive) {
-      _addNewAgents();
-
       if (_callbacks.onGenomeDie)
         _callbacks.onGenomeDie(index);
     }
@@ -113,6 +111,8 @@ WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
     if (_callbacks.onGenerationStep)
       _callbacks.onGenerationStep();
   }
+
+  _addNewAgents();
 
   if (isGenerationComplete())
     return;
@@ -193,18 +193,45 @@ WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t tot
 void
 WebWorkersSimulation::_addNewAgents() {
   while (_currentAgentIndex < _def.totalGenomes) {
-    // select the worker with fewest agents
 
-    uint32_t bestWorkerIndex = 0;
-    for (std::size_t index = 1; index < _workerProducers.size(); ++index) {
-      const auto& bestWorker = _workerProducers.at(bestWorkerIndex);
-      const auto& currWorker = _workerProducers.at(index);
+    // select consumer with fewer cars
 
-      if (bestWorker->getTotalLiveAgents() < currWorker->getTotalLiveAgents())
+    std::size_t bestWorkerIndex = 0;
+    for (std::size_t ii = 1; ii < _workerProducers.size(); ++ii) {
+      const auto& bestState = _workerProducers.at(bestWorkerIndex);
+      const auto& currState = _workerProducers.at(ii);
+
+      if (bestState->getTotalLiveAgents() < currState->getTotalLiveAgents())
         continue;
 
-      bestWorkerIndex = index;
+      bestWorkerIndex = ii;
     }
+
+    auto& bestWorkerData = *(_workerProducers.at(bestWorkerIndex));
+
+    if (bestWorkerData.getTotalLiveAgents() > 20) {
+      // this thread is already about to add more agents
+      if (bestWorkerData.getWaitingAgents() >= 5) {
+        // D_MYLOG("this thread is already about to add more agents");
+        break;
+      }
+
+      // not enough profiling data, not adding more cars
+      if (bestWorkerData.isReadyToAddMoreCars()) {
+        // D_MYLOG("not enough profiling data, not adding more cars");
+        break;
+      }
+
+      // simulation too slow, not adding more cars
+      if (bestWorkerData.getMaxDuration() >= 10) {
+        // D_MYLOG("simulation too slow, not adding more cars");
+        break;
+      }
+    }
+
+    //
+    //
+    //
 
     // make the car live
 

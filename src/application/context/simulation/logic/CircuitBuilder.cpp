@@ -286,7 +286,7 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 
   CircuitBuilder::CircuitVertex vertex;
 
-  constexpr unsigned int maxIterations = 1000;
+  constexpr unsigned int maxIterations = 3000;
   constexpr float step = 1.0f / maxIterations; // tiny steps
 
   for (float coef = 0.0f; coef <= 1.0f; coef += step) {

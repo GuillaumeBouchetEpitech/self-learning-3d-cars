@@ -106,7 +106,8 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
   auto& scene = context.graphic.scene;
 
   GeometriesStackRenderer::GeometryInstance instance;
-  instance.position = glm::vec3(0.0f), instance.orientation = glm::quat(0.0f, glm::vec3(0, 0, 1));
+  instance.position = glm::vec3(0.0f);
+  instance.orientation = glm::identity<glm::quat>();
   instance.scale = glm::vec3(0.2f);
   instance.color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
   instance.outlineValue = 1.0f;
@@ -124,7 +125,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
     instance.color = glm::vec4(particle.color, 1.0f);
     instance.position = particle.position;
     instance.scale = glm::vec3(localScale);
-    scene.geometriesStackRenderer.pushAlias(1111, instance);
+    scene.shapeStackRenderer.pushSphere(instance);
   }
 
   auto tmpEasing = gero::easing::GenericEasing<3>()
@@ -152,7 +153,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
     // particle.scale * 0.2f);
     instance.scale = glm::vec3(particle.scale + easedVal);
 
-    scene.geometriesStackRenderer.pushAlias(2222, instance);
+    scene.shapeStackRenderer.pushSuperiorSphere(instance);
   }
 }
 

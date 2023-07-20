@@ -53,6 +53,5 @@ public:
 
 public:
   void clearAll();
-  // void renderAll(const glm::vec3& inLightPos);
-  void renderAll();
+  void renderAll(const gero::graphics::Camera& inCamera);
 };

@@ -61,8 +61,8 @@ State_Running::update(float elapsedTime) {
 
   } // simulation update
 
-  // done to avoid a spurious change of gero::graphics::Camera
-  // -> true when changing states: Running -> EndGeneration
+  // done to avoid a spurious change of camera
+  // -> which happen when changing states: Running -> EndGeneration
   if (StateManager::get()->getState() == StateManager::States::Running) {
 
     graphic.scene.modelsRenderer.update(elapsedTime);

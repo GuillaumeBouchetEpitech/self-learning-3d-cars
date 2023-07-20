@@ -197,7 +197,7 @@ CoreUsageRenderer::renderWireFrame() {
     // k_size.y - 10, 0);
     const glm::vec3 k_pos = glm::vec3(_position.x, _position.y + 100.0f, 0.0f);
 
-    gero::graphics::widgets::renderPerformanceProfilerMetrics(
+    gero::graphics::widgets::renderHistoricalTimeData(
       k_pos, k_size, timeData, stackRenderers, graphic.hud.textRenderer);
 
     // graphic.stackRenderers.flush();

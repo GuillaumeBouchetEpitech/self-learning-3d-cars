@@ -185,6 +185,7 @@ PthreadSimulation::_resetPhysic() {
 
     } // floor
 
+    newData->historicalTimeData.setSize(5);
     _allThreadsData.emplace_back(std::move(newData));
   }
 }
@@ -218,6 +219,8 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
     _allAgentValues.push_back(currValues);
   _waitingAgentsValues.clear();
 
+  _addCars();
+
   for (std::size_t ii = 0; ii < _carsData.size(); ++ii)
     _carsData.at(ii).latestTransformsHistory.clear();
 
@@ -233,7 +236,7 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
       auto& currPhysicWorlds = currData.physicWorld;
 
       for (unsigned int step = 0; step < totalSteps; ++step) {
-        currData.frameProfiler.start();
+        currData.historicalTimeData.start();
 
         // update physical world
 
@@ -275,7 +278,7 @@ PthreadSimulation::update(float elapsedTime, unsigned int totalSteps) {
           }
         }
 
-        currData.frameProfiler.stop(currPhysicWorlds.getPhysicVehicleManager().totalLiveVehicles());
+        currData.historicalTimeData.stop();
       }
 
       //
@@ -373,7 +376,6 @@ PthreadSimulation::_updateCarResult() {
     if (carWasAlive && !carData.isAlive) {
 
       _currentLiveAgents -= 1;
-      _addCars();
 
       if (_callbacks.onGenomeDie)
         _callbacks.onGenomeDie(currValue->dataIndex);
@@ -436,6 +438,10 @@ PthreadSimulation::_updateCarResult() {
 
 void
 PthreadSimulation::_addCars() {
+
+  // std::vector<bool> wasUpdated;
+  // wasUpdated.resize(_allThreadsData.size(), false);
+
   while (_currentAgentIndex < _def.totalGenomes) {
 
     // select physic world with fewer cars
@@ -456,13 +462,30 @@ PthreadSimulation::_addCars() {
 
     const uint32_t totalLiveVehicles = physicWorld.getPhysicVehicleManager().totalLiveVehicles();
     if (totalLiveVehicles > 20) {
-      if (_waitingAgentsValues.size() >= 10)
+      // this thread is already about to add more agents
+      if (_waitingAgentsValues.size() >= 5) {
+        // D_MYLOG("this thread is already about to add more agents");
         break;
+      }
+
+      const auto& profilerData = bestThreadData.historicalTimeData;
+
+      // not enough profiling data, not adding more cars
+      if (profilerData.getTotalDurations() < profilerData.getSize()) {
+        // D_MYLOG("not enough profiling data, not adding more cars");
+        break;
+      }
 
       // simulation too slow, not adding more cars
-      if (bestThreadData.frameProfiler.getMaxDelta(totalLiveVehicles) >= 25)
+      if (profilerData.getMaxDuration() >= 10) {
+        // D_MYLOG("simulation too slow, not adding more cars");
         break;
+      }
     }
+
+    //
+    //
+    //
 
     // make the car live
 
@@ -479,11 +502,20 @@ PthreadSimulation::_addCars() {
     _currentAgentIndex += 1;
     _currentLiveAgents += 1;
 
+    // wasUpdated.at(bestWorldIndex) = true;
+
     for (std::size_t ii = 0; ii < _allThreadsData.size(); ++ii) {
       auto& coreState = _coreStates.at(ii);
       coreState.genomesAlive = _getTotalLiveAgents(*_allThreadsData.at(ii));
     }
   }
+
+  // for (std::size_t ii = 1; ii < _allThreadsData.size(); ++ii) {
+  //   if (wasUpdated.at(ii) == false)
+  //     continue;
+  //   wasUpdated.at(ii) = false;
+  //   // _allThreadsData.at(ii)->historicalTimeData.reset();
+  // }
 }
 
 uint32_t

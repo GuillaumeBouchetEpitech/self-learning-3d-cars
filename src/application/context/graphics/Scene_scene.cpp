@@ -65,7 +65,6 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
 
     scene.stackRenderers.setMatricesData(matricesData);
     scene.carTailsRenderer.setMatricesData(matricesData);
-    scene.geometriesStackRenderer.setMatricesData(matricesData);
   }
 
   {
@@ -88,10 +87,10 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
     scene.modelsRenderer.render(inCamera);
     scene.animatedCircuitRenderer.renderGround(inCamera);
     scene.carTailsRenderer.render();
-    scene.flockingManager.render();
+    scene.flockingManager->render();
 
     scene.stackRenderers.flush();
 
-    scene.geometriesStackRenderer.renderAll();
+    scene.shapeStackRenderer.render(inCamera);
   }
 }
