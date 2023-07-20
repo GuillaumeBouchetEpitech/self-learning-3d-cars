@@ -101,5 +101,4 @@ public:
   uint32_t getWaitingAgents() const;
   bool isReadyToAddMoreCars() const;
   int32_t getMaxDuration() const;
-
 };

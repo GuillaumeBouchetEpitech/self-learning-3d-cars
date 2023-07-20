@@ -3,8 +3,7 @@
 
 #include "internals/GeometriesStackRenderer.hpp"
 
-class ShapeStackRenderer
-{
+class ShapeStackRenderer {
 public:
   ShapeStackRenderer() = default;
   ShapeStackRenderer(const ShapeStackRenderer& other) = delete;
@@ -26,6 +25,4 @@ public:
 
 private:
   GeometriesStackRenderer _geometriesStackRenderer;
-
 };
-

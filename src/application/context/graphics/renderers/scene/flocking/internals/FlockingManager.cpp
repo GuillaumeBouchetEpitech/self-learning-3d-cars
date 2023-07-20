@@ -6,25 +6,23 @@
 
 #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
 #include "geronimo/system/asValue.hpp"
-#include "geronimo/system/math/clamp.hpp"
-#include "geronimo/system/math/lerp.hpp"
-#include "geronimo/system/math/angles.hpp"
-#include "geronimo/system/math/constants.hpp"
-#include "geronimo/system/math/safe-normalize.hpp"
 #include "geronimo/system/easing/easingFunctions.hpp"
+#include "geronimo/system/math/angles.hpp"
+#include "geronimo/system/math/clamp.hpp"
+#include "geronimo/system/math/constants.hpp"
+#include "geronimo/system/math/lerp.hpp"
+#include "geronimo/system/math/safe-normalize.hpp"
 #include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 FlockingManager::FlockingManager() {
   constexpr std::size_t totalEntities = 64;
   _allBoids.resize(totalEntities);
 
-  for (std::size_t ii = 0; ii < _allBoids.size(); ++ii)
-  {
+  for (std::size_t ii = 0; ii < _allBoids.size(); ++ii) {
     auto& currBoid = _allBoids.at(ii);
     currBoid.horizontalAngle = gero::math::hpi * (((ii % 2) == 0) ? 1.0f : -1.0f);
     currBoid.verticalAngle = gero::math::hpi * (((ii % 3) == 0) ? 1.0f : -1.0f);
   }
-
 }
 
 void
@@ -57,8 +55,6 @@ FlockingManager::update(float elapsedTime) {
   constexpr float maxAcc = 0.05f;
   constexpr float maxVel = 2.0f;
 
-
-
   _spatialIndexer.clear();
   _spatialIndexer.pre_allocate(_allBoids.size());
   for (Boid& currBoid : _allBoids)
@@ -71,16 +67,11 @@ FlockingManager::update(float elapsedTime) {
 
     const float distanceToTarget = glm::distance(currBoid.position, target);
 
-    if (distanceToTarget > 30.0f)
-    {
+    if (distanceToTarget > 30.0f) {
       currBoid.seek(target, 1.0f);
-    }
-    else if (distanceToTarget < 10.0f)
-    {
+    } else if (distanceToTarget < 10.0f) {
       currBoid.flee(target, 3.0f);
-    }
-    else
-    {
+    } else {
       currBoid.strafe(target, currBoid.horizontalAngle, currBoid.verticalAngle, 1.5f);
     }
 
@@ -117,10 +108,8 @@ FlockingManager::render() {
   instance.color = k_color;
   instance.outlineValue = 0.0f;
 
-  for (const Boid& currBoid : _allBoids)
-  {
-    for (const auto& currData : currBoid.graphicData.trailData)
-    {
+  for (const Boid& currBoid : _allBoids) {
+    for (const auto& currData : currBoid.graphicData.trailData) {
       instance.scale.x = currData.length;
       instance.orientation = currData.orientation;
       instance.position = currData.center;
@@ -128,6 +117,4 @@ FlockingManager::render() {
       shapeStackRenderer.pushBox(instance);
     }
   }
-
 }
-

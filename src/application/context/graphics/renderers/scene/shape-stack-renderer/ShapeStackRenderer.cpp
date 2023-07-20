@@ -1,9 +1,8 @@
 
 #include "ShapeStackRenderer.hpp"
 
-
-void ShapeStackRenderer::initialize()
-{
+void
+ShapeStackRenderer::initialize() {
   _geometriesStackRenderer.initialize();
 
   {
@@ -40,27 +39,23 @@ void ShapeStackRenderer::initialize()
 
     _geometriesStackRenderer.createAlias(3333, vertices);
   }
-
 }
 
-void ShapeStackRenderer::pushSphere(const GeometriesStackRenderer::GeometryInstance& instance)
-{
+void
+ShapeStackRenderer::pushSphere(const GeometriesStackRenderer::GeometryInstance& instance) {
   _geometriesStackRenderer.pushAlias(2222, instance);
 }
-void ShapeStackRenderer::pushSuperiorSphere(const GeometriesStackRenderer::GeometryInstance& instance)
-{
+void
+ShapeStackRenderer::pushSuperiorSphere(const GeometriesStackRenderer::GeometryInstance& instance) {
   _geometriesStackRenderer.pushAlias(2223, instance);
 }
 
-void ShapeStackRenderer::pushBox(const GeometriesStackRenderer::GeometryInstance& instance)
-{
+void
+ShapeStackRenderer::pushBox(const GeometriesStackRenderer::GeometryInstance& instance) {
   _geometriesStackRenderer.pushAlias(3333, instance);
 }
 
-void ShapeStackRenderer::render(const gero::graphics::Camera& inCamera)
-{
+void
+ShapeStackRenderer::render(const gero::graphics::Camera& inCamera) {
   _geometriesStackRenderer.renderAll(inCamera);
 }
-
-
-

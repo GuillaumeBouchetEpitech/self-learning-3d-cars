@@ -5,7 +5,6 @@
 
 #include "geronimo/system/trees/Spatial3dIndexer.hpp"
 
-
 class FlockingManager : public AbstractFlockingManager {
 public:
   FlockingManager();
@@ -21,5 +20,4 @@ private:
   float _timeUntilTrailUpdate = 0.0f;
 
   gero::trees::Spatial3dIndexer<Boid*> _spatialIndexer;
-
 };

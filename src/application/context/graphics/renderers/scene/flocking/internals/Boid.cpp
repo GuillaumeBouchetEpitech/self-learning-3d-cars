@@ -11,8 +11,7 @@ Boid::Boid() {
   position.y += gero::rng::RNG::getRangedValue(-10.0f, +10.0f);
   position.z += gero::rng::RNG::getRangedValue(-10.0f, +10.0f);
 
-  for (auto& item : trail)
-  {
+  for (auto& item : trail) {
     item.position = position;
   }
 }
@@ -57,7 +56,8 @@ Boid::strafe(const glm::vec3& target, float inHorizontalAngle, float inVerticalA
     return;
 
   const float horizontalAngle = gero::math::getAngle(currentDirection.x, currentDirection.y);
-  const float verticalAngle = gero::math::getAngle(glm::length(glm::vec2(currentDirection.x, currentDirection.y)), currentDirection.z);
+  const float verticalAngle =
+    gero::math::getAngle(glm::length(glm::vec2(currentDirection.x, currentDirection.y)), currentDirection.z);
   const float newHorizontalAngle = horizontalAngle + inHorizontalAngle;
   const float newVerticalAngle = verticalAngle + inVerticalAngle;
 
@@ -81,8 +81,8 @@ Boid::wander(float coef) {
   acceleration.z += gero::rng::RNG::getRangedValue(-coef, +coef);
 }
 
-void Boid::updateTrail()
-{
+void
+Boid::updateTrail() {
   for (std::size_t ii = trail.size() - 1; ii > 0; --ii)
     trail.at(ii) = trail.at(ii - 1);
   trail.at(0).position = position;
@@ -92,8 +92,7 @@ void Boid::updateTrail()
 
   GraphicData::TrailData tmpData;
 
-  for (std::size_t kk = 0; kk + 1 < trail.size(); ++kk)
-  {
+  for (std::size_t kk = 0; kk + 1 < trail.size(); ++kk) {
     const glm::vec3& posA = trail.at(kk + 0).position;
     const glm::vec3& posB = trail.at(kk + 1).position;
 
@@ -108,8 +107,8 @@ void Boid::updateTrail()
     tmpData.length = magnitude * 2.0f;
 
     tmpData.orientation = glm::identity<glm::quat>();
-    tmpData.orientation *= glm::angleAxis(horAngleRad, glm::vec3(0,0,1));
-    tmpData.orientation *= glm::angleAxis(vertAngleRad, glm::vec3(0,1,0));
+    tmpData.orientation *= glm::angleAxis(horAngleRad, glm::vec3(0, 0, 1));
+    tmpData.orientation *= glm::angleAxis(vertAngleRad, glm::vec3(0, 1, 0));
 
     tmpData.center = posA + rawDiff * 0.5f;
 

@@ -13,5 +13,4 @@ public:
 
 public:
   static std::unique_ptr<AbstractFlockingManager> create();
-
 };

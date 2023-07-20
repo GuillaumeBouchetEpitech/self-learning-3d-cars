@@ -78,5 +78,4 @@ public:
 
 public:
   static std::unique_ptr<AbstractSimulation> create();
-
 };

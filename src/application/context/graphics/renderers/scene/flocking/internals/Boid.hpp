@@ -15,31 +15,27 @@
 constexpr std::size_t k_trailSize = 15;
 
 struct Boid {
-  glm::vec3 position = {0,0,0};
-  glm::vec3 velocity = {0,0,0};
-  glm::vec3 acceleration = {0,0,0};
+  glm::vec3 position = {0, 0, 0};
+  glm::vec3 velocity = {0, 0, 0};
+  glm::vec3 acceleration = {0, 0, 0};
 
   float horizontalAngle = 0.0f;
   float verticalAngle = 0.0f;
 
-  struct TrailData
-  {
+  struct TrailData {
     glm::vec3 position;
   };
   std::array<TrailData, k_trailSize> trail;
 
-  struct GraphicData
-  {
-    struct TrailData
-    {
+  struct GraphicData {
+    struct TrailData {
       glm::vec3 center;
       glm::quat orientation;
       float length;
     };
 
     std::vector<TrailData> trailData;
-  }
-  graphicData;
+  } graphicData;
 
   Boid();
 
