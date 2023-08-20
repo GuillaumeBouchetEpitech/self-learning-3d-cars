@@ -22,7 +22,9 @@ public:
   bool isPressed(int inKey);
   void reset();
 
-  template <typename... Args> bool isPressed(Args... args) {
+  template <typename... Args>
+  bool
+  isPressed(Args... args) {
     std::array<int, sizeof...(args)> allValues{{args...}};
 
     for (int val : allValues)

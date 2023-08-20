@@ -52,8 +52,8 @@ InformationTextRenderer::render() {
   { // top-center header text
 
     // const glm::vec2 textPos = {vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
-    const glm::vec2 textPos1 = {vSize.x  - 5.0f, vSize.y - 5.0f};
-    const glm::vec2 textPos2 = {vSize.x  - 5.0f, vSize.y - 5.0f - k_textScale};
+    const glm::vec2 textPos1 = {vSize.x - 5.0f, vSize.y - 5.0f};
+    const glm::vec2 textPos2 = {vSize.x - 5.0f, vSize.y - 5.0f - k_textScale};
 
     textRenderer.setMainColor(textColor);
     textRenderer.setOutlineColor(textOutlineColor);
@@ -109,7 +109,6 @@ InformationTextRenderer::render() {
       // graphic.stackRenderers.flush();
       // graphic.hud.textRenderer.render();
     }
-
   }
 
   {
@@ -145,9 +144,10 @@ InformationTextRenderer::render() {
     }
 
     helpers::renderProgressBar(
-      glm::vec2(vSize.x * 0.5f, 1.25f * k_textHScale), glm::vec2(250.0f, k_textScale * 1.5f), progressValueA, progressValueB,
-      k_textDepth, k_textScale, textColor, textOutlineColor, 4.0f, glm::vec4(1.0f, 1.0f, 1.0f, _alpha * 0.75f),
-      glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f), glm::vec4(0.5f, 0.5f, 0.0f, _alpha * 0.75f));
+      glm::vec2(vSize.x * 0.5f, 1.25f * k_textHScale), glm::vec2(250.0f, k_textScale * 1.5f), progressValueA,
+      progressValueB, k_textDepth, k_textScale, textColor, textOutlineColor, 4.0f,
+      glm::vec4(1.0f, 1.0f, 1.0f, _alpha * 0.75f), glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f),
+      glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f), glm::vec4(0.5f, 0.5f, 0.0f, _alpha * 0.75f));
   }
 
 #if 0

@@ -50,8 +50,6 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
                                  const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                                  const CircuitBuilder::Vec3Array& normals,
                                  const CircuitBuilder::Indices& indices) -> void {
-
-
     const float limitStep = 1.0f / float(indices.size());
     float limitValue = float(groundIndex);
 
@@ -79,9 +77,9 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   };
 
   auto onLeftWallPatchCallback = [&groundIndex, &whiteColor, &leftGreyColor, &wallsVertices](
-                               const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                               const CircuitBuilder::Vec3Array& normals,
-                               const CircuitBuilder::Indices& indices) -> void {
+                                   const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                   const CircuitBuilder::Vec3Array& normals,
+                                   const CircuitBuilder::Indices& indices) -> void {
     static_cast<void>(colors); // <= unused
 
     const float limitStep = 1.0f / float(indices.size());
@@ -107,9 +105,9 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   };
 
   auto onRightWallPatchCallback = [&groundIndex, &whiteColor, &rightGreyColor, &wallsVertices](
-                               const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                               const CircuitBuilder::Vec3Array& normals,
-                               const CircuitBuilder::Indices& indices) -> void {
+                                    const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                                    const CircuitBuilder::Vec3Array& normals,
+                                    const CircuitBuilder::Indices& indices) -> void {
     static_cast<void>(colors); // <= unused
 
     const float limitStep = 1.0f / float(indices.size());
@@ -144,10 +142,10 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   simulationDef.totalCores = logic.cores.totalCores;
   simulationDef.totalGenomes = totalGenomes;
   simulationDef.neuralNetworkTopology = logic.annTopology;
-  simulationDef.onSkeletonPatch = onSkeletonPatch;        // callback
-  simulationDef.onNewGroundPatch = onGroundPatchCallback; // callback
-  simulationDef.onNewLeftWallPatch = onLeftWallPatchCallback;     // callback
-  simulationDef.onNewRightWallPatch = onRightWallPatchCallback;     // callback
+  simulationDef.onSkeletonPatch = onSkeletonPatch;              // callback
+  simulationDef.onNewGroundPatch = onGroundPatchCallback;       // callback
+  simulationDef.onNewLeftWallPatch = onLeftWallPatchCallback;   // callback
+  simulationDef.onNewRightWallPatch = onRightWallPatchCallback; // callback
 
   logic.simulation->initialize(simulationDef);
 

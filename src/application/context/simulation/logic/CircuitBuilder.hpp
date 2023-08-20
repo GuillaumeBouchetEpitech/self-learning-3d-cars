@@ -42,7 +42,8 @@ public:
 
 public:
   void generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch);
-  void generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewLeftWallPatch, CallbackNormals onNewRightWallPatch);
+  void generateCircuitGeometry(
+    CallbackNormals onNewGroundPatch, CallbackNormals onNewLeftWallPatch, CallbackNormals onNewRightWallPatch);
 
 private:
   void generateSmoothedKnotsData(Knots& smoothedVertices);

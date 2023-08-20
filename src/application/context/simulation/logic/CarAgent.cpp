@@ -371,8 +371,8 @@ CarAgent::reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& posi
   _physicVehicle->reset();
 }
 
-void CarAgent::getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const
-{
+void
+CarAgent::getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const {
   // inCarData.latestTransformsHistory.clear();
 
   inCarData.isAlive = this->isAlive();

@@ -4,8 +4,8 @@
 #include "StateManager.hpp"
 #include "State_Running.hpp"
 
-#include "application/context/graphics/Scene.hpp"
 #include "application/context/Context.hpp"
+#include "application/context/graphics/Scene.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
 

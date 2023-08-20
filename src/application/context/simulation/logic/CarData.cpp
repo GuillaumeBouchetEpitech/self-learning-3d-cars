@@ -57,7 +57,6 @@ CarData::lerp(const CarData& valA, const CarData& valB, float inCoef) {
   }
 }
 
-
 // void CarData::serialize(gero::messaging::MessageBuffer& inMessage) const
 // {
 

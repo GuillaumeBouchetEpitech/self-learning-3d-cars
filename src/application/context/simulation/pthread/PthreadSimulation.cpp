@@ -81,23 +81,24 @@ PthreadSimulation::initialize(const Definition& def) {
     };
 
     auto onNewLeftPhysicWallPatch = [&](
-                                  const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                                  const CircuitBuilder::Vec3Array& normals,
-                                  const CircuitBuilder::Indices& indices) -> void {
+                                      const CircuitBuilder::Vec3Array& vertices,
+                                      const CircuitBuilder::Vec3Array& colors, const CircuitBuilder::Vec3Array& normals,
+                                      const CircuitBuilder::Indices& indices) -> void {
       if (_def.onNewLeftWallPatch)
         _def.onNewLeftWallPatch(vertices, colors, normals, indices);
     };
-    auto onNewRightPhysicWallPatch = [&](
-                                  const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                                  const CircuitBuilder::Vec3Array& normals,
-                                  const CircuitBuilder::Indices& indices) -> void {
+    auto onNewRightPhysicWallPatch =
+      [&](
+        const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+        const CircuitBuilder::Vec3Array& normals, const CircuitBuilder::Indices& indices) -> void {
       if (_def.onNewRightWallPatch)
         _def.onNewRightWallPatch(vertices, colors, normals, indices);
     };
 
     _circuitBuilder.parse(_def.filename);
     _circuitBuilder.generateWireFrameSkeleton(_def.onSkeletonPatch);
-    _circuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
+    _circuitBuilder.generateCircuitGeometry(
+      onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
     _startTransform = _circuitBuilder.getStartTransform();
   }
 

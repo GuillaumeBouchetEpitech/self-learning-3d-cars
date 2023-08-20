@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <functional>
 #include <iostream>
@@ -14,10 +14,9 @@
 #include <string>
 #include <unordered_map>
 
-
-#include <unordered_map>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 struct TouchData {
   int32_t fingerId = -1;
@@ -33,8 +32,7 @@ struct TouchData {
   // TouchData& operator=(TouchData&& other);
 };
 
-
-class TouchManager: public gero::NonCopyable {
+class TouchManager : public gero::NonCopyable {
 public:
   using MaybeTouchDataRef = std::optional<std::reference_wrapper<TouchData>>;
 
@@ -55,17 +53,17 @@ public:
   void updateAsTouchedUp(int32_t inFingerId);
   void updateAsTouchedMotion(int32_t inFingerId, const glm::vec2& inPos, const glm::vec2& inDelta);
 
-// public:
-//   bool isPressed(int inKey) const;
+  // public:
+  //   bool isPressed(int inKey) const;
 
-//   template <typename... Args> bool isPressed(Args... args) const {
-//     std::array<int, sizeof...(args)> allValues{{args...}};
+  //   template <typename... Args> bool isPressed(Args... args) const {
+  //     std::array<int, sizeof...(args)> allValues{{args...}};
 
-//     for (int val : allValues)
-//       if (isPressed(val))
-//         return true;
-//     return false;
-//   }
+  //     for (int val : allValues)
+  //       if (isPressed(val))
+  //         return true;
+  //     return false;
+  //   }
 
 public:
   MaybeTouchDataRef getTouchData(int32_t inFingerId);

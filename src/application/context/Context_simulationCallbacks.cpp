@@ -76,7 +76,6 @@ Context::_initializeSimulationCallbacks() {
   });
 
   logic.simulation->setOnGenomeDieCallback([this](unsigned int genomeIndex) -> void {
-
     const auto& carData = logic.carDataFrameHandler.getAllCarsData().at(genomeIndex);
 
     const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);

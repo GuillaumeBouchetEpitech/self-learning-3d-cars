@@ -1,9 +1,9 @@
 
 #pragma once
 
+#include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/messaging/MessageBuffer.hpp"
 #include "geronimo/system/messaging/MessageView.hpp"
-#include "geronimo/helpers/GLMath.hpp"
 
 #include <array>
 #include <vector>
@@ -56,7 +56,6 @@ public:
   SensorData groundSensor;
 
   std::vector<float> neuronsValues;
-
 };
 
 using AllCarsData = std::vector<CarData>;

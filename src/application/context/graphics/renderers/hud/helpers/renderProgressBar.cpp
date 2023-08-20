@@ -9,9 +9,10 @@ namespace helpers {
 
 void
 renderProgressBar(
-  const glm::vec2& inCenter, const glm::vec2& inSize, float inProgressValueA, float inProgressValueB, float inTextDepth, float inTextScale,
-  const glm::vec4& inTextColor, const glm::vec4& inTextOutlineColor, float inBorderSize, const glm::vec4& inBorderColor,
-  const glm::vec4& inBackgroundColor, const glm::vec4& inProgressColorA, const glm::vec4& inProgressColorB) {
+  const glm::vec2& inCenter, const glm::vec2& inSize, float inProgressValueA, float inProgressValueB, float inTextDepth,
+  float inTextScale, const glm::vec4& inTextColor, const glm::vec4& inTextOutlineColor, float inBorderSize,
+  const glm::vec4& inBorderColor, const glm::vec4& inBackgroundColor, const glm::vec4& inProgressColorA,
+  const glm::vec4& inProgressColorB) {
 
   const float progressValueA = gero::math::clamp(inProgressValueA, 0.0f, 1.0f);
   const float progressValueB = gero::math::clamp(inProgressValueB, 0.0f, 1.0f);
@@ -57,7 +58,8 @@ renderProgressBar(
     progressBarValCenter.x -= progressBarValSize.x * 0.5f;
     progressBarValCenter.x += inSize.x * progressValueA;
 
-    stackRenderers.getTrianglesStack().pushQuad(progressBarValCenter, progressBarValSize, inProgressColorA, inTextDepth - 0.1f);
+    stackRenderers.getTrianglesStack().pushQuad(
+      progressBarValCenter, progressBarValSize, inProgressColorA, inTextDepth - 0.1f);
   }
 
   {
@@ -69,10 +71,9 @@ renderProgressBar(
     progressBarValCenter.x -= progressBarValSize.x * 0.5f;
     progressBarValCenter.x += inSize.x * progressValueB;
 
-    stackRenderers.getTrianglesStack().pushQuad(progressBarValCenter, progressBarValSize, inProgressColorB, inTextDepth - 0.15f);
+    stackRenderers.getTrianglesStack().pushQuad(
+      progressBarValCenter, progressBarValSize, inProgressColorB, inTextDepth - 0.15f);
   }
-
-
 }
 
 } // namespace helpers

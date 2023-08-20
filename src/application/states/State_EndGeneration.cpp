@@ -3,8 +3,8 @@
 
 #include "StateManager.hpp"
 
-#include "application/context/graphics/Scene.hpp"
 #include "application/context/Context.hpp"
+#include "application/context/graphics/Scene.hpp"
 
 void
 State_EndGeneration::enter() {

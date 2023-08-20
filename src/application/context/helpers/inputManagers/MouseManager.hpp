@@ -26,7 +26,9 @@ public:
 public:
   bool isPressed(int inKey) const;
 
-  template <typename... Args> bool isPressed(Args... args) const {
+  template <typename... Args>
+  bool
+  isPressed(Args... args) const {
     std::array<int, sizeof...(args)> allValues{{args...}};
 
     for (int val : allValues)

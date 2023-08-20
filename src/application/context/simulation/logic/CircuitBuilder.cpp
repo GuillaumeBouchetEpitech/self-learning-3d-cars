@@ -305,8 +305,7 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 
       if (
         glm::distance(lastVertex.left, vertex.left) < triangleLength ||
-        glm::distance(lastVertex.right, vertex.right) < triangleLength
-      ) {
+        glm::distance(lastVertex.right, vertex.right) < triangleLength) {
         continue;
       }
     }
@@ -327,7 +326,8 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 }
 
 void
-CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewLeftWallPatch, CallbackNormals onNewRightWallPatch) {
+CircuitBuilder::generateCircuitGeometry(
+  CallbackNormals onNewGroundPatch, CallbackNormals onNewLeftWallPatch, CallbackNormals onNewRightWallPatch) {
   if (_knots.empty())
     D_THROW(std::runtime_error, "not initialized");
 
@@ -379,8 +379,8 @@ CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, Callba
 
     int indicesIndex = 0;
 
-    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() && stepIndex < index + patchesPerKnot; ++stepIndex)
-    {
+    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() && stepIndex < index + patchesPerKnot;
+         ++stepIndex) {
       const int currIndex = indicesIndex++ * 4;
       indices.push_back(currIndex + 0);
       indices.push_back(currIndex + 1);

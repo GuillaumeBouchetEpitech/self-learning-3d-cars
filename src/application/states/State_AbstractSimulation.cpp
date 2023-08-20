@@ -109,8 +109,7 @@ State_AbstractSimulation::update(float elapsedTime) {
     const bool hasTouchEvent = TouchManager::get().getTouchData(0).has_value();
     const bool hasMouseEvent = MouseManager::get().isLocked();
 
-    if (hasTouchEvent)
-    {
+    if (hasTouchEvent) {
 
       // touch OR mouse, not both
 
@@ -119,11 +118,9 @@ State_AbstractSimulation::update(float elapsedTime) {
         rotations.phi += float(touch->get().delta.y) * 1.0f * elapsedTime;
       }
 
-    }
-    else if (hasMouseEvent)
-    {
+    } else if (hasMouseEvent) {
 
-       // mouse/touch event(s)
+      // mouse/touch event(s)
 
       auto& mouse = MouseManager::get();
 

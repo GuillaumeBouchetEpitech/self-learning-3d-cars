@@ -7,9 +7,9 @@
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/graphics/ShaderProgramBuilder.hpp"
-#include "geronimo/system/easing/easingFunctions.hpp"
-#include "geronimo/system/asValue.hpp"
 #include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/asValue.hpp"
+#include "geronimo/system/easing/easingFunctions.hpp"
 
 using namespace gero::graphics;
 
@@ -120,7 +120,6 @@ AnimatedCircuitRenderer::initialize(
 
     lastIndex = uint32_t(currIndex);
   }
-
 }
 
 void
@@ -152,9 +151,9 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
     // lower value, closest from the cars
 
     const auto localEasing = gero::easing::GenericEasing<3>()
-      .push(0.0f, 1.0f, gero::easing::easeOutCubic)
-      .push(0.5f, 0.75f, gero::easing::easeOutCubic)
-      .push(1.0f, 0.5f, gero::easing::easeOutCubic);
+                               .push(0.0f, 1.0f, gero::easing::easeOutCubic)
+                               .push(0.5f, 0.75f, gero::easing::easeOutCubic)
+                               .push(1.0f, 0.5f, gero::easing::easeOutCubic);
 
     if (_lowerValue > _targetValue) {
 
@@ -205,7 +204,8 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
     }
   }
 
-  int32_t indexValue = _circuitIndices.at(std::min(int32_t(std::ceil(_upperValue)), int32_t(_circuitIndices.size()) - 1));
+  int32_t indexValue =
+    _circuitIndices.at(std::min(int32_t(std::ceil(_upperValue)), int32_t(_circuitIndices.size()) - 1));
   if (indexValue > int32_t(_maxPrimitiveCount))
     indexValue = int32_t(_maxPrimitiveCount);
 

@@ -17,24 +17,26 @@
 //   return *this;
 // }
 
-
 TouchManager* TouchManager::_instance = nullptr;
 
-void TouchManager::create() {
+void
+TouchManager::create() {
   if (_instance)
     D_THROW(std::runtime_error, "already created");
 
   _instance = new TouchManager();
 }
 
-void TouchManager::destroy() {
+void
+TouchManager::destroy() {
   if (!_instance)
     D_THROW(std::runtime_error, "no allocated");
 
   delete _instance, _instance = nullptr;
 }
 
-TouchManager& TouchManager::get() {
+TouchManager&
+TouchManager::get() {
   if (!_instance)
     D_THROW(std::runtime_error, "no allocated");
 
@@ -43,8 +45,8 @@ TouchManager& TouchManager::get() {
 
 //
 
-void TouchManager::updateAsTouchedDown(int32_t inFingerId, const glm::vec2& inPos)
-{
+void
+TouchManager::updateAsTouchedDown(int32_t inFingerId, const glm::vec2& inPos) {
   TouchData newData;
   newData.fingerId = inFingerId;
   newData.position = inPos;
@@ -56,12 +58,12 @@ void TouchManager::updateAsTouchedDown(int32_t inFingerId, const glm::vec2& inPo
   // it->second.position = inPos;
   // it->second.delta = {0, 0};
 }
-void TouchManager::updateAsTouchedUp(int32_t inFingerId)
-{
+void
+TouchManager::updateAsTouchedUp(int32_t inFingerId) {
   _touchDataMap.erase(inFingerId);
 }
-void TouchManager::updateAsTouchedMotion(int32_t inFingerId, const glm::vec2& inPos, const glm::vec2& inDelta)
-{
+void
+TouchManager::updateAsTouchedMotion(int32_t inFingerId, const glm::vec2& inPos, const glm::vec2& inDelta) {
   auto it = _touchDataMap.find(inFingerId);
   if (it == _touchDataMap.end())
     return;
@@ -73,8 +75,8 @@ void TouchManager::updateAsTouchedMotion(int32_t inFingerId, const glm::vec2& in
 
 //
 
-TouchManager::MaybeTouchDataRef TouchManager::getTouchData(int32_t inFingerId)
-{
+TouchManager::MaybeTouchDataRef
+TouchManager::getTouchData(int32_t inFingerId) {
   auto it = _touchDataMap.find(inFingerId);
   if (it == _touchDataMap.end())
     return {};
@@ -90,7 +92,7 @@ TouchManager::MaybeTouchDataRef TouchManager::getTouchData(int32_t inFingerId)
 
 //
 
-void TouchManager::reset() {
+void
+TouchManager::reset() {
   _touchDataMap.clear();
 }
-
