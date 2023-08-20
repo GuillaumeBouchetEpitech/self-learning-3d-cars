@@ -14,8 +14,8 @@ const onGlobalPageLoad = async () => {
 
   let isRunning = true;
 
-  const textAreaElement = findOrFailHtmlElement<HTMLTextAreaElement>("#loggerOutput");
-  const logger = new Logger(textAreaElement);
+  const loggerOutputElement = findOrFailHtmlElement<HTMLDivElement>("#loggerOutput");
+  const logger = new Logger(loggerOutputElement);
 
   logger.log("[JS] page loaded");
 

@@ -6,6 +6,7 @@
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/writeTime.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/renderPerformanceProfilerMetrics.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 
@@ -50,15 +51,41 @@ InformationTextRenderer::render() {
 
   { // top-center header text
 
-    const glm::vec2 textPos = {vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
+    // const glm::vec2 textPos = {vSize.x * 0.5, vSize.y - k_textScale - k_textHScale};
+    const glm::vec2 textPos1 = {vSize.x  - 5.0f, vSize.y - 5.0f};
+    const glm::vec2 textPos2 = {vSize.x  - 5.0f, vSize.y - 5.0f - k_textScale};
 
     textRenderer.setMainColor(textColor);
     textRenderer.setOutlineColor(textOutlineColor);
     textRenderer.setScale(k_textScale);
     textRenderer.setDepth(k_textDepth);
-    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+    textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::right);
+    textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::top);
 
-    textRenderer.pushText(textPos, logic.hudText.header);
+    const float textLength = float(logic.hudText.headerGpu.size()) * k_textScale;
+    const float maxTextLength = vSize.x - 300.0f;
+
+    if (textLength < maxTextLength) {
+      textRenderer.pushText(textPos1, logic.hudText.headerGpu);
+    } else {
+
+      const int32_t newTextLength = int32_t(std::floor((maxTextLength) / k_textScale));
+
+      // D_MYLOG("newTextLength " << newTextLength);
+
+      if (newTextLength > 10) {
+
+        const std::string_view shortenedText(logic.hudText.headerGpu.c_str(), newTextLength);
+
+        textRenderer.pushText(textPos1, shortenedText);
+      }
+    }
+
+    gero::graphics::helpers::renderTextBackground(
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
+      graphic.hud.stackRenderers, textRenderer);
+
+    textRenderer.pushText(textPos2, logic.hudText.headerType);
 
     gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
@@ -67,12 +94,32 @@ InformationTextRenderer::render() {
   } // top-center header text
 
   {
+    const auto& performanceProfiler = context.logic.metrics.performanceProfiler;
+    if (auto timeDataRef = performanceProfiler.tryGetTimeData("Complete Frame")) {
+      const auto& timeData = timeDataRef->get();
+
+      auto& stackRenderers = graphic.hud.stackRenderers;
+
+      const glm::vec2 k_size = glm::vec2(120, 50);
+      const glm::vec3 k_pos = glm::vec3(5, vSize.y - 70.0f, 0.5f);
+
+      gero::graphics::widgets::renderHistoricalTimeData(
+        k_pos, k_size, true, timeData, stackRenderers, graphic.hud.textRenderer);
+
+      // graphic.stackRenderers.flush();
+      // graphic.hud.textRenderer.render();
+    }
+
+  }
+
+  {
 
     const uint32_t totalCars = logic.cores.totalGenomes;
     const uint32_t liveCars = logic.simulation->getLiveGenomes();
     const uint32_t carsLeft = logic.simulation->getWaitingGenomes() + liveCars;
 
-    const float progressValue = float(totalCars - carsLeft) / totalCars;
+    const float progressValueA = float(totalCars - carsLeft) / totalCars;
+    const float progressValueB = progressValueA + float(liveCars) / totalCars;
 
     {
       std::stringstream sstr;
@@ -87,7 +134,8 @@ InformationTextRenderer::render() {
       textRenderer.setOutlineColor(textOutlineColor);
       textRenderer.setScale(k_textScale);
       textRenderer.setDepth(k_textDepth);
-      textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+      textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+      textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
       textRenderer.pushText(textPos, str);
 
@@ -97,9 +145,9 @@ InformationTextRenderer::render() {
     }
 
     helpers::renderProgressBar(
-      glm::vec2(vSize.x * 0.5f, 1.25f * k_textHScale), glm::vec2(250.0f, k_textScale * 1.5f), progressValue,
+      glm::vec2(vSize.x * 0.5f, 1.25f * k_textHScale), glm::vec2(250.0f, k_textScale * 1.5f), progressValueA, progressValueB,
       k_textDepth, k_textScale, textColor, textOutlineColor, 4.0f, glm::vec4(1.0f, 1.0f, 1.0f, _alpha * 0.75f),
-      glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f));
+      glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.0f, 0.5f, 0.0f, _alpha * 0.75f), glm::vec4(0.5f, 0.5f, 0.0f, _alpha * 0.75f));
   }
 
 #if 0
@@ -149,7 +197,8 @@ InformationTextRenderer::render() {
     textRenderer.setOutlineColor(textOutlineColor);
     textRenderer.setScale(k_textScale);
     textRenderer.setDepth(k_textDepth);
-    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+    textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::left);
+    textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::top);
 
     textRenderer.pushText(textPos, str);
 
@@ -224,7 +273,8 @@ InformationTextRenderer::render() {
       textRenderer.setOutlineColor(textOutlineColor);
       textRenderer.setScale(k_textScale);
       textRenderer.setDepth(k_textDepth);
-      textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::right);
+      textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::right);
+      textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::top);
 
       textRenderer.pushText(
         textPos, str,

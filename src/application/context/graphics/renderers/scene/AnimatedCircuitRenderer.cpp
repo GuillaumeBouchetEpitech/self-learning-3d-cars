@@ -7,8 +7,9 @@
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/graphics/ShaderProgramBuilder.hpp"
-#include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/asValue.hpp"
+#include "geronimo/helpers/GLMath.hpp"
 
 using namespace gero::graphics;
 
@@ -20,7 +21,7 @@ AnimatedCircuitRenderer::initialize(
 
   auto& resourceManager = Context::get().graphic.resourceManager;
 
-  const std::string basePath = "./assets/graphics/shaders/scene/";
+  const std::string basePath = "./assets/graphics/shaders/scene/animated-circuit/";
 
   ShaderProgramBuilder shaderProgramBuilder;
   GeometryBuilder geometryBuilder;
@@ -104,6 +105,22 @@ AnimatedCircuitRenderer::initialize(
   } // compute circuit walls geometries
 
   _maxPrimitiveCount = groundVertices.size();
+
+  int32_t lastIndex = 0;
+  _circuitIndices.reserve(100);
+  for (std::size_t ii = 0; ii + 3 < groundVertices.size(); ii += 3) {
+
+    const float rawFloat = groundVertices.at(ii + 0).limitId;
+    const int32_t currIndex = int32_t(std::ceil(rawFloat));
+    if (currIndex != lastIndex + 1) {
+      continue;
+    }
+
+    _circuitIndices.push_back(ii);
+
+    lastIndex = uint32_t(currIndex);
+  }
+
 }
 
 void
@@ -116,7 +133,7 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
     _lowerValue = _maxUpperValue;
     _upperValue = _maxUpperValue;
   } else {
-    _targetValue = 3.0f; // <= default value
+    _targetValue = 1.1f; // <= default value
 
     int bestGroundIndex = -1;
     for (unsigned int ii = 0; ii < simulation.getTotalCars(); ++ii) {
@@ -134,41 +151,63 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
 
     // lower value, closest from the cars
 
-    if (_lowerValue > _targetValue + 10.0f) {
-      // fall really quickly
-      _lowerValue -= 60.0f * elapsedTime;
-      _lowerValue = std::max(_lowerValue, _targetValue);
-    } else if (_lowerValue > _targetValue) {
-      // fall quickly
-      _lowerValue -= 18.0f * elapsedTime;
-      _lowerValue = std::max(_lowerValue, _targetValue);
+    const auto localEasing = gero::easing::GenericEasing<3>()
+      .push(0.0f, 1.0f, gero::easing::easeOutCubic)
+      .push(0.5f, 0.75f, gero::easing::easeOutCubic)
+      .push(1.0f, 0.5f, gero::easing::easeOutCubic);
+
+    if (_lowerValue > _targetValue) {
+
+      const float tmpCoef = localEasing.get(_lowerValue - _targetValue);
+
+      if (_lowerValue > _targetValue + 10.0f) {
+        // fall really quickly
+        _lowerValue -= 15.0f * elapsedTime * tmpCoef;
+        _lowerValue = std::max(_lowerValue, _targetValue);
+      } else {
+        // fall quickly
+        _lowerValue -= 4.5f * elapsedTime * tmpCoef;
+        _lowerValue = std::max(_lowerValue, _targetValue);
+      }
     } else {
+
+      const float tmpCoef = localEasing.get(_targetValue - _lowerValue);
+
       // rise slowly
-      _lowerValue += 12.0f * elapsedTime;
+      _lowerValue += 3.0f * elapsedTime * tmpCoef;
       _lowerValue = std::min(_lowerValue, _targetValue);
     }
 
     // upper value, farthest from the cars
 
-    if (_upperValue > _targetValue + 10.0f) {
-      // fall really quickly
-      _upperValue -= 36.0f * elapsedTime;
-      _upperValue = std::max(_upperValue, _targetValue);
-    } else if (_upperValue > _targetValue) {
-      // fall slowly
-      _upperValue -= 6.0f * elapsedTime;
-      _upperValue = std::max(_upperValue, _targetValue);
+    const float newTargetValue = _targetValue + 0.4f;
+
+    if (_upperValue > newTargetValue) {
+
+      const float tmpCoef = localEasing.get(newTargetValue - _upperValue);
+
+      if (_upperValue > newTargetValue + 10.0f) {
+        // fall really quickly
+        _upperValue -= 9.0f * elapsedTime * tmpCoef;
+        _upperValue = std::max(_upperValue, newTargetValue);
+      } else {
+        // fall slowly
+        _upperValue -= 1.5f * elapsedTime * tmpCoef;
+        _upperValue = std::max(_upperValue, newTargetValue);
+      }
     } else {
+
+      const float tmpCoef = localEasing.get(_upperValue - newTargetValue);
+
       // rise really quickly
-      _upperValue += 60.0f * elapsedTime;
-      _upperValue = std::min(_upperValue, _targetValue);
+      _upperValue += 15.0f * elapsedTime * tmpCoef;
+      _upperValue = std::min(_upperValue, newTargetValue);
     }
   }
 
-  const unsigned int verticesLength = 36; // <= 3 * 12 triangles
-  int indexValue = std::ceil(_upperValue) * verticesLength;
-  if (indexValue > int(_maxPrimitiveCount))
-    indexValue = int(_maxPrimitiveCount);
+  int32_t indexValue = _circuitIndices.at(std::min(int32_t(std::ceil(_upperValue)), int32_t(_circuitIndices.size()) - 1));
+  if (indexValue > int32_t(_maxPrimitiveCount))
+    indexValue = int32_t(_maxPrimitiveCount);
 
   _geometries.grounds.setPrimitiveCount(indexValue);
   _geometries.walls.setPrimitiveCount(indexValue * 2); // <= 2 walls

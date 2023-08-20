@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "CarData.hpp"
+
 #include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/physics/vehicle/AbstractPhysicVehicle.hpp"
 
@@ -32,7 +34,7 @@ private: // attributes
 
   float _fitness;
   float _health;
-  unsigned int _totalUpdateNumber;
+  uint32_t _totalUpdateNumber;
 
   Sensors _eyeSensors;
   Sensor _groundSensor;
@@ -48,6 +50,8 @@ public: // ctor/dtor
 public: // method(s)
   void update(float elapsedTime, NeuralNetwork& nn);
   void reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion);
+
+  void getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const;
 
 private: // method(s)
   void _createVehicle();
@@ -67,7 +71,7 @@ public: // setter(s)/getter(s)
   const gero::physics::BodyWeakRef getBody() const;
   const gero::physics::VehicleWeakRef getVehicle() const;
   float getLife() const;
-  unsigned int getTotalUpdates() const;
+  uint32_t getTotalUpdates() const;
 };
 
 using CarAgents = std::vector<CarAgent>;

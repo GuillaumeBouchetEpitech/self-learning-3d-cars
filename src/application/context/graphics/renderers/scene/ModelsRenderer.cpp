@@ -38,8 +38,6 @@ ModelsRenderer::initialize() {
   ShaderProgramBuilder shaderProgramBuilder;
   GeometryBuilder geometryBuilder;
 
-  const std::string basePath = "./assets/graphics/shaders/scene/";
-
   auto& context = Context::get();
 
   const uint32_t totalCars = context.logic.carDataFrameHandler.getAllCarsData().size();
@@ -47,7 +45,9 @@ ModelsRenderer::initialize() {
   _modelsCarChassisMatrices.reserve(totalCars);    // pre-allocate
   _modelsCarWheelsMatrices.reserve(totalCars * 4); // pre-allocate
 
-  const std::string modelBasePath = "./assets/graphics/model/";
+  const std::string basePath = "./assets/graphics/";
+  const std::string modelBasePath = basePath + "model/";
+  const std::string shaderPath = basePath + "shaders/scene/models-car/";
 
   { // chassis gero::graphics::Geometry (instanced)
 
@@ -81,8 +81,8 @@ ModelsRenderer::initialize() {
     }
 
     shaderProgramBuilder.reset()
-      .setVertexFilename(basePath + "modelsCarChassis.glsl.vert")
-      .setFragmentFilename(basePath + "modelsCarChassis.glsl.frag")
+      .setVertexFilename(shaderPath + "modelsCarChassis.glsl.vert")
+      .setFragmentFilename(shaderPath + "modelsCarChassis.glsl.frag")
       .addAttribute("a_vertex_position")
       .addAttribute("a_vertex_color")
       .addAttribute("a_vertex_normal")
@@ -137,8 +137,8 @@ ModelsRenderer::initialize() {
       wheelVertices.push_back({vertex.position, vertex.color});
 
     shaderProgramBuilder.reset()
-      .setVertexFilename(basePath + "modelsCarWheels.glsl.vert")
-      .setFragmentFilename(basePath + "modelsCarWheels.glsl.frag")
+      .setVertexFilename(shaderPath + "modelsCarWheels.glsl.vert")
+      .setFragmentFilename(shaderPath + "modelsCarWheels.glsl.frag")
       .addAttribute("a_vertex_position")
       .addAttribute("a_vertex_color")
       .addAttribute("a_offset_position")

@@ -68,7 +68,8 @@ Scene::_renderHUD_ortho() {
       textRenderer.setOutlineColor(outlineColor);
       textRenderer.setScale(scale);
       textRenderer.setDepth(depth);
-      textRenderer.setTextAlign(TextRenderer::TextAlign::center);
+      textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+      textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
       textRenderer.pushText(textPos, message);
 
@@ -94,7 +95,8 @@ Scene::_renderHUD_ortho() {
       textRenderer.setOutlineColor(outlineColor);
       textRenderer.setScale(scale);
       textRenderer.setDepth(depth);
-      textRenderer.setTextAlign(TextRenderer::TextAlign::center);
+      textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+      textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
       textRenderer.pushText(textPos, message);
 

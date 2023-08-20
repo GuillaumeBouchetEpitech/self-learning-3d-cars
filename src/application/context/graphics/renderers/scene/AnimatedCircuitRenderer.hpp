@@ -55,6 +55,8 @@ private:
     gero::graphics::Geometry walls;
   } _geometries;
 
+  std::vector<uint32_t> _circuitIndices;
+
   float _targetValue = 10.0f;
   float _lowerValue = 10.0f;
   float _upperValue = 10.0f;

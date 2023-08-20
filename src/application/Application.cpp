@@ -1,6 +1,10 @@
 
 #include "Application.hpp"
 
+#include "application/context/helpers/inputManagers/KeyboardManager.hpp"
+#include "application/context/helpers/inputManagers/MouseManager.hpp"
+#include "application/context/helpers/inputManagers/TouchManager.hpp"
+
 #include "application/context/Context.hpp"
 #include "application/context/graphics/Scene.hpp"
 #include "application/defines.hpp"
@@ -26,6 +30,10 @@ using gero::graphics::SDLWindowWrapper;
 
 Application::Application(const Definition& def)
   : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, k_frameRate, OpenGlEsVersion::v3, k_canResize) {
+
+  KeyboardManager::create();
+  MouseManager::create();
+  TouchManager::create();
   Context::create(def.width, def.height, def.totalGenomes, def.totalCores);
   StateManager::create();
   Scene::initialize();
@@ -34,6 +42,9 @@ Application::Application(const Definition& def)
 Application::~Application() {
   StateManager::destroy();
   Context::destroy();
+  TouchManager::destroy();
+  MouseManager::destroy();
+  KeyboardManager::destroy();
 }
 
 //

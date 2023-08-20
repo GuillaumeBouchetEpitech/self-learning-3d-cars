@@ -116,7 +116,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
 
   for (auto& particle : _smallExplosionParticles) {
 
-    if (!frustumCulling.sphereInFrustum(particle.position, 2.0f))
+    if (!frustumCulling.sphereInFrustum(particle.position, particle.scale))
       continue;
 
     // update scale
@@ -136,7 +136,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
 
   for (auto& particle : _bigExplosionParticles) {
 
-    if (!frustumCulling.sphereInFrustum(particle.position, 6.0f))
+    if (!frustumCulling.sphereInFrustum(particle.position, particle.scale))
       continue;
 
     // update scale
@@ -160,7 +160,7 @@ ExplosionParticlesManager::render(const gero::graphics::Camera& inCamera) {
 void
 ExplosionParticlesManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity) {
 
-  const unsigned int totalParticles = gero::rng::RNG::getRangedValue(5, 8);
+  // const unsigned int totalParticles = gero::rng::RNG::getRangedValue(5, 8);
 
   const float maxVelLength = 10.0f;
   const float velLength = std::min(glm::length(velocity), maxVelLength);
@@ -172,19 +172,19 @@ ExplosionParticlesManager::emitParticles(const glm::vec3& position, const glm::v
       normalizedVel = glm::normalize(velocity); // max velocity
   }
 
-  for (unsigned int ii = 0; ii < totalParticles; ++ii) {
-    const glm::vec3 particlePos = position + getRandomVec3(1.0f);
-    const glm::vec3 color = k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
+  // for (unsigned int ii = 0; ii < totalParticles; ++ii) {
+  //   const glm::vec3 particlePos = position + getRandomVec3(1.0f);
+  //   const glm::vec3 color = k_particleColors.at(gero::rng::RNG::getRangedValue(0, 3));
 
-    const float maxVelocity = gero::rng::RNG::getRangedValue(15.0f, 25.0f);
-    const glm::vec3 linearVelocity = glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
+  //   const float maxVelocity = gero::rng::RNG::getRangedValue(15.0f, 25.0f);
+  //   const glm::vec3 linearVelocity = glm::normalize(normalizedVel + getRandomVec3(0.25f)) * maxVelocity;
 
-    const float scale = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
+  //   const float scale = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
 
-    const float life = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
+  //   const float life = gero::rng::RNG::getRangedValue(0.5f, 1.5f);
 
-    _smallExplosionParticles.emplace_back(particlePos, linearVelocity, color, scale, life);
-  }
+  //   _smallExplosionParticles.emplace_back(particlePos, linearVelocity, color, scale, life);
+  // }
 
   for (unsigned int ii = 0; ii < 3; ++ii) {
     const glm::vec3 particlePos = position + getRandomVec3(1.0f);

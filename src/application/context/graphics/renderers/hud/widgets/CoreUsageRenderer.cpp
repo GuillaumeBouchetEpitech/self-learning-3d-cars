@@ -24,7 +24,7 @@ constexpr float k_textHScale = k_textScale * 0.5f;
 
 CoreUsageRenderer::CoreUsageRenderer() {
   _position.x = k_faceOutX;
-  _position.y = 12.0f * k_textScale;
+  _position.y = 13.0f * k_textScale;
 
   _size = {150, 100};
 }
@@ -76,7 +76,7 @@ CoreUsageRenderer::renderWireFrame() {
   const glm::vec3 whiteColor(0.8f, 0.8f, 0.8f);
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
 
-  const glm::vec3 borderPos = {_position.x, _position.y + k_textScale + k_textHScale, 0.1f};
+  const glm::vec3 borderPos = {_position.x, _position.y + k_textHScale, 0.1f};
   const glm::vec2 borderSize = {_size.x, _size.y - k_textScale * 3.0f};
 
   const auto& profileData = context.logic.cores.profileData;
@@ -186,24 +186,6 @@ CoreUsageRenderer::renderWireFrame() {
 
   // }
 
-  const auto& performanceProfiler = context.logic.metrics.performanceProfiler;
-  if (auto timeDataRef = performanceProfiler.tryGetTimeData("Complete Frame")) {
-    const auto& timeData = timeDataRef->get();
-
-    // const glm::vec2 vSize = glm::vec2(graphic.cameraData.viewportSize);
-
-    const glm::vec2 k_size = glm::vec2(120, 60);
-    // const glm::vec3 k_pos = glm::vec3(vSize.x - k_size.x - 10, vSize.y -
-    // k_size.y - 10, 0);
-    const glm::vec3 k_pos = glm::vec3(_position.x, _position.y + 100.0f, 0.0f);
-
-    gero::graphics::widgets::renderHistoricalTimeData(
-      k_pos, k_size, timeData, stackRenderers, graphic.hud.textRenderer);
-
-    // graphic.stackRenderers.flush();
-    // graphic.hud.textRenderer.render();
-  }
-
   stackRenderers.flush();
 }
 
@@ -244,7 +226,9 @@ CoreUsageRenderer::renderHudText() {
     textRenderer.setOutlineColor(outlineColor);
     textRenderer.setScale(k_textScale);
     textRenderer.setDepth(textDepth);
-    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+    // textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+    textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::left);
+    textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::top);
 
     textRenderer.pushText(textPos, str);
 

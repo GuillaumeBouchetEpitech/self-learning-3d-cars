@@ -56,3 +56,13 @@ CarData::lerp(const CarData& valA, const CarData& valB, float inCoef) {
     neuronValue = gero::math::lerp(neuronValueA, neuronValueB, coef);
   }
 }
+
+
+// void CarData::serialize(gero::messaging::MessageBuffer& inMessage) const
+// {
+
+// }
+// void CarData::deserialize(gero::messaging::MessageView& inMessage) const
+// {
+
+// }

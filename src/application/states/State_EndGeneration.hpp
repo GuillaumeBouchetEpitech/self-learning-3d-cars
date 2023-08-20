@@ -10,8 +10,8 @@ private:
   gero::Timer _timer;
 
 public:
-  virtual void enter() override;
+  void enter() override;
 
 public:
-  virtual void update(float) override;
+  void update(float) override;
 };

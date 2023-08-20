@@ -3,7 +3,7 @@
 
 #include "Boid.hpp"
 
-#include "geronimo/system/trees/Spatial3dIndexer.hpp"
+#include "geronimo/system/trees/SpatialIndexer.hpp"
 
 class FlockingManager : public AbstractFlockingManager {
 public:

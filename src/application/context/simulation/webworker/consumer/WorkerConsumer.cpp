@@ -404,7 +404,7 @@ WorkerConsumer::_resetPhysic() {
       _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
     };
 
-    _circuitBuilder.generateCircuitGeometry(onNewGroundPatch, onNewWallPatch);
+    _circuitBuilder.generateCircuitGeometry(onNewGroundPatch, onNewWallPatch, onNewWallPatch);
 
   } // generate circuit
 

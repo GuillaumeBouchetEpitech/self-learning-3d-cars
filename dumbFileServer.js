@@ -5,8 +5,9 @@ const fs    = require('fs');
 const path  = require('path');
 const os    = require('os');
 const zlib  = require('zlib');
-const g_address  = process.argv[2] || '127.0.0.1';
-const g_port  = parseInt(process.argv[3] || 9000, 10);
+// const g_address  = process.argv[2] || '127.0.0.1';
+const g_address  = '0.0.0.0';
+const g_port  = parseInt(process.argv[2] || 9000, 10);
 
 const worker_port = g_port;
 const thread_port = g_port + 1;
@@ -68,9 +69,24 @@ const build_folder_page = (req, parsedUrl, pathname) => {
   for (const data of folders) {
     allFolders.push(`<a href="http://${req.headers.host}/${data.url}"><b>${data.name}/</b></a>`);
   }
-  const allFiles = [];
-  for (const data of files) {
-    allFiles.push(`<a href="http://${req.headers.host}/${data.url}">${data.name}</a>`);
+
+  const inputHtmlFiles = [];
+  const inputOtherFiles = [];
+  files.forEach((data) => {
+    if (path.parse(data.name).ext == '.html') {
+      inputHtmlFiles.push(data);
+    } else {
+      inputOtherFiles.push(data);
+    }
+  });
+
+  const allHtmlFiles = [];
+  for (const data of inputHtmlFiles) {
+    allHtmlFiles.push(`<a href="http://${req.headers.host}/${data.url}">${data.name}</a>`);
+  }
+  const allOtherFiles = [];
+  for (const data of inputOtherFiles) {
+    allOtherFiles.push(`<a href="http://${req.headers.host}/${data.url}">${data.name}</a>`);
   }
 
   return `
@@ -102,6 +118,17 @@ const build_folder_page = (req, parsedUrl, pathname) => {
       ul {
         line-height: 12px;
       }
+
+      ul.big {
+        line-height: 30px;
+        font-size: 30px;
+        color: #8F0000;
+      }
+      ul.big a {
+        line-height: 30px;
+        font-size: 30px;
+        color: #BB8888;
+      }
     </style>
 
   </head>
@@ -116,9 +143,12 @@ const build_folder_page = (req, parsedUrl, pathname) => {
     <ul>
       ${allFolders.map(line => `      <li>${line}</li>`).join("<br>")}
     </ul>
-    <p>FILES (${allFiles.length})</p>
+    <p>FILES (${files.length})</p>
+    <ul class="big">
+      ${allHtmlFiles.map(line => `      <li>=> ${line}</li>`).join("<br>")}
+    </ul>
     <ul>
-      ${allFiles.map(line => `      <li>${line}</li>`).join("<br>")}
+      ${allOtherFiles.map(line => `      <li>${line}</li>`).join("<br>")}
     </ul>
   </body>
 </html>
@@ -222,22 +252,31 @@ const list_WiFi_IpAddresses = (inPort) => {
     });
   });
 
+  const ipv4Interfaces = [];
   allInterfaces.forEach((currNetwork, family) => {
+    if (family === 'ipv4')
+      ipv4Interfaces.push(currNetwork);
+  });
 
-    console.log();
+  let longestNetworkNameLength = 0;
+  ipv4Interfaces.forEach((currNetwork) => {
+    currNetwork.forEach((currUrls, networkName) => {
+      longestNetworkNameLength = Math.max(longestNetworkNameLength, networkName.length);
+    });
+  });
+  longestNetworkNameLength = Math.min(150, longestNetworkNameLength);
 
-    const separator = "".padStart(family.length, '#');
+  const separator = "".padStart(longestNetworkNameLength, ' ');
 
-    console.log(` ##${separator}##`);
-    console.log(` # ${family} #`);
-    console.log(` ##${separator}##`);
+  ipv4Interfaces.forEach((currNetwork) => {
 
     currNetwork.forEach((currUrls, networkName) => {
 
-      console.log();
-      console.log(`   => network: ${networkName}`);
+      // console.log();
+      // console.log(`   => network: ${networkName}`);
       currUrls.forEach((url) => {
-        console.log(`       ---> ${url}`);
+        console.log(` => network: ${networkName.padStart(longestNetworkNameLength)}, ${url}`);
+        // console.log(`       ---> ${url}`);
       });
     });
   });

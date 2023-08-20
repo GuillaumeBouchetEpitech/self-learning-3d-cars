@@ -217,8 +217,8 @@ CircuitBuilder::generateWireFrameSkeleton(CallbackNoNormals onSkeletonPatch) {
 
     const int currIndex = ii * 4;
 
-    indices.push_back(currIndex + 0); // upper 0 left-right
-    indices.push_back(currIndex + 1);
+    // indices.push_back(currIndex + 0); // upper 0 left-right
+    // indices.push_back(currIndex + 1);
 
     indices.push_back(currIndex + 2); // lower 0 left-right
     indices.push_back(currIndex + 3);
@@ -257,7 +257,7 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
   smoothedKnotsData.clear();
   smoothedKnotsData.reserve(2048); // pre-allocate, ease the reallocation
 
-  enum class SplineType : unsigned int {
+  enum class SplineType : uint32_t {
     leftX = 0,
     leftY,
     leftZ,
@@ -286,7 +286,7 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 
   CircuitBuilder::CircuitVertex vertex;
 
-  constexpr unsigned int maxIterations = 3000;
+  constexpr uint32_t maxIterations = 1000;
   constexpr float step = 1.0f / maxIterations; // tiny steps
 
   for (float coef = 0.0f; coef <= 1.0f; coef += step) {
@@ -297,22 +297,26 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
     vertex.right.y = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightY));
     vertex.right.z = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::rightZ));
 
-    const float knotSize = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::size));
-
     if (!smoothedKnotsData.empty()) {
       // both left and right vertices must be far enough to be included
       const auto& lastVertex = smoothedKnotsData.back();
 
+      constexpr float triangleLength = 4.0f;
+
       if (
-        glm::distance(lastVertex.left, vertex.left) < knotSize ||
-        glm::distance(lastVertex.right, vertex.right) < knotSize)
+        glm::distance(lastVertex.left, vertex.left) < triangleLength ||
+        glm::distance(lastVertex.right, vertex.right) < triangleLength
+      ) {
         continue;
+      }
     }
 
     // check for invalid values (it create graphic and physic artifacts)
     const float minLength = 0.001f;
     if (glm::length(vertex.left) < minLength || glm::length(vertex.right) < minLength)
       continue; // TODO: fix it
+
+    vertex.size = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::size));
 
     vertex.color.r = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorR));
     vertex.color.g = bsplineSmoother.calcAt(coef, gero::asValue(SplineType::colorG));
@@ -323,17 +327,17 @@ CircuitBuilder::generateSmoothedKnotsData(Knots& smoothedKnotsData) {
 }
 
 void
-CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewWallPatch) {
+CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, CallbackNormals onNewLeftWallPatch, CallbackNormals onNewRightWallPatch) {
   if (_knots.empty())
     D_THROW(std::runtime_error, "not initialized");
 
-  if (!onNewGroundPatch && !onNewWallPatch)
+  if (!onNewGroundPatch && !onNewLeftWallPatch && !onNewRightWallPatch)
     D_THROW(std::invalid_argument, "no callbacks provided");
 
   Knots smoothedKnotsData;
   generateSmoothedKnotsData(smoothedKnotsData);
 
-  constexpr std::size_t patchesPerKnot = 6;
+  std::size_t patchesPerKnot = 6U;
 
   glm::vec3 prevNormal;
 
@@ -356,7 +360,7 @@ CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, Callba
   indices.reserve(512);            // pre-allocate
   circuitPatchColors.reserve(512); // pre-allocate
 
-  const unsigned int startIndex = 1;
+  const uint32_t startIndex = 1;
   for (std::size_t index = startIndex; index < smoothedKnotsData.size(); index += patchesPerKnot) {
     indices.clear();
     ground.vertices.clear();
@@ -368,11 +372,16 @@ CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, Callba
     //
     // prepare the vertices
 
-    int indicexIndex = 0;
+    const auto& tmpKnot = smoothedKnotsData.at(index);
+    //
 
-    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() && stepIndex < index + patchesPerKnot;
-         ++stepIndex) {
-      const int currIndex = indicexIndex++ * 4;
+    patchesPerKnot = 6U + std::size_t(tmpKnot.size) * 2U;
+
+    int indicesIndex = 0;
+
+    for (std::size_t stepIndex = index; stepIndex < smoothedKnotsData.size() && stepIndex < index + patchesPerKnot; ++stepIndex)
+    {
+      const int currIndex = indicesIndex++ * 4;
       indices.push_back(currIndex + 0);
       indices.push_back(currIndex + 1);
       indices.push_back(currIndex + 2);
@@ -462,10 +471,10 @@ CircuitBuilder::generateCircuitGeometry(CallbackNormals onNewGroundPatch, Callba
     if (onNewGroundPatch)
       onNewGroundPatch(ground.vertices, circuitPatchColors, ground.normals, indices);
 
-    if (onNewWallPatch) {
-      onNewWallPatch(leftWall.vertices, circuitPatchColors, leftWall.normals, indices);
-      onNewWallPatch(rightWall.vertices, circuitPatchColors, rightWall.normals, indices);
-    }
+    if (onNewLeftWallPatch)
+      onNewLeftWallPatch(leftWall.vertices, circuitPatchColors, leftWall.normals, indices);
+    if (onNewRightWallPatch)
+      onNewRightWallPatch(rightWall.vertices, circuitPatchColors, rightWall.normals, indices);
   }
 }
 

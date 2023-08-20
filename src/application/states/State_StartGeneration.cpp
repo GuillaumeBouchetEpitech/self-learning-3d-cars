@@ -38,6 +38,9 @@ State_StartGeneration::update(float elapsedTime) {
   _updateCommonLogic(elapsedTime);
   _updateCameraTracking(elapsedTime);
 
+  auto& scene = Context::get().graphic.scene;
+  scene.animatedCircuitRenderer.update(elapsedTime * 0.25f);
+
   _timer.update(elapsedTime);
   if (_timer.isDone()) {
     StateManager::get()->changeState(StateManager::States::Running);

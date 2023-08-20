@@ -36,7 +36,7 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
 
   logic.simulation = AbstractSimulation::create();
 
-  constexpr float k_logicFrameDuration = 1.0f / 40.0f;
+  constexpr float k_logicFrameDuration = 1.0f / 60.0f;
   logic.carDataFrameHandler.initialize(totalGenomes, k_logicFrameDuration);
 
   _initializeSimulationCallbacks();
@@ -49,30 +49,36 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
       glVersion = "unknown";
 
     std::stringstream sstr;
-    sstr << "Graphic: " << glVersion << std::endl;
+    sstr << glVersion << std::endl;
+
+    logic.hudText.headerGpu = sstr.str();
+  }
+
+  {
+    std::stringstream sstr;
 
 #if defined D_WEB_BUILD
 
-    sstr << "Type: C++ (WebAssembly Build)" << std::endl;
+    sstr << "C++ (WebAssembly Build)" << std::endl;
 
 #if defined D_WEB_PTHREAD_BUILD
 
-    sstr << "Mode: pthread";
+    sstr << "PTHREAD";
 
 #else
 
-    sstr << "Mode: webworker (as a fallback)";
+    sstr << "webworker (PTHREAD fallback)";
 
 #endif
 
 #else
 
-    sstr << "Type: C++ (Native Build)" << std::endl;
-    sstr << "Mode: pthread";
+    sstr << "C++ (Native Build)" << std::endl;
+    sstr << "PTHREAD";
 
 #endif
 
-    logic.hudText.header = sstr.str();
+    logic.hudText.headerType = sstr.str();
 
   } // compute the top left HUD text
 

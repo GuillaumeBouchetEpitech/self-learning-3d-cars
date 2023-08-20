@@ -87,6 +87,8 @@
 
       #loggerOutput {
         width: 99%;
+        height: 100px;
+        font-size: 14px;
         margin: 0px auto; /* horizontally centered */
         border: 0px none;
         padding: 0px none;
@@ -95,6 +97,7 @@
         font-family: 'Lucida Console', Monaco, monospace;
         outline: none;
         display: block;
+        overflow: auto;
       }
 
       .button {
@@ -148,7 +151,7 @@
       <h2 class="redText">You can also scroll down (if curious).</h2>
     </div>
 
-    <textarea id="loggerOutput" rows="10" readonly></textarea>
+    <div id="loggerOutput"></div>
 
     <div id="text-description">
 

@@ -1,19 +1,16 @@
 
 #pragma once
 
+#include "geronimo/system/messaging/MessageBuffer.hpp"
+#include "geronimo/system/messaging/MessageView.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 
 #include <array>
 #include <vector>
 
 struct CarData {
-  bool isAlive = false;
-  bool isDying = false;
-  float life = 0.0f;
-  float fitness = 0.0f;
-  unsigned int totalUpdates = 0;
-  int groundIndex = -1;
 
+public:
   struct SingleTransform {
     glm::vec3 position;
     glm::quat orientation;
@@ -26,6 +23,23 @@ struct CarData {
 
     void lerp(const CarTransform& valA, const CarTransform& valB, float coef);
   };
+
+public:
+  CarData();
+
+  void lerp(const CarData& valA, const CarData& valB, float coef);
+
+  // void serialize(gero::messaging::MessageBuffer& inMessage) const;
+  // void deserialize(gero::messaging::MessageView& inMessage) const;
+
+public:
+  bool isAlive = false;
+  bool isDying = false;
+  float life = 0.0f;
+  float fitness = 0.0f;
+  unsigned int totalUpdates = 0;
+  int groundIndex = -1;
+
   CarTransform liveTransforms;
 
   std::vector<CarTransform> latestTransformsHistory;
@@ -43,9 +57,6 @@ struct CarData {
 
   std::vector<float> neuronsValues;
 
-  CarData();
-
-  void lerp(const CarData& valA, const CarData& valB, float coef);
 };
 
 using AllCarsData = std::vector<CarData>;

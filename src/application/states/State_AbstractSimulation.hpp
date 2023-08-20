@@ -5,15 +5,15 @@
 
 class State_AbstractSimulation : public IState {
 public:
-  virtual void enter() override;
-  virtual void leave() override;
+  void enter() override;
+  void leave() override;
 
 public:
-  virtual void handleEvent(const SDL_Event&) override;
-  virtual void update(float) override;
-  virtual void render(const SDL_Window&) override;
-  virtual void resize(int width, int height) override;
-  virtual void visibility(bool visible) override;
+  void handleEvent(const SDL_Event&) override;
+  void update(float) override;
+  void render(const SDL_Window&) override;
+  void resize(int width, int height) override;
+  void visibility(bool visible) override;
 
 protected:
   void _updateCommonLogic(float elapsedTime);

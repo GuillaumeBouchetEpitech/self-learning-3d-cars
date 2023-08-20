@@ -19,6 +19,7 @@ public:
   void discardAll();
 
 public:
+  uint32_t getTotalStoredFrames() const;
   const AllCarsData& getAllCarsData() const;
   float getLogicFrameDuration() const;
 

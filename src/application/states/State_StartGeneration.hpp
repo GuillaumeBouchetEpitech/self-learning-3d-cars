@@ -10,9 +10,9 @@ private:
   gero::Timer _timer;
 
 public:
-  virtual void enter() override;
-  virtual void leave() override;
+  void enter() override;
+  void leave() override;
 
 public:
-  virtual void update(float) override;
+  void update(float) override;
 };

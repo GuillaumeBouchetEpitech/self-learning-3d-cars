@@ -16,12 +16,12 @@ public:
 
 public:
   Application(const Definition& def);
-  virtual ~Application();
+  ~Application();
 
 private:
-  virtual void _onEvent(const SDL_Event& event) override;
-  virtual void _onUpdate(uint32_t deltaTime) override;
-  virtual void _onRender(const SDL_Window& screen) override;
-  virtual void _onResize(uint32_t width, uint32_t height) override;
-  virtual void _onVisibilityChange(bool visible) override;
+  void _onEvent(const SDL_Event& event) override;
+  void _onUpdate(uint32_t deltaTime) override;
+  void _onRender(const SDL_Window& screen) override;
+  void _onResize(uint32_t width, uint32_t height) override;
+  void _onVisibilityChange(bool visible) override;
 };

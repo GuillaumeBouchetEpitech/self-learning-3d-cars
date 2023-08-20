@@ -6,29 +6,31 @@ build_platform=native-pthread
 build_mode=release
 # build_mode=debug
 
-#
-
-ifeq ($(build_platform),native-pthread)
-# $(info build_platform is valid, value=$(build_platform))
-else ifeq ($(build_platform),web-wasm-pthread)
-# $(info build_platform is valid, value=$(build_platform))
-else ifeq ($(build_platform),web-wasm-webworker)
-# $(info build_platform is valid, value=$(build_platform))
-else
-$(error unsupported value for "build_platform", value=$(build_platform))
-endif
+include Makefile.env
 
 #
 
-ifeq ($(build_mode),release)
-# $(info build_mode is valid, value=$(build_mode))
-else ifeq ($(build_mode),debug)
-# $(info build_mode is valid, value=$(build_mode))
-else
-$(error unsupported value for "build_mode", value=$(build_mode))
-endif
+# ifeq ($(build_platform),native-pthread)
+# # $(info build_platform is valid, value=$(build_platform))
+# else ifeq ($(build_platform),web-wasm-pthread)
+# # $(info build_platform is valid, value=$(build_platform))
+# else ifeq ($(build_platform),web-wasm-webworker)
+# # $(info build_platform is valid, value=$(build_platform))
+# else
+# $(error unsupported value for "build_platform", value=$(build_platform))
+# endif
 
-LOG_INFO= '[$(build_mode)] [$(build_platform)]'
+# #
+
+# ifeq ($(build_mode),release)
+# # $(info build_mode is valid, value=$(build_mode))
+# else ifeq ($(build_mode),debug)
+# # $(info build_mode is valid, value=$(build_mode))
+# else
+# $(error unsupported value for "build_mode", value=$(build_mode))
+# endif
+
+# LOG_INFO= '[$(build_mode)] [$(build_platform)]'
 
 #
 
@@ -123,6 +125,7 @@ SRC+=	\
 		$(DIR_SRC)/application/states/*.cpp \
 		$(DIR_SRC)/application/context/*.cpp \
 		$(DIR_SRC)/application/context/helpers/*.cpp \
+		$(DIR_SRC)/application/context/helpers/inputManagers/*.cpp \
 		$(DIR_SRC)/application/context/graphics/*.cpp \
 		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \

@@ -162,19 +162,10 @@ public:
     } circuitDimension;
 
     struct HudText {
-      std::string header;
+      std::string headerGpu;
+      std::string headerType;
     } hudText;
 
     FitnessStats fitnessStats;
   } logic;
-
-  struct Input {
-    std::unordered_map<int, bool> keys;
-
-    struct Mouse {
-      glm::vec2 position = {0, 0};
-      glm::vec2 delta = {0, 0};
-      bool tracking = false;
-    } mouse;
-  } inputs;
 };

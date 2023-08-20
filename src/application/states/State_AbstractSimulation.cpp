@@ -4,6 +4,10 @@
 #include "StateManager.hpp"
 #include "State_AbstractSimulation.hpp"
 
+#include "application/context/helpers/inputManagers/KeyboardManager.hpp"
+#include "application/context/helpers/inputManagers/MouseManager.hpp"
+#include "application/context/helpers/inputManagers/TouchManager.hpp"
+
 #include "application/context/Context.hpp"
 #include "application/context/graphics/Scene.hpp"
 
@@ -29,43 +33,60 @@ State_AbstractSimulation::leave() {
 void
 State_AbstractSimulation::handleEvent(const SDL_Event& event) {
   auto& context = Context::get();
-  auto& keys = context.inputs.keys;
-  auto& mouse = context.inputs.mouse;
+  auto& keyboard = KeyboardManager::get();
+  auto& mouse = MouseManager::get();
+  auto& touch = TouchManager::get();
 
   switch (event.type) {
   case SDL_KEYDOWN: {
-    keys[event.key.keysym.sym] = true;
+    keyboard.updateAsPressed(event.key.keysym.sym);
     break;
   }
   case SDL_KEYUP: {
-    keys[event.key.keysym.sym] = false;
+    keyboard.updateAsReleased(event.key.keysym.sym);
     break;
   }
 
   case SDL_MOUSEBUTTONDOWN: {
-    mouse.position = {event.motion.x, event.motion.y};
-    mouse.delta = {0, 0};
-    mouse.tracking = true;
+    mouse.updateAsPressed(event.button.button);
+    if (mouse.setLock(true))
+      mouse.resetDelta();
     break;
   }
   case SDL_MOUSEBUTTONUP: {
-    mouse.tracking = false;
+    mouse.setLock(false);
+    mouse.updateAsReleased(event.button.button);
     break;
   }
   case SDL_MOUSEMOTION: {
-    if (mouse.tracking) {
-      // mouse/touch events are 4 times more sentitive in web build
-      // this bit ensure the mouse/touch are even in native/web build
-#if defined D_WEB_BUILD
-      constexpr float coef = 1;
-#else
-      constexpr float coef = 4;
+
+    float deltaX = float(event.motion.xrel);
+    float deltaY = float(event.motion.yrel);
+
+#ifdef D_WEB_BUILD
+    deltaX *= 0.5f;
+    deltaY *= 0.5f;
 #endif
 
-      const glm::vec2 newPosition = {event.motion.x, event.motion.y};
-      mouse.delta = (newPosition - glm::vec2(mouse.position)) * coef;
-      mouse.position = newPosition;
-    }
+    mouse.updateDelta(deltaX, deltaY);
+    break;
+  }
+
+  case SDL_FINGERDOWN: {
+    const glm::vec2 vSize = glm::vec2(context.graphic.cameraData.viewportSize);
+    const glm::vec2 currPos = glm::vec2(event.tfinger.x, event.tfinger.y) * vSize;
+    touch.updateAsTouchedDown(int32_t(event.tfinger.fingerId), currPos);
+    break;
+  }
+  case SDL_FINGERUP: {
+    touch.updateAsTouchedUp(int32_t(event.tfinger.fingerId));
+    break;
+  }
+  case SDL_FINGERMOTION: {
+    const glm::vec2 vSize = glm::vec2(context.graphic.cameraData.viewportSize);
+    const glm::vec2 currPos = glm::vec2(event.tfinger.x, event.tfinger.y) * vSize;
+    const glm::vec2 currDelta = glm::vec2(event.tfinger.dx, event.tfinger.dy) * vSize;
+    touch.updateAsTouchedMotion(int32_t(event.tfinger.fingerId), currPos, currDelta);
     break;
   }
 
@@ -85,41 +106,44 @@ State_AbstractSimulation::update(float elapsedTime) {
 
     auto& rotations = cameraData.rotations;
 
-    { // mouse/touch event(s)
+    const bool hasTouchEvent = TouchManager::get().getTouchData(0).has_value();
+    const bool hasMouseEvent = MouseManager::get().isLocked();
 
-      auto& mouse = context.inputs.mouse;
+    if (hasTouchEvent)
+    {
 
-      if (mouse.tracking) {
-        rotations.theta -= float(mouse.delta.x) * 1.0f * elapsedTime;
-        rotations.phi += float(mouse.delta.y) * 1.0f * elapsedTime;
-        mouse.delta = {0, 0};
+      // touch OR mouse, not both
+
+      if (auto touch = TouchManager::get().getTouchData(0)) {
+        rotations.theta -= float(touch->get().delta.x) * 1.0f * elapsedTime;
+        rotations.phi += float(touch->get().delta.y) * 1.0f * elapsedTime;
       }
+
+    }
+    else if (hasMouseEvent)
+    {
+
+       // mouse/touch event(s)
+
+      auto& mouse = MouseManager::get();
+
+      if (mouse.isLocked()) {
+        rotations.theta -= float(mouse.getDelta().x) * 1.0f * elapsedTime;
+        rotations.phi += float(mouse.getDelta().y) * 1.0f * elapsedTime;
+      }
+      mouse.resetDelta();
 
     } // mouse/touch event(s)
 
     { // keyboard event(s)
 
-      auto& keys = context.inputs.keys;
+      auto& keyboard = KeyboardManager::get();
 
-      bool rotateLeft =
-        (keys[SDLK_LEFT] || // ARROW
-         keys[SDLK_q] ||    // QWERTY (UK-US keyboard layout)
-         keys[SDLK_a]       // AZERTY (FR keyboard layout)
-        );
-
-      bool rotateRight =
-        (keys[SDLK_RIGHT] || // ARROW
-         keys[SDLK_d]);
-
-      bool rotateUp =
-        (keys[SDLK_UP] || // ARROW
-         keys[SDLK_w] ||  // QWERTY (UK-US keyboard layout)
-         keys[SDLK_z]     // AZERTY (FR keyboard layout)
-        );
-
-      bool rotateDown =
-        (keys[SDLK_DOWN] || // ARROW
-         keys[SDLK_s]);
+      const bool rotateUp = keyboard.isPressed(SDLK_UP, SDLK_w, SDLK_z);
+      const bool rotateDown = keyboard.isPressed(SDLK_DOWN, SDLK_s);
+      const bool rotateLeft = keyboard.isPressed(SDLK_LEFT, SDLK_q, SDLK_a);
+      const bool rotateRight = keyboard.isPressed(SDLK_RIGHT, SDLK_d);
+      const bool accelerate = keyboard.isPressed(SDLK_SPACE);
 
       if (rotateLeft)
         rotations.theta += 2.0f * elapsedTime;
@@ -131,7 +155,7 @@ State_AbstractSimulation::update(float elapsedTime) {
       else if (rotateDown)
         rotations.phi += 1.0f * elapsedTime;
 
-      context.logic.isAccelerated = (keys[SDLK_SPACE]); // spacebar
+      context.logic.isAccelerated = accelerate;
 
     } // keyboard event(s)
 

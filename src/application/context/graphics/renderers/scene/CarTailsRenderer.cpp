@@ -75,6 +75,7 @@ CarTailsRenderer::render() {
     if (logic.leaderCar.hasLeader() && !logic.carWheelsTrails.isEmpty()) {
 
       const auto& trailData = logic.carWheelsTrails.getTrailByIndex(logic.leaderCar.leaderIndex());
+      const uint32_t totalStoredFrames = logic.carDataFrameHandler.getTotalStoredFrames();
 
       // rely on only the 30 last positions recorded
       constexpr int maxSize = 30;
@@ -83,7 +84,7 @@ CarTailsRenderer::render() {
         if (currWheel.size() < 10)
           continue;
 
-        const int startIndex = 3;
+        const int startIndex = std::max(0, int(totalStoredFrames) - 1);
 
         const int totalSize = currWheel.size();
         const int currSize = std::min(totalSize, maxSize) - startIndex;

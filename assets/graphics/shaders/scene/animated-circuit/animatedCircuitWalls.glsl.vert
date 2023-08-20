@@ -7,14 +7,15 @@ uniform float u_alpha;
 uniform float u_lowerLimit;
 uniform float u_upperLimit;
 
+const vec4 k_white = vec4(1.0);
+const float k_ambiantCoef = 0.4;
+
 in vec3 a_vertex_position;
 in vec3 a_vertex_color;
 in vec3 a_vertex_animatedNormal;
 in float a_vertex_index;
 
 out vec4 v_color;
-
-const vec4 k_white = vec4(1.0);
 
 void main(void)
 {

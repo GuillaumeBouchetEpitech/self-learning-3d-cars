@@ -1,13 +1,13 @@
 
 class Logger {
 
-  private _textAreaElement: HTMLTextAreaElement;
+  private _divElement: HTMLDivElement;
   private _lines: string[];
   private _maxLines: number;
 
-  constructor(textAreaElement: HTMLTextAreaElement) {
-    this._textAreaElement = textAreaElement;
-    this._textAreaElement.value = ""; // <= clear any browser cache
+  constructor(textAreaElement: HTMLDivElement) {
+    this._divElement = textAreaElement;
+    this._divElement.innerHTML = ""; // <= clear any browser cache
     this._lines = [];
     this._maxLines = 30;
   }
@@ -42,10 +42,21 @@ class Logger {
     if (this._lines.length > this._maxLines)
       this._lines.splice(0, this._lines.length - this._maxLines);
 
-    this._textAreaElement.value = `${this._lines.join("\n")}\n`;
+    this._divElement.innerHTML = this._lines
+      .map(line => {
+
+        if (/^(\[JS\]).*$/.test(line)) {
+          return `<span style="color: rgb(200,200,150);">${line}</span>`;
+        }
+        if (/^(\[C\+\+\]).*$/.test(line)) {
+          return `<span style="color: rgb(150,150,200);">${line}</span>`;
+        }
+        return line;
+      })
+      .join("<br>");
 
     // force focus on last line
-    this._textAreaElement.scrollTop = this._textAreaElement.scrollHeight;
+    this._divElement.scrollTop = this._divElement.scrollHeight;
   }
 
   get size() {

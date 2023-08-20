@@ -12,10 +12,15 @@ FitnessStats::FitnessStats() {
 void
 FitnessStats::update(float latestFitness) {
   const float lastFitness = get(-1);
+
+#if 1
   const float secondLastFitness = get(-2);
   const bool lastFitnessWasSmarter = lastFitness > secondLastFitness;
   if (lastFitnessWasSmarter)
     _index = (_index + 1) % _allFitnesses.size();
+#else
+  _index = (_index + 1) % _allFitnesses.size();
+#endif
 
   _allFitnesses[int(_index) - 1] = latestFitness;
   _maxFitness = std::max(_maxFitness, latestFitness);

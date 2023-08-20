@@ -28,7 +28,7 @@ WebWorkersSimulation::initialize(const Definition& def) {
   circuit.parse(def.filename);
 
   circuit.generateWireFrameSkeleton(def.onSkeletonPatch);
-  circuit.generateCircuitGeometry(def.onNewGroundPatch, def.onNewWallPatch);
+  circuit.generateCircuitGeometry(def.onNewGroundPatch, def.onNewLeftWallPatch, def.onNewRightWallPatch);
 
   //
 

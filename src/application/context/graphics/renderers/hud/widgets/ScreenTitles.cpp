@@ -149,7 +149,8 @@ ScreenTitles::render() {
     textRenderer.setOutlineColor(outlineColor);
     textRenderer.setScale(k_scale);
     textRenderer.setDepth(depth);
-    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+    textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+    textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
     textRenderer.pushText(
       currPos, message.data(),
@@ -199,7 +200,8 @@ ScreenTitles::render() {
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+        textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
         textRenderer.pushText(
           currPos, message.data(),
@@ -250,7 +252,8 @@ ScreenTitles::render() {
         textRenderer.setOutlineColor(outlineColor);
         textRenderer.setScale(k_scale);
         textRenderer.setDepth(depth);
-        textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+        textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+        textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::center);
 
         textRenderer.pushText(
           currPos, message,

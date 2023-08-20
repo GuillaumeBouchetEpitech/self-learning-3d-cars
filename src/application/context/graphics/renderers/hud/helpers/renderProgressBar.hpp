@@ -5,9 +5,10 @@
 
 namespace helpers {
 
-void renderProgressBar(
-  const glm::vec2& center, const glm::vec2& size, float progressValue, float textDepth, float textScale,
-  const glm::vec4& textColor, const glm::vec4& textOutlineColor, float borderSize, const glm::vec4& borderColor,
-  const glm::vec4& backgroundColor, const glm::vec4& progressColor);
+void
+renderProgressBar(
+  const glm::vec2& inCenter, const glm::vec2& inSize, float inProgressValueA, float inProgressValueB, float inTextDepth, float inTextScale,
+  const glm::vec4& inTextColor, const glm::vec4& inTextOutlineColor, float inBorderSize, const glm::vec4& inBorderColor,
+  const glm::vec4& inBackgroundColor, const glm::vec4& inProgressColorA, const glm::vec4& inProgressColorB);
 
 }

@@ -371,6 +371,55 @@ CarAgent::reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& posi
   _physicVehicle->reset();
 }
 
+void CarAgent::getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const
+{
+  // inCarData.latestTransformsHistory.clear();
+
+  inCarData.isAlive = this->isAlive();
+  inCarData.isDying = this->isDying();
+  inCarData.life = this->getLife();
+  inCarData.fitness = this->getFitness();
+  inCarData.totalUpdates = this->getTotalUpdates();
+  inCarData.groundIndex = this->getGroundIndex();
+
+  if (!inCarData.isAlive) {
+    return;
+  }
+
+  const auto body = this->getBody();
+  const auto vehicle = this->getVehicle();
+
+  // transformation matrix of the car
+  inCarData.liveTransforms.chassis.position = body->getPosition();
+  inCarData.liveTransforms.chassis.orientation = body->getOrientation();
+
+  // transformation matrix of the wheels
+  for (std::size_t jj = 0; jj < inCarData.liveTransforms.wheels.size(); ++jj) {
+    inCarData.liveTransforms.wheels.at(jj).position = vehicle->getWheelPosition(jj);
+    inCarData.liveTransforms.wheels.at(jj).orientation = vehicle->getWheelOrientation(jj);
+  }
+
+  inCarData.velocity = body->getLinearVelocity();
+
+  const auto& eyeSensors = this->getEyeSensors();
+  for (std::size_t jj = 0; jj < eyeSensors.size(); ++jj) {
+
+    const auto& inSensor = eyeSensors.at(jj);
+    auto& outSensor = inCarData.eyeSensors.at(jj);
+
+    outSensor.near = inSensor.near;
+    outSensor.far = inSensor.far;
+    outSensor.value = inSensor.value;
+  }
+
+  const auto& gSensor = this->getGroundSensor();
+  inCarData.groundSensor.near = gSensor.near;
+  inCarData.groundSensor.far = gSensor.far;
+  inCarData.groundSensor.value = gSensor.value;
+
+  inNeuralNet.getNeuronsValues(inCarData.neuronsValues);
+}
+
 bool
 CarAgent::isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const {
   return _physicWorld == inPhysicWorld;
@@ -426,7 +475,7 @@ CarAgent::getLife() const {
   return float(_health) / constants::healthMaxValue;
 }
 
-unsigned int
+uint32_t
 CarAgent::getTotalUpdates() const {
   return _totalUpdateNumber;
 }

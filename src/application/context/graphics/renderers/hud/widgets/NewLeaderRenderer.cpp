@@ -20,7 +20,7 @@ NewLeaderRenderer::compute() {
       // we don't advertise a dead leader
       leaderData->isAlive &&
       // we don't advertise an early leader
-      leaderData->fitness > 5.0f &&
+      leaderData->fitness > 1.0f &&
       // we don't advertise a dying leader
       leaderData->groundSensor.value < 0.5f) {
 
@@ -46,8 +46,8 @@ NewLeaderRenderer::renderWireFrame() {
   auto& graphic = Context::get().graphic;
   auto& stackRenderers = graphic.hud.stackRenderers;
 
-  const glm::vec3 carPos = {_screenCoord.x, _screenCoord.y, 0.0f};
-  const glm::vec3 textPos = carPos + glm::vec3(0, 50, 0);
+  const glm::vec3 carPos = {_screenCoord.x, _screenCoord.y, 0.1f};
+  const glm::vec3 textPos = carPos + glm::vec3(0, 100, 0.1f);
 
   stackRenderers.getWireFramesStack().pushLine(carPos, textPos, {1, 1, 1});
 }
@@ -66,7 +66,7 @@ NewLeaderRenderer::renderHudText() {
   const glm::vec4 outlineColor = {0.3f, 0.3f, 0.0f, 1.0f};
   const float depth = 0.20f;
 
-  const glm::vec2 textPos = glm::vec2(_screenCoord) + glm::vec2(0, 50.0f);
+  const glm::vec2 textPos = glm::vec2(_screenCoord) + glm::vec2(0, 100.0f);
 
   const std::string_view message = "NEW\nLEADER";
 
@@ -74,7 +74,8 @@ NewLeaderRenderer::renderHudText() {
   textRenderer.setOutlineColor(outlineColor);
   textRenderer.setScale(textScale);
   textRenderer.setDepth(depth);
-  textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::center);
+  textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::center);
+  textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::bottom);
 
   textRenderer.pushText(textPos, message.data());
 

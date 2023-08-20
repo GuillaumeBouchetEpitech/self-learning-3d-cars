@@ -58,7 +58,7 @@ func_handle_third_parties() {
     echo "###"
     echo ""
 
-    EMSDK_VERSION=3.1.26
+    EMSDK_VERSION=3.1.44
 
     if [ -z "${EMSDK}" ]; then
 
@@ -135,7 +135,7 @@ func_handle_third_parties() {
       "GERONIMO" \
       "geronimo" \
       "GuillaumeBouchetEpitech/geronimo" \
-      "v0.0.13" \
+      "v0.0.14" \
       "not-interactive"
 
     tree -L 1 $DIR_DEPENDENCIES
@@ -186,6 +186,9 @@ func_handle_third_parties() {
     echo "#"
     echo "# web-wasm version"
     echo "#"
+
+    export EMSDK_NUM_CORE=2
+    export EMCC_CORES=2
 
     make build_mode="release" build_platform="web-wasm" all -j4
 
@@ -255,6 +258,7 @@ func_build_wasm_loader_webapp() {
   cd $DIR_ROOT/web-wasm-loader
   npm install
   npm run build
+  npm run update-dist
   cd $DIR_ROOT
 
 }

@@ -30,20 +30,17 @@ NEXT_KNOTS_STATES   color="0.15,0.15,0.15"
 PUSH_KNOTS left="30,0,0"     right="30,0,7"
 
 
+# increase distance to next reward(s)
+NEXT_KNOTS_STATES   size="10"
+
 #
 #
 # horizontal loop (left)
 
     NEXT_KNOTS_STATES   color="0.25,0.75,0.25"
 
-    # increase distance to next reward(s)
-    NEXT_KNOTS_STATES   size="5"
-
     PUSH_KNOTS  left="50,50,6"     right="60,60,6"
     PUSH_KNOTS  left="-50,50,6"    right="-60,60,6"
-
-    # increase distance to next reward(s)
-    NEXT_KNOTS_STATES   size="6"
 
     PUSH_KNOTS  left="-50,-50,6"   right="-60,-60,6"
     PUSH_KNOTS  left="50,-50,6"    right="60,-60,6"
@@ -65,19 +62,13 @@ PUSH_KNOTS       left="40,0,7"     right="40,0,0"
 #
 # horizontal loop (right)
 
-    # increase distance to next reward(s)
-    NEXT_KNOTS_STATES   size="6"
+    NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
 
-        NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
+    PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
+    PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
 
-        PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
-        PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
-
-    # increase distance to next reward(s)
-    #NEXT_KNOTS_STATES   size="6"
-
-        PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
-        PUSH_KNOTS  left="60,60,6"     right="50,50,6"
+    PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
+    PUSH_KNOTS  left="60,60,6"     right="50,50,6"
 
 # /horizontal loop (right)
 #
@@ -108,21 +99,23 @@ PUSH_KNOTS   left="90,0,0"     right="90,0,0"
 	PUSH_KNOTS  left="45,0,60"     right="45,0,60"
 
     # decrease distance to next reward(s)
-    NEXT_KNOTS_STATES   size="4"
+    NEXT_KNOTS_STATES   size="6"
 
 	PUSH_KNOTS  left="-45,0,55"   right="-45,0,50"
 
-	PUSH_KNOTS  left="-40,30,-5"    right="-40,40,-15"
-	PUSH_KNOTS  left="0,40,-10"    right="20,40,0"
+	PUSH_KNOTS  left="-50,40,-5"    right="-50,50,-15"
+	PUSH_KNOTS  left="0,40,-5"    right="20,40,0"
 
-	PUSH_KNOTS  left="35,30,0"     right="20,20,5"
-	PUSH_KNOTS  left="45,0,0"      right="40,0,0"
+	PUSH_KNOTS  left="35,30,-3"     right="20,20,5"
+	PUSH_KNOTS  left="45,0,-2"      right="40,0,0"
 
 # /twisted looping
 #
 #
 
 
+# decrease distance to next reward(s)
+NEXT_KNOTS_STATES   size="10"
 
 NEXT_KNOTS_STATES   color="0.25,0.25,0.75"
 

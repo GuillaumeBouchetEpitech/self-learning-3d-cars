@@ -6,9 +6,9 @@
 class State_Running : public State_AbstractSimulation {
 
 public:
-  virtual void enter() override;
-  virtual void leave() override;
+  void enter() override;
+  void leave() override;
 
 public:
-  virtual void update(float) override;
+  void update(float) override;
 };

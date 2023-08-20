@@ -3,7 +3,6 @@
 
 #include "application/context/Context.hpp"
 
-#include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
@@ -273,7 +272,7 @@ FitnessDataRenderer::renderHudText() {
   const glm::vec4 colorGreen = glm::vec4(0.0f, 0.5f, 0.0f, _alpha);
   constexpr float k_textDepth = 0.25f;
 
-  const glm::vec2 basePos = {_position.x, _position.y - 1.5f * k_textScale};
+  const glm::vec2 basePos = {_position.x, _position.y - 10.0f};
 
   glm::vec2 currPos = basePos;
 
@@ -309,7 +308,8 @@ FitnessDataRenderer::renderHudText() {
     textRenderer.setOutlineColor(textOutlineColor);
     textRenderer.setScale(k_textScale);
     textRenderer.setDepth(k_textDepth);
-    textRenderer.setTextAlign(gero::graphics::TextRenderer::TextAlign::left);
+    textRenderer.setHorizontalTextAlign(gero::graphics::TextRenderer::HorizontalTextAlign::left);
+    textRenderer.setVerticalTextAlign(gero::graphics::TextRenderer::VerticalTextAlign::top);
 
     textRenderer.pushText(
       textPos, str,

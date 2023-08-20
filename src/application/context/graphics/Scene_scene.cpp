@@ -74,7 +74,6 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
     scene.chessBoardFloorRenderer.render(inCamera);
 
     scene.animatedCircuitRenderer.renderWireFrame(inCamera);
-    scene.animatedCircuitRenderer.renderWalls(inCamera);
 
     Scene::_renderLeadingCarSensors();
 
@@ -85,12 +84,19 @@ Scene::renderScene(const gero::graphics::Camera& inCamera) {
     scene.stackRenderers.flush();
 
     scene.modelsRenderer.render(inCamera);
-    scene.animatedCircuitRenderer.renderGround(inCamera);
     scene.carTailsRenderer.render();
     scene.flockingManager->render();
 
     scene.stackRenderers.flush();
 
     scene.shapeStackRenderer.render(inCamera);
+
+    scene.animatedCircuitRenderer.renderGround(inCamera);
+
+    GlContext::disable(States::depthTest);
+
+    scene.animatedCircuitRenderer.renderWalls(inCamera);
+
+    GlContext::enable(States::depthTest);
   }
 }

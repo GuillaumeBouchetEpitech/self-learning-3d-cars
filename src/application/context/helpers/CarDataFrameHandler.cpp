@@ -10,27 +10,30 @@ CarDataFrameHandler::initialize(uint32_t totalGenomes, float logicFrameDuration)
   _logicFrameDuration = logicFrameDuration;
 
   _allCarsData.resize(totalGenomes);
-  for (int ii = 0; ii < 4; ++ii) {
-    _unusedFrames.push_back(AllCarsData());
-    _unusedFrames.back().resize(totalGenomes);
+  for (int ii = 0; ii < 10; ++ii) {
+    AllCarsData newFrame;
+    newFrame.resize(totalGenomes);
+    _unusedFrames.push_back(std::move(newFrame));
   }
 }
 
 bool
 CarDataFrameHandler::needNewFrame() const {
-  return _usedFrames.size() <= 3 && !_unusedFrames.empty();
+  return _usedFrames.size() <= 9 && !_unusedFrames.empty();
 }
 
 void
 CarDataFrameHandler::pushNewFrame(const AbstractSimulation& simulation) {
-  if (_unusedFrames.empty())
+  if (_unusedFrames.empty()) {
     D_THROW(std::runtime_error, "not more unused frames");
+  }
 
-  if (_unusedFrames.back().size() != simulation.getTotalCars())
+  if (_unusedFrames.back().size() != simulation.getTotalCars()) {
     D_THROW(
       std::runtime_error, "new frame match not matching"
                             << ", expected: " << _unusedFrames.back().size()
                             << ", input: " << simulation.getTotalCars());
+  }
 
   AllCarsData newFrame = std::move(_unusedFrames.back());
   _unusedFrames.pop_back();
@@ -83,13 +86,17 @@ CarDataFrameHandler::update(float deltaTime) {
 void
 CarDataFrameHandler::discardAll() {
   // discard all used frames
-  while (!_usedFrames.empty()) {
-    _unusedFrames.push_back(std::move(_usedFrames.front()));
-    _usedFrames.pop_front();
-  }
+  for (auto& frame : _usedFrames)
+    _unusedFrames.push_back(std::move(frame));
+  _usedFrames.clear();
 
   for (unsigned int ii = 0; ii < _allCarsData.size(); ++ii)
     _allCarsData.at(ii).isAlive = false;
+}
+
+uint32_t
+CarDataFrameHandler::getTotalStoredFrames() const {
+  return uint32_t(_usedFrames.size());
 }
 
 const AllCarsData&

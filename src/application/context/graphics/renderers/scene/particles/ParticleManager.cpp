@@ -18,5 +18,5 @@ void
 ParticleManager::emitParticles(const glm::vec3& position, const glm::vec3& velocity) {
 
   _explosionParticlesManager.emitParticles(position, velocity);
-  _trailsParticleManager.emitParticles(position, velocity);
+  // _trailsParticleManager.emitParticles(position, velocity);
 }

@@ -1,1 +1,417 @@
-"use strict";function e(e,t,i,n){return new(i||(i=Promise))((function(s,o){function r(e){try{l(n.next(e))}catch(e){o(e)}}function a(e){try{l(n.throw(e))}catch(e){o(e)}}function l(e){var t;e.done?s(e.value):(t=e.value,t instanceof i?t:new i((function(e){e(t)}))).then(r,a)}l((n=n.apply(e,t||[])).next())}))}class t{constructor(e){this._textAreaElement=e,this._textAreaElement.value="",this._lines=[],this._maxLines=30}log(...e){if(0==e.length)return;const t=Array.prototype.slice.call(e).join(" ");console.log(t),this._pushText(t)}error(...e){if(0==e.length)return;const t=Array.prototype.slice.call(e).join(" ");console.error(t),this._pushText(`[ERR] - ${t}`)}_pushText(e){this._lines.push(e),this._lines.length>this._maxLines&&this._lines.splice(0,this._lines.length-this._maxLines),this._textAreaElement.value=`${this._lines.join("\n")}\n`,this._textAreaElement.scrollTop=this._textAreaElement.scrollHeight}get size(){return this._lines.length}peekLast(){if(this._lines.length>0)return this._lines[this._lines.length-1]}popLast(){this._lines.length>0&&this._lines.splice(this._lines.length-1,1)}}const i=/[?&]+([^=&]+)=([^&]*)/gi;class n{constructor(e,t,i){this._width=800,this._height=600,this._isInitialized=!1,this._isAborted=!1,this._canvas=e,this._onProgress=t,this._onError=i}initialize(t,i,n,s,o){return e(this,void 0,void 0,(function*(){if(this._width=t,this._height=i,!window.Worker)throw new Error("missing WebWorker feature (unsupported)");if(o.log("[JS][check] WebWorker feature => supported"),!(()=>{try{if("object"==typeof WebAssembly&&"function"==typeof WebAssembly.instantiate){const e=new WebAssembly.Module(Uint8Array.of(0,97,115,109,1,0,0,0));if(e instanceof WebAssembly.Module)return new WebAssembly.Instance(e)instanceof WebAssembly.Instance}}catch(e){}return!1})())throw new Error("missing WebAssembly feature (unsupported)");o.log("[JS][check] WebAssembly feature => supported");const e=(()=>{const e=void 0!==window.SharedArrayBuffer;if(e){const e=8,t={initial:e,maximum:e,shared:!0};if(!(new WebAssembly.Memory(t).buffer instanceof SharedArrayBuffer))return!1}return e})();if(e?o.log("[JS][check] multithreading => supported"):(o.log("[JS][check] multithreading => NOT supported"),o.log("[JS][check] => falling back to the webworker version")),!window.WebGL2RenderingContext)throw new Error("missing WebGL2 feature (unsupported)");o.log("[JS][check] WebGL2 feature => supported");this._canvas.addEventListener("webglcontextcreationerror",(()=>{this._isAborted=!0,this._onError&&this._onError("Could not create a WebGL2 context.")}),!1);this._canvas.addEventListener("webglcontextlost",(()=>{this._isAborted=!0,this._onError&&this._onError("WebGL2 context lost. You will need to reload the page.")}),!1);this._canvas.addEventListener("contextmenu",(e=>{e.preventDefault()}),!1),this._webglCtx=(e=>{if(!window.WebGL2RenderingContext)throw new Error("missing WebGL2 feature (unsuported)");const t=e.getContext("webgl2",{alpha:!1,antialias:!1,depth:!0,failIfMajorPerformanceCaveat:!1,powerPreference:"high-performance",premultipliedAlpha:!0,preserveDrawingBuffer:!0,stencil:!1});if(!t)throw new Error("WebGL2 context failed (initialisation)");return t})(this._canvas),o.log("[JS] WebGL2 context initialized");const r="wasm/"+(e?"pthread":"webworker");return new Promise(((e,t)=>{const i={downloadingDataRegExp:/Downloading data\.\.\. \(([0-9]*)\/([0-9]*)\)/,lastProgressLevel:0,locateFile:e=>`${r}/${e}`,print:e=>{o.log(`[C++][out] ${e}`)},printErr:e=>{o.error(`[C++][err] ${e}`)},setStatus:e=>{if(!e)return;const t=i.downloadingDataRegExp.exec(e);if(t){const e=parseFloat(t[1]),n=parseFloat(t[2]),s=Math.floor(e/n*100);i.lastProgressLevel!==s&&(i.lastProgressLevel=s,this._onProgress(s))}else o.log(`[JS][wasm][status] ${e}`)},onRuntimeInitialized:()=>{o.log("[JS][wasm] loaded"),o.log("[JS][wasm] initialising");const t={startApplication:window.Module.cwrap("startApplication",void 0,["number","number","number","number"]),updateApplication:window.Module.cwrap("updateApplication",void 0,["number"]),renderApplication:window.Module.cwrap("renderApplication",void 0,[])};this._wasmApplicationUpdateFunc=t.updateApplication,this._wasmApplicationRenderFunc=t.renderApplication,t.startApplication(this._width,this._height,n,s),this._isInitialized=!0,o.log("[JS][wasm] initialized"),e()},canvas:this._canvas,preinitializedWebGLContext:this._webglCtx,noInitialRun:!0,noExitRuntime:!0};var a;window.Module=i,o.log("[JS][wasm] loading"),(a=`./${r}/index.js`,new Promise(((e,t)=>{const i=document.createElement("script");i.src=a,i.addEventListener("load",(()=>e)),i.addEventListener("error",t),document.head.appendChild(i)}))).catch(t)}))}))}update(e){this._isInitialized&&!this._isAborted&&this._wasmApplicationUpdateFunc&&this._wasmApplicationUpdateFunc(e)}render(){this._isInitialized&&!this._isAborted&&this._wasmApplicationRenderFunc&&this._wasmApplicationRenderFunc()}abort(){if(!this._isInitialized||this._isAborted)return;this._isAborted=!0;const e=window.Module;e&&(e.setStatus=e=>{e&&console.error(`[JS][wasm][aborted] ${e}`)})}}const s=e=>{const t=document.querySelector(e);if(!t)throw new Error(`DOM elements not found, id=${e}`);return t};window.addEventListener("load",(()=>e(void 0,void 0,void 0,(function*(){let e=!0;const o=s("#loggerOutput"),r=new t(o);r.log("[JS] page loaded");const a=t=>{e=!1,r.error(`[JS] exception, message=${t.message}`)};window.addEventListener("error",a);const l=s("#errorText"),c=s("#renderArea"),d=s("#canvas"),h={switchTo3cpuCores:s("#try_with_3_cpu_cores"),switchTo6cpuCores:s("#try_with_6_cpu_cores")},p=e=>{"none"!==e.style.display&&(e.style.display="none")},u=e=>{"block"!==e.style.display&&(e.style.display="block")},w=e=>{l.innerHTML=e,p(d),u(l)};window.removeEventListener("error",a),window.addEventListener("error",(e=>{a(e),w(`fatal error, event=${e}`)}));const g=(e,t)=>e?parseInt(e,10):t,m=(()=>{const e={};let t=null;for(;t=i.exec(window.location.href);){const i=t[1],n=t[2];e[i]=n}return e})(),_={width:g(m.width,800),height:g(m.height,600),totalGenomes:g(m.totalGenomes,1e3),totalCores:g(m.totalCores,3)};var b,f;b=_.width,f=_.height,c.style.width=`${b}px`,c.style.height=`${f}px`,d.width=b,d.height=f,d.style.width=`${b}px`,d.style.height=`${f}px`;const v=(e,t,i)=>{e.disabled=!1,e.classList.contains(t)||e.classList.add(t),e.classList.contains("grayButton")&&e.classList.remove("grayButton"),e.addEventListener("click",(()=>{window.location.href=window.location.pathname+`?totalCores=${i}`}))};3!=_.totalCores?(h.switchTo6cpuCores.disabled=!0,v(h.switchTo3cpuCores,"blueButton",3)):(h.switchTo3cpuCores.disabled=!0,v(h.switchTo6cpuCores,"redButton",6));const A=new n(d,(e=>{const t=`Loading wasm [${e}%]`;r.size>0&&r.peekLast().indexOf("Loading wasm [")>=0&&r.popLast(),r.log(`[JS] ${t}`),w(t)}),w);try{yield A.initialize(_.width,_.height,_.totalGenomes,_.totalCores,r),p(l),u(d)}catch(e){r.error(`[JS] dependencies check failed: message="${e.message}"`),w(["this browser isn't compatible","error message:",`=> ${e.message}`].join("<br>"))}let y=Date.now();const x=()=>{e&&requestAnimationFrame(x);const t=Date.now(),i=t-y;y=t,A.update(i),A.render()};x()}))));
+(() => {
+  // src/Logger.ts
+  var Logger = class {
+    constructor(textAreaElement) {
+      this._divElement = textAreaElement;
+      this._divElement.innerHTML = "";
+      this._lines = [];
+      this._maxLines = 30;
+    }
+    log(...args) {
+      if (args.length == 0)
+        return;
+      const text = Array.prototype.slice.call(args).join(" ");
+      console.log(text);
+      this._pushText(text);
+    }
+    error(...args) {
+      if (args.length == 0)
+        return;
+      const text = Array.prototype.slice.call(args).join(" ");
+      console.error(text);
+      this._pushText("[ERR] - ".concat(text));
+    }
+    _pushText(text) {
+      this._lines.push(text);
+      if (this._lines.length > this._maxLines)
+        this._lines.splice(0, this._lines.length - this._maxLines);
+      this._divElement.innerHTML = this._lines.map((line) => {
+        if (/^(\[JS\]).*$/.test(line)) {
+          return '<span style="color: rgb(200,200,150);">'.concat(line, "</span>");
+        }
+        if (/^(\[C\+\+\]).*$/.test(line)) {
+          return '<span style="color: rgb(150,150,200);">'.concat(line, "</span>");
+        }
+        return line;
+      }).join("<br>");
+      this._divElement.scrollTop = this._divElement.scrollHeight;
+    }
+    get size() {
+      return this._lines.length;
+    }
+    peekLast() {
+      if (this._lines.length > 0)
+        return this._lines[this._lines.length - 1];
+      return void 0;
+    }
+    popLast() {
+      if (this._lines.length > 0)
+        this._lines.splice(this._lines.length - 1, 1);
+    }
+  };
+  var Logger_default = Logger;
+
+  // src/helpers/extractVarsFromUrl.ts
+  var urlVarsRegexp = /[?&]+([^=&]+)=([^&]*)/gi;
+  var extractVarsFromUrl = () => {
+    const urlVars = {};
+    let cap = null;
+    while (cap = urlVarsRegexp.exec(window.location.href)) {
+      const key = cap[1];
+      const value = cap[2];
+      urlVars[key] = value;
+    }
+    return urlVars;
+  };
+
+  // src/helpers/scriptLoadingUtility.ts
+  var scriptLoadingUtility = (src) => {
+    return new Promise((resolve, reject) => {
+      const scriptElement = document.createElement("script");
+      scriptElement.src = src;
+      scriptElement.addEventListener("load", () => resolve);
+      scriptElement.addEventListener("error", reject);
+      document.head.appendChild(scriptElement);
+    });
+  };
+
+  // src/helpers/getWebGl2Context.ts
+  var getWebGl2Context = (inCanvas) => {
+    if (!window.WebGL2RenderingContext) {
+      throw new Error("missing WebGL2 feature (unsuported)");
+    }
+    const renderingContextAttribs = {
+      // Boolean that indicates if the canvas contains an alpha buffer.
+      alpha: false,
+      // Boolean that indicates whether or not to perform anti-aliasing.
+      antialias: false,
+      // Boolean that indicates that the drawing buffer has a depth
+      // buffer of at least 16 bits.
+      depth: true,
+      // Boolean that indicates if a context will be created if the
+      // system performance is low.
+      failIfMajorPerformanceCaveat: false,
+      // A hint to the user agent indicating what configuration of GPU is
+      // suitable for the WebGL2 context. Possible values are:
+      // "default":
+      //     Let the user agent decide which GPU configuration is most
+      //     suitable. This is the default value.
+      // "high-performance":
+      //     Prioritizes rendering performance over power consumption.
+      // "low-power":
+      //     Prioritizes power saving over rendering performance.
+      powerPreference: "high-performance",
+      // Boolean that indicates that the page compositor will assume the
+      // drawing buffer contains colors with pre-multiplied alpha.
+      premultipliedAlpha: true,
+      // If the value is true the buffers will not be cleared and will
+      // preserve their values until cleared or overwritten by the author.
+      preserveDrawingBuffer: true,
+      // Boolean that indicates that the drawing buffer has a
+      // stencil buffer of at least 8 bits.
+      stencil: false
+    };
+    const webglCtx = inCanvas.getContext("webgl2", renderingContextAttribs);
+    if (!webglCtx) {
+      const errMsg = "WebGL2 context failed (initialisation)";
+      throw new Error(errMsg);
+    }
+    return webglCtx;
+  };
+
+  // src/environment/isWasmSupported.ts
+  var isWasmSupported = () => {
+    const wasmSupported = (() => {
+      try {
+        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+          const module = new WebAssembly.Module(Uint8Array.of(0, 97, 115, 109, 1, 0, 0, 0));
+          if (module instanceof WebAssembly.Module)
+            return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+        }
+      } catch (err) {
+      }
+      return false;
+    })();
+    return wasmSupported;
+  };
+
+  // src/environment/isWebWorkerSupported.ts
+  var isWebWorkerSupported = () => {
+    return !!window.Worker;
+  };
+
+  // src/environment/isWebGL2Supported.ts
+  var isWebGL2Supported = () => {
+    return !!window.WebGL2RenderingContext;
+  };
+
+  // src/environment/isMultithreadingSupported.ts
+  var isMultithreadingSupported = () => {
+    const initialTest = window.SharedArrayBuffer !== void 0;
+    if (initialTest) {
+      const tmpMemorySize = 8;
+      const opts = {
+        initial: tmpMemorySize,
+        maximum: tmpMemorySize,
+        shared: true
+      };
+      const wasmMemory = new WebAssembly.Memory(opts);
+      if (!(wasmMemory.buffer instanceof SharedArrayBuffer))
+        return false;
+    }
+    return initialTest;
+  };
+
+  // src/Application.ts
+  var Application = class {
+    constructor(canvas, onProgress, onError) {
+      this._width = 800;
+      this._height = 600;
+      this._isInitialized = false;
+      this._isAborted = false;
+      this._canvas = canvas;
+      this._onProgress = onProgress;
+      this._onError = onError;
+    }
+    async initialize(width, height, totalGenomes, totalCores, inLogger) {
+      this._width = width;
+      this._height = height;
+      if (!isWebWorkerSupported()) {
+        throw new Error("missing WebWorker feature (unsupported)");
+      }
+      inLogger.log("[JS][check] WebWorker feature => supported");
+      if (!isWasmSupported()) {
+        throw new Error("missing WebAssembly feature (unsupported)");
+      }
+      inLogger.log("[JS][check] WebAssembly feature => supported");
+      const multithreadingSupported = isMultithreadingSupported();
+      if (multithreadingSupported) {
+        inLogger.log("[JS][check] multithreading => supported");
+      } else {
+        inLogger.log("[JS][check] multithreading => NOT supported");
+        inLogger.log("[JS][check] => falling back to the webworker version");
+      }
+      if (!isWebGL2Supported()) {
+        throw new Error("missing WebGL2 feature (unsupported)");
+      }
+      inLogger.log("[JS][check] WebGL2 feature => supported");
+      const onContextCreationError = () => {
+        this._isAborted = true;
+        if (this._onError)
+          this._onError("Could not create a WebGL2 context.");
+      };
+      this._canvas.addEventListener("webglcontextcreationerror", onContextCreationError, false);
+      const onWebGlContextLost = () => {
+        this._isAborted = true;
+        if (this._onError)
+          this._onError("WebGL2 context lost. You will need to reload the page.");
+      };
+      this._canvas.addEventListener("webglcontextlost", onWebGlContextLost, false);
+      const onContextMenu = (event) => {
+        event.preventDefault();
+      };
+      this._canvas.addEventListener("contextmenu", onContextMenu, false);
+      this._webglCtx = getWebGl2Context(this._canvas);
+      inLogger.log("[JS] WebGL2 context initialized");
+      const wasmFolder = "wasm/".concat(multithreadingSupported ? "pthread" : "webworker");
+      return new Promise((resolve, reject) => {
+        const Module = {
+          downloadingDataRegExp: /Downloading data\.\.\. \(([0-9]*)\/([0-9]*)\)/,
+          lastProgressLevel: 0,
+          locateFile: (url) => {
+            return "".concat(wasmFolder, "/").concat(url);
+          },
+          print: (text) => {
+            inLogger.log("[C++][out] ".concat(text));
+          },
+          printErr: (text) => {
+            inLogger.error("[C++][err] ".concat(text));
+          },
+          setStatus: (text) => {
+            if (!text)
+              return;
+            const capture = Module.downloadingDataRegExp.exec(text);
+            if (capture) {
+              const current = parseFloat(capture[1]);
+              const total = parseFloat(capture[2]);
+              const percent = Math.floor(current / total * 100);
+              if (Module.lastProgressLevel !== percent) {
+                Module.lastProgressLevel = percent;
+                this._onProgress(percent);
+              }
+            } else {
+              inLogger.log("[JS][wasm][status] ".concat(text));
+            }
+          },
+          onRuntimeInitialized: () => {
+            inLogger.log("[JS][wasm] loaded");
+            inLogger.log("[JS][wasm] initialising");
+            const wasmFunctions = {
+              startApplication: window.Module.cwrap("startApplication", void 0, ["number", "number", "number", "number"]),
+              updateApplication: window.Module.cwrap("updateApplication", void 0, ["number"]),
+              renderApplication: window.Module.cwrap("renderApplication", void 0, [])
+            };
+            this._wasmApplicationUpdateFunc = wasmFunctions.updateApplication;
+            this._wasmApplicationRenderFunc = wasmFunctions.renderApplication;
+            wasmFunctions.startApplication(this._width, this._height, totalGenomes, totalCores);
+            this._isInitialized = true;
+            inLogger.log("[JS][wasm] initialized");
+            resolve();
+          },
+          canvas: this._canvas,
+          preinitializedWebGLContext: this._webglCtx,
+          noInitialRun: true,
+          noExitRuntime: true
+        };
+        window.Module = Module;
+        inLogger.log("[JS][wasm] loading");
+        scriptLoadingUtility("./".concat(wasmFolder, "/index.js")).catch(reject);
+      });
+    }
+    update(deltaTime) {
+      if (!this._isInitialized || this._isAborted)
+        return;
+      if (this._wasmApplicationUpdateFunc)
+        this._wasmApplicationUpdateFunc(deltaTime);
+    }
+    render() {
+      if (!this._isInitialized || this._isAborted)
+        return;
+      if (this._wasmApplicationRenderFunc)
+        this._wasmApplicationRenderFunc();
+    }
+    abort() {
+      if (!this._isInitialized || this._isAborted)
+        return;
+      this._isAborted = true;
+      const currModule = window.Module;
+      if (currModule) {
+        currModule.setStatus = (text) => {
+          if (text)
+            console.error("[JS][wasm][aborted] ".concat(text));
+        };
+      }
+    }
+  };
+
+  // src/main.ts
+  var findOrFailHtmlElement = (elementId) => {
+    const textAreaElement = document.querySelector(elementId);
+    if (!textAreaElement)
+      throw new Error("DOM elements not found, id=".concat(elementId));
+    return textAreaElement;
+  };
+  var onGlobalPageLoad = async () => {
+    let isRunning = true;
+    const loggerOutputElement = findOrFailHtmlElement("#loggerOutput");
+    const logger = new Logger_default(loggerOutputElement);
+    logger.log("[JS] page loaded");
+    const onInitialGlobalPageError = (event) => {
+      isRunning = false;
+      logger.error("[JS] exception, message=".concat(event.message));
+    };
+    window.addEventListener("error", onInitialGlobalPageError);
+    const errorText = findOrFailHtmlElement("#errorText");
+    const renderArea = findOrFailHtmlElement("#renderArea");
+    const mainCanvas = findOrFailHtmlElement("#canvas");
+    const buttons = {
+      switchTo3cpuCores: findOrFailHtmlElement("#try_with_3_cpu_cores"),
+      switchTo6cpuCores: findOrFailHtmlElement("#try_with_6_cpu_cores")
+    };
+    const hide = (htmlElem) => {
+      if (htmlElem.style.display !== "none")
+        htmlElem.style.display = "none";
+    };
+    const show = (htmlElem) => {
+      if (htmlElem.style.display !== "block")
+        htmlElem.style.display = "block";
+    };
+    const showErrorText = (htmlText) => {
+      errorText.innerHTML = htmlText;
+      hide(mainCanvas);
+      show(errorText);
+    };
+    const showCanvas = () => {
+      hide(errorText);
+      show(mainCanvas);
+    };
+    const resize = (width, height) => {
+      renderArea.style.width = "".concat(width, "px");
+      renderArea.style.height = "".concat(height, "px");
+      mainCanvas.width = width;
+      mainCanvas.height = height;
+      mainCanvas.style.width = "".concat(width, "px");
+      mainCanvas.style.height = "".concat(height, "px");
+    };
+    const onNextGlobalPageError = (event) => {
+      onInitialGlobalPageError(event);
+      showErrorText("fatal error, event=".concat(event));
+    };
+    window.removeEventListener("error", onInitialGlobalPageError);
+    window.addEventListener("error", onNextGlobalPageError);
+    const getInteger = (text, defaultValue) => text ? parseInt(text, 10) : defaultValue;
+    const urlVars = extractVarsFromUrl();
+    const config = {
+      width: getInteger(urlVars.width, 800),
+      height: getInteger(urlVars.height, 600),
+      totalGenomes: getInteger(urlVars.totalGenomes, 1e3),
+      totalCores: getInteger(urlVars.totalCores, 3)
+      // initialMemory: getInteger(urlVars.initialMemory, 128),
+    };
+    resize(config.width, config.height);
+    const setupActiveButton = (currButton, className, totalCores) => {
+      currButton.disabled = false;
+      if (!currButton.classList.contains(className))
+        currButton.classList.add(className);
+      if (currButton.classList.contains("grayButton"))
+        currButton.classList.remove("grayButton");
+      currButton.addEventListener("click", () => {
+        window.location.href = window.location.pathname + "?totalCores=".concat(totalCores);
+      });
+    };
+    if (config.totalCores != 3) {
+      buttons.switchTo6cpuCores.disabled = true;
+      setupActiveButton(buttons.switchTo3cpuCores, "blueButton", 3);
+    } else {
+      buttons.switchTo3cpuCores.disabled = true;
+      setupActiveButton(buttons.switchTo6cpuCores, "redButton", 6);
+    }
+    const onProgress = (percent) => {
+      const statusMsg = "Loading wasm [".concat(percent, "%]");
+      if (logger.size > 0 && logger.peekLast().indexOf("Loading wasm [") >= 0)
+        logger.popLast();
+      logger.log("[JS] ".concat(statusMsg));
+      showErrorText(statusMsg);
+    };
+    const myApplication = new Application(mainCanvas, onProgress, showErrorText);
+    try {
+      await myApplication.initialize(
+        config.width,
+        config.height,
+        config.totalGenomes,
+        config.totalCores,
+        logger
+      );
+      showCanvas();
+    } catch (err) {
+      logger.error('[JS] dependencies check failed: message="'.concat(err.message, '"'));
+      showErrorText([
+        "this browser isn't compatible",
+        "error message:",
+        "=> ".concat(err.message)
+      ].join("<br>"));
+    }
+    let previousTime = Date.now();
+    const onFrame = () => {
+      if (isRunning)
+        requestAnimationFrame(onFrame);
+      const currTime = Date.now();
+      const deltaTime = currTime - previousTime;
+      previousTime = currTime;
+      myApplication.update(deltaTime);
+      myApplication.render();
+    };
+    onFrame();
+  };
+  window.addEventListener("load", onGlobalPageLoad);
+})();

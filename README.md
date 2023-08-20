@@ -219,7 +219,7 @@ libsdl2-dev
 libglesv2
 ```
 
-## Dependency: Geronimo 0.0.12
+## Dependency: Geronimo 0.0.14
 
 [Github Link](https://github.com/GuillaumeBouchetEpitech/geronimo)
 

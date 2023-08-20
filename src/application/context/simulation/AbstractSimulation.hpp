@@ -26,7 +26,8 @@ public:
     NeuralNetworkTopology neuralNetworkTopology;
     CircuitBuilder::CallbackNoNormals onSkeletonPatch = nullptr;
     CircuitBuilder::CallbackNormals onNewGroundPatch = nullptr;
-    CircuitBuilder::CallbackNormals onNewWallPatch = nullptr;
+    CircuitBuilder::CallbackNormals onNewLeftWallPatch = nullptr;
+    CircuitBuilder::CallbackNormals onNewRightWallPatch = nullptr;
 
     Definition() = default;
   };

@@ -17,7 +17,8 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   groundVertices.reserve(k_preallocSize * 4);
   wallsVertices.reserve(k_preallocSize * 8);
 
-  const glm::vec3 greyColor = {0.7f, 0.7f, 0.7f};
+  const glm::vec3 leftGreyColor = {1.0f, 1.0f, 1.0f};
+  const glm::vec3 rightGreyColor = {1.0f, 1.0f, 1.0f};
   const glm::vec3 whiteColor = {1.0f, 1.0f, 1.0f};
 
   const float maxFloat = std::numeric_limits<float>::max();
@@ -41,22 +42,22 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
     }
   };
 
-  float latestSize = 0;
+  int32_t groundIndex = 0;
   float maxUpperValue = 0.0f;
   constexpr float k_maxDeformation = 0.5f;
 
-  auto onGroundPatchCallback = [&latestSize, &whiteColor, &groundVertices, &maxUpperValue](
+  auto onGroundPatchCallback = [&groundIndex, &whiteColor, &groundVertices, &maxUpperValue](
                                  const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                                  const CircuitBuilder::Vec3Array& normals,
                                  const CircuitBuilder::Indices& indices) -> void {
-    // save it for "onWallPatch" bellow
-    latestSize = float(groundVertices.size());
 
-    float limitValue = latestSize / indices.size();
-    const float limitStep = 1.0f / indices.size();
+
+    const float limitStep = 1.0f / float(indices.size());
+    float limitValue = float(groundIndex);
 
     for (int index : indices) {
-      const bool firstLine = (index < 2); // hacky
+
+      const bool firstLine = (index < 6); // hacky
 
       const auto& color = (firstLine ? whiteColor : colors.at(index));
 
@@ -72,22 +73,25 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
       limitValue += limitStep;
     }
 
+    // save it for "onWallPatch" bellow
+    groundIndex += 1;
     maxUpperValue += 1.0f;
   };
 
-  auto onWallPatchCallback = [&latestSize, &whiteColor, &greyColor, &wallsVertices](
+  auto onLeftWallPatchCallback = [&groundIndex, &whiteColor, &leftGreyColor, &wallsVertices](
                                const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                                const CircuitBuilder::Vec3Array& normals,
                                const CircuitBuilder::Indices& indices) -> void {
     static_cast<void>(colors); // <= unused
 
-    float limitValue = latestSize / indices.size();
-    const float limitStep = 1.0f / indices.size();
+    const float limitStep = 1.0f / float(indices.size());
+    float limitValue = float(groundIndex - 1);
 
     for (int index : indices) {
-      const bool firstLine = (index < 2); // hacky
 
-      const auto& color = (firstLine ? whiteColor : greyColor);
+      const bool firstLine = (index < 6); // hacky
+
+      const auto& color = (firstLine ? whiteColor : leftGreyColor);
 
       const glm::vec3 deformation = {
         gero::rng::RNG::getRangedValue(-k_maxDeformation, +k_maxDeformation),
@@ -95,6 +99,34 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
         gero::rng::RNG::getRangedValue(-k_maxDeformation, +k_maxDeformation)};
 
       const glm::vec3 animNormal = (normals.at(index) + deformation) * 4.0f;
+
+      wallsVertices.emplace_back(vertices.at(index), color, normals.at(index), animNormal, limitValue);
+
+      limitValue += limitStep;
+    }
+  };
+
+  auto onRightWallPatchCallback = [&groundIndex, &whiteColor, &rightGreyColor, &wallsVertices](
+                               const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
+                               const CircuitBuilder::Vec3Array& normals,
+                               const CircuitBuilder::Indices& indices) -> void {
+    static_cast<void>(colors); // <= unused
+
+    const float limitStep = 1.0f / float(indices.size());
+    float limitValue = float(groundIndex - 1);
+
+    for (int index : indices) {
+
+      const bool firstLine = (index < 6); // hacky
+
+      const auto& color = (firstLine ? whiteColor : rightGreyColor);
+
+      const glm::vec3 deformation = {
+        gero::rng::RNG::getRangedValue(-k_maxDeformation, +k_maxDeformation),
+        gero::rng::RNG::getRangedValue(-k_maxDeformation, +k_maxDeformation),
+        gero::rng::RNG::getRangedValue(-k_maxDeformation, +k_maxDeformation)};
+
+      const glm::vec3 animNormal = (normals.at(index) + deformation) * 6.0f;
 
       wallsVertices.emplace_back(vertices.at(index), color, normals.at(index), animNormal, limitValue);
 
@@ -114,7 +146,8 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   simulationDef.neuralNetworkTopology = logic.annTopology;
   simulationDef.onSkeletonPatch = onSkeletonPatch;        // callback
   simulationDef.onNewGroundPatch = onGroundPatchCallback; // callback
-  simulationDef.onNewWallPatch = onWallPatchCallback;     // callback
+  simulationDef.onNewLeftWallPatch = onLeftWallPatchCallback;     // callback
+  simulationDef.onNewRightWallPatch = onRightWallPatchCallback;     // callback
 
   logic.simulation->initialize(simulationDef);
 
