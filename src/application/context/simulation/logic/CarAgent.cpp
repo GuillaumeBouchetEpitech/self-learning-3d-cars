@@ -1,7 +1,7 @@
 
 #include "CarAgent.hpp"
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/asValue.hpp"
@@ -56,7 +56,15 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   _health -= (_isDying ? 2.0f : 1.0f) * elapsedTime;
 
   if (_health <= 0.0f) {
-    _physicWorld->getPhysicVehicleManager().removeVehicle(_physicVehicle);
+
+    auto& vehicleManager = _physicWorld->getPhysicVehicleManager();
+    auto& physicBodyManager = _physicWorld->getPhysicBodyManager();
+
+    if (_physicVehicle)
+      vehicleManager.removeVehicle(_physicVehicle);
+    if (_physicBody)
+      physicBodyManager.removeBody(_physicBody);
+
     return;
   }
 
@@ -88,16 +96,16 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
   _physicVehicle->setSteeringValue(0, steerVal);
   _physicVehicle->setSteeringValue(1, steerVal);
 
-  // const float engineFore = gero::easing::GenericEasing<4>()
-  auto engineEasing = gero::easing::GenericEasing<5>()
-                        // reverse
-                        .push(0.0f, -constants::speedMaxValue)
-                        // neutral
-                        .push(0.5f, 0.0f)
-                        // 4 time faster initial acceleration, then linear acceleration
-                        .push(0.5f + 0.5f * 0.25f, constants::speedMaxValue * 4.0f)
-                        .push(0.5f + 0.5f * 0.50f, constants::speedMaxValue)
-                        .push(0.5f + 0.5f * 1.00f, constants::speedMaxValue);
+  auto engineEasing = gero::easing::GenericEasing<5>();
+  engineEasing.push(0.0f, -constants::speedMaxValue); // reverse
+  // [0.000 -> 0.500] -> [-speedMaxValue -> 0.000]
+  engineEasing.push(0.5f, 0.0f); // neutral
+  // [0.500 -> 0.625] -> [0.000 -> +speedMaxValue * 4]
+  engineEasing.push(0.5f + 0.5f * 0.25f, constants::speedMaxValue * 4.0f); // 4 time faster initial acceleration
+  // [0.625 -> 0.750] -> [+speedMaxValue * 4 -> +speedMaxValue * 1]
+  engineEasing.push(0.5f + 0.5f * 0.50f, constants::speedMaxValue); // linear acceleration
+  // [0.750 -> 1.000] -> [+speedMaxValue * 1 -> +speedMaxValue * 1]
+  engineEasing.push(0.5f + 0.5f * 1.00f, constants::speedMaxValue);
 
   const float engineForce = engineEasing.get(_output.speed);
 
@@ -109,10 +117,14 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
 
 void
 CarAgent::_createVehicle() {
+
+  auto& vehicleManager = _physicWorld->getPhysicVehicleManager();
+  auto& physicBodyManager = _physicWorld->getPhysicBodyManager();
+
   if (_physicVehicle)
-    _physicWorld->getPhysicVehicleManager().destroyVehicle(_physicVehicle);
+    vehicleManager.destroyVehicle(_physicVehicle);
   if (_physicBody)
-    _physicWorld->getPhysicBodyManager().destroyBody(_physicBody);
+    physicBodyManager.destroyBody(_physicBody);
 
   gero::physics::PhysicBodyDef bodyDef;
 
@@ -140,7 +152,7 @@ CarAgent::_createVehicle() {
   bodyDef.group = gero::asValue(Groups::vehicle);
   bodyDef.mask = gero::asValue(Groups::ground);
 
-  _physicBody = _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
+  _physicBody = physicBodyManager.createAndAddBody(bodyDef);
   _physicBody->setPosition({30, 30, 5});
   _physicBody->setFriction(1.0f);
   _physicBody->disableSleep();
@@ -150,50 +162,49 @@ CarAgent::_createVehicle() {
 
   const glm::vec3 wheelDirectionCS0 = {0.0f, 0.0f, -1.0f}; // down axis: -Z (toward the ground)
   const glm::vec3 wheelAxleCS = {1.0f, 0.0f, 0.0f};        // rotation axis: +X
-  const float wheelRadius = 0.5f;
-  const float wheelWidth = 0.2f;
-  const float wheelSide = wheelWidth * 0.3f;
+  constexpr float wheelRadius = 0.5f;
+  constexpr float wheelWidth = 0.2f;
+  constexpr float wheelSide = wheelWidth * 0.3f;
 
   // The maximum length of the suspension (metres)
-  const float suspensionRestLength = 0.3f;
+  constexpr float suspensionRestLength = 0.3f;
 
   // The maximum distance the suspension can be compressed (centimetres)
-  const float maxSuspensionTravelCm = 20.0f; // <= 0.2 metres
+  constexpr float maxSuspensionTravelCm = 20.0f; // <= 0.2 metres
 
   // The coefficient of friction between the tyre and the ground.
   // Should be about 0.8 for realistic cars, but can increased for better
-  // handling. Set large (10000.0) for kart racers const float wheelFriction =
-  // 100.0f; // <= "kart racer"
-  const float wheelFriction = 10000.0f; // <= "kart racer"
+  // handling. Set large (10000.0) for kart racers
+  constexpr float wheelFriction = 10000.0f; // <= "kart racer"
 
   // The stiffness constant for the suspension.
-  // => 10.0: "Offroad buggy"
+  // => 10.0: "Off road buggy"
   // => 50.0: "Sports car"
   // => 200.0: "F1 Car"
-  const float suspensionStiffness = 100.0f; // <= "Sports/F1 Car"
+  constexpr float suspensionStiffness = 100.0f; // <= "Sports/F1 Car"
 
   // The damping coefficient for when the suspension is compressed.
   // Set to k * 2.0 * btSqrt(m_suspensionStiffness) so k is proportional to
   // critical damping. k = 0.0 undamped & bouncy, k = 1.0 critical damping 0.1
   // to 0.3 are good values
-  const float wheelsDampingCompression = 0.3f;
+  constexpr float wheelsDampingCompression = 0.3f;
 
   // The damping coefficient for when the suspension is expanding.
   // See the comments for m_wheelsDampingCompression for how to set k.
   // m_wheelsDampingRelaxation should be slightly larger than
   // m_wheelsDampingCompression, eg 0.2 to 0.5
-  const float wheelsDampingRelaxation = 0.5f;
+  constexpr float wheelsDampingRelaxation = 0.5f;
 
   // Reduces the rolling torque applied from the wheels that cause the vehicle
   // to roll over. This is a bit of a hack, but it's quite effective. 0.0 = no
   // roll, 1.0 = physical behaviour. If m_frictionSlip is too high, you'll need
   // to reduce this to stop the vehicle rolling over. You should also try
   // lowering the vehicle's centre of mass
-  const float rollInfluence = 0.5f;
+  constexpr float rollInfluence = 0.5f;
 
   gero::physics::PhysicVehicleDef vehicleDef;
   vehicleDef.body = _physicBody;
-  vehicleDef.coordinateSystem = {0, 2, 1};
+  vehicleDef.coordinateSystem = {0, 2, 1}; // -> X,Z,Y
   vehicleDef.wheelsCollisionGroup = gero::asValue(Groups::vehicle);
   vehicleDef.wheelsCollisionMask = gero::asValue(Groups::ground);
   vehicleDef.allWheelStats.reserve(4);
@@ -235,7 +246,6 @@ CarAgent::_createVehicle() {
     vehicleDef.allWheelStats.push_back(wheelStats);
   }
 
-  auto& vehicleManager = _physicWorld->getPhysicVehicleManager();
   _physicVehicle = vehicleManager.createAndAddVehicle(vehicleDef);
 }
 
@@ -248,7 +258,7 @@ CarAgent::_updateSensors() {
 
     glm::vec4 newNearValue = vehicleTransform * glm::vec4(0, 0, constants::eyeHeight, 1);
 
-    int sensorIndex = 0;
+    int32_t sensorIndex = 0;
 
     for (const auto& eyeElevation : constants::eyeElevations)
       for (const auto& eyeAngle : constants::eyeAngles) {
@@ -278,12 +288,12 @@ CarAgent::_collideEyeSensors() {
     sensor.value = 1.0f;
 
     // eye sensors collide ground + walls
-    gero::physics::Raycaster::RaycastParams params(
+    gero::physics::RayCaster::RayCastParams params(
       sensor.near, sensor.far, 0, gero::asValue(Groups::sensor), gero::asValue(Masks::eyeSensor));
 
-    gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
+    gero::physics::RayCaster::RayCastParams::ResultArray<1> result;
 
-    _physicWorld->getRaycaster().raycast(params, result);
+    _physicWorld->getRayCaster().rayCast(params, result);
 
     if (!result.hasHit)
       continue;
@@ -296,15 +306,15 @@ CarAgent::_collideEyeSensors() {
 
 bool
 CarAgent::_collideGroundSensor() {
-  // raycast the ground to get the checkpoints validation
+  // rayCast the ground to get the checkpoints validation
 
   // ground sensor collide only ground
-  gero::physics::Raycaster::RaycastParams params(
+  gero::physics::RayCaster::RayCastParams params(
     _groundSensor.near, _groundSensor.far, 0, gero::asValue(Groups::sensor), gero::asValue(Masks::groundSensor));
 
-  gero::physics::Raycaster::RaycastParams::ResultArray<1> result;
+  gero::physics::RayCaster::RayCastParams::ResultArray<1> result;
 
-  _physicWorld->getRaycaster().raycast(params, result);
+  _physicWorld->getRayCaster().rayCast(params, result);
 
   if (!result.hasHit) {
     return false;
@@ -319,7 +329,7 @@ CarAgent::_collideGroundSensor() {
   }
 
   // int hitGroundIndex = params.result.impactIndex;
-  const int hitGroundIndex = result.allImpactsData.front().body->getUserValue();
+  const int32_t hitGroundIndex = result.allImpactsData.front().body->getUserValue();
   // const int hitGroundIndex =
   // result.allImpactsData.front().bodyRef->getUserValue();
 
@@ -450,7 +460,7 @@ CarAgent::isDying() const {
   return _isDying;
 }
 
-int
+int32_t
 CarAgent::getGroundIndex() const {
   return _groundIndex;
 }

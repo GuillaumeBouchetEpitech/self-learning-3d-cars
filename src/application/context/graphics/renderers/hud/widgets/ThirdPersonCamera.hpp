@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "application/context/graphics/renderers/hud/PostProcess.hpp"
+#include "application/context/graphics/renderers/hud/post-process/PostProcess.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/Timer.hpp"

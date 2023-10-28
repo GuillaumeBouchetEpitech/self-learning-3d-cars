@@ -125,20 +125,29 @@ SRC+=	\
 		$(DIR_SRC)/application/states/*.cpp \
 		$(DIR_SRC)/application/context/*.cpp \
 		$(DIR_SRC)/application/context/helpers/*.cpp \
-		$(DIR_SRC)/application/context/helpers/inputManagers/*.cpp \
 		$(DIR_SRC)/application/context/graphics/*.cpp \
 		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \
+		\
 		$(DIR_SRC)/application/context/graphics/renderers/hud/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/helpers/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/hud/post-process/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/hud/widgets/*.cpp \
+		\
 		$(DIR_SRC)/application/context/graphics/renderers/scene/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/animated-circuit/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/background-torus/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/car-tails/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/chessboard-floor/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/flocking/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/flocking/internals/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/models-car/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/particles/internals/*.cpp \
+		$(DIR_SRC)/application/context/graphics/renderers/scene/scene-stack-renderers/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/*.cpp \
+		\
 		$(DIR_SRC)/application/context/simulation/*.cpp \
 		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
 		)
@@ -228,8 +237,8 @@ CXXFLAGS += -s USE_SDL=2
 LDFLAGS_COMMON_WEB_WASM += -s USE_SDL=2
 LDFLAGS_COMMON_WEB_WASM += -s USE_WEBGL2=1
 LDFLAGS_COMMON_WEB_WASM += -s FULL_ES3=1
-LDFLAGS_COMMON_WEB_WASM +=	-s WASM=1
-LDFLAGS_COMMON_WEB_WASM +=	-s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
+LDFLAGS_COMMON_WEB_WASM += -s WASM=1
+LDFLAGS_COMMON_WEB_WASM += -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
 LDFLAGS_COMMON_WEB_WASM += -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0
 LDFLAGS_COMMON_WEB_WASM += -s EXPORTED_RUNTIME_METHODS=cwrap
 
@@ -260,6 +269,14 @@ LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
 LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/textRenderer/assets
 LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/stackRenderers/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/hud/post-process/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/animated-circuit/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/background-torus/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/car-tails/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/chessboard-floor/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/models-car/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/scene-stack-renderers/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders
 
 # pthread build: the application need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
@@ -277,6 +294,14 @@ LDFLAGS += $(LDFLAGS_COMMON_WEB_WASM)
 LDFLAGS += --preload-file ./assets/
 LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/textRenderer/assets
 LDFLAGS += --preload-file $(DIR_LIB_GERONIMO)/src/geronimo/graphics/advanced-concept/stackRenderers/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/hud/post-process/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/animated-circuit/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/background-torus/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/car-tails/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/chessboard-floor/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/models-car/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/scene-stack-renderers/shaders
+LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders
 
 # webworker build: main script need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.

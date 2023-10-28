@@ -12,33 +12,12 @@
 #include "helpers/LeaderCar.hpp"
 #include "helpers/ProfileData.hpp"
 
-#include "graphics/renderers/hud/PostProcess.hpp"
-#include "graphics/renderers/hud/widgets/CoreUsageRenderer.hpp"
-#include "graphics/renderers/hud/widgets/FitnessDataRenderer.hpp"
-#include "graphics/renderers/hud/widgets/InformationTextRenderer.hpp"
-#include "graphics/renderers/hud/widgets/LeaderEyeRenderer.hpp"
-#include "graphics/renderers/hud/widgets/ScreenTitles.hpp"
-#include "graphics/renderers/hud/widgets/ThirdPersonCamera.hpp"
-#include "graphics/renderers/hud/widgets/TopologyRenderer.hpp"
+#include "graphics/renderers/GraphicsRenderer.hpp"
 
-#include "graphics/renderers/scene/AnimatedCircuitRenderer.hpp"
-#include "graphics/renderers/scene/BackGroundTorusRenderer.hpp"
-#include "graphics/renderers/scene/CarTailsRenderer.hpp"
-#include "graphics/renderers/scene/ChessBoardFloorRenderer.hpp"
-#include "graphics/renderers/scene/ModelsRenderer.hpp"
-#include "graphics/renderers/scene/SceneStackRenderers.hpp"
-#include "graphics/renderers/scene/flocking/AbstractFlockingManager.hpp"
-#include "graphics/renderers/scene/particles/ParticleManager.hpp"
-#include "graphics/renderers/scene/shape-stack-renderer/ShapeStackRenderer.hpp"
-
-#include "geronimo/graphics/ResourceManager.hpp"
 #include "geronimo/graphics/camera/Camera.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/metrics/PerformanceProfiler.hpp"
-
-#include "geronimo/graphics/advanced-concept/stackRenderers/StackRenderers.hpp"
-#include "geronimo/graphics/advanced-concept/textRenderer/TextRenderer.hpp"
 
 #include <array>
 #include <chrono>
@@ -72,7 +51,6 @@ public:
   //
 
 private:
-  void _initializeGraphicResource();
   void _initializeSimulation(uint32_t totalGenomes, uint32_t totalCores);
   void _initializeSimulationCallbacks();
 
@@ -80,7 +58,6 @@ public:
   struct Graphic {
     // TODO: move in a class
     struct cameraData {
-      glm::vec2 viewportSize = {800.0f, 600.0f};
 
       struct Rotations {
         float theta = -2.5f;
@@ -90,40 +67,10 @@ public:
       glm::vec3 center = {0.0f, 0.0f, 0.0f};
       float distance = 100.0f;
 
-      gero::graphics::Camera scene;
-      gero::graphics::Camera hud;
     } cameraData;
 
-    struct Hud {
-      gero::graphics::StackRenderers stackRenderers;
-      gero::graphics::TextRenderer textRenderer;
+    GraphicsRenderer renderer;
 
-      PostProcess postProcess;
-
-      struct Widgets {
-        TopologyRenderer topologyRenderer;
-        ScreenTitles screenTitles;
-        CoreUsageRenderer coreUsageRenderer;
-        ThirdPersonCamera thirdPersonCamera;
-        FitnessDataRenderer fitnessDataRenderer;
-        InformationTextRenderer informationTextRenderer;
-        LeaderEyeRenderer leaderEyeRenderer;
-      } widgets;
-    } hud;
-
-    struct Scene {
-      SceneStackRenderers stackRenderers;
-      ParticleManager particleManager;
-      ChessBoardFloorRenderer chessBoardFloorRenderer;
-      BackGroundTorusRenderer backGroundTorusRenderer;
-      AnimatedCircuitRenderer animatedCircuitRenderer;
-      ModelsRenderer modelsRenderer;
-      std::unique_ptr<AbstractFlockingManager> flockingManager;
-      CarTailsRenderer carTailsRenderer;
-      ShapeStackRenderer shapeStackRenderer;
-    } scene;
-
-    gero::graphics::ResourceManager resourceManager;
   } graphic;
 
   //

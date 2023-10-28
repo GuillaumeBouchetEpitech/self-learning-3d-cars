@@ -17,7 +17,7 @@ public:
 
 public:
   void update(float delta);
-  void render(const gero::graphics::Camera& inCamera);
+  void render(const gero::graphics::ICamera& inCamera);
 
 public:
   void emitParticles(const glm::vec3& position, const glm::vec3& velocity);

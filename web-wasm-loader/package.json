@@ -9,14 +9,9 @@
     "copy-html-to-dist-folders": "cp -f ./pages/index.html ../dist/index.html",
     "copy-js-to-dist-folders": "cp -f ./js/bundle.js ../dist/js/bundle.js",
     "update-dist": "npm run ensure-dist-folders && npm run copy-html-to-dist-folders && npm run copy-js-to-dist-folders",
-    "build-release": "node ./esbuild.js",
-    "build-debug": "node ./esbuild.js debug",
+    "build-release": "bun run bun-build.js release",
+    "build-debug": "bun run bun-build.js debug",
     "build": "npm run build-release"
-  },
-  "devDependencies": {
-    "tslib": "^2.5.0",
-    "typescript": "^3.7.2",
-    "esbuild": "0.18.17"
   },
   "author": "",
   "license": "ISC"

@@ -80,15 +80,15 @@ TrailsParticleManager::update(float delta) {
 }
 
 void
-TrailsParticleManager::render(const gero::graphics::Camera& inCamera) {
+TrailsParticleManager::render(const gero::graphics::ICamera& inCamera) {
 
   auto& context = Context::get();
-  auto& scene = context.graphic.scene;
+  auto& sceneRenderer = context.graphic.renderer.getSceneRenderer();
 
   const auto& frustumCulling = inCamera.getFrustumCulling();
 
   {
-    auto& stackRenderer = scene.stackRenderers.getTrianglesStack();
+    auto& stackRenderer = sceneRenderer.getSceneStackRenderers().getTrianglesStack();
 
     for (auto& trailParticle : _trailParticles) {
 

@@ -19,9 +19,9 @@ renderProgressBar(
 
   const float textHScale = inTextScale * 0.5f;
 
-  auto& hud = Context::get().graphic.hud;
-  auto& textRenderer = hud.textRenderer;
-  auto& stackRenderers = hud.stackRenderers;
+  auto& hudRenderer = Context::get().graphic.renderer.getHudRenderer();
+  auto& textRenderer = hudRenderer.getTextRenderer();
+  auto& stackRenderers = hudRenderer.getStackRenderers();
 
   std::stringstream sstr;
   sstr << uint32_t(progressValueA * 100.0f) << "%";

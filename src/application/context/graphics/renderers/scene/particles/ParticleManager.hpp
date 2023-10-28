@@ -2,7 +2,7 @@
 #pragma once
 
 #include "internals/ExplosionParticlesManager.hpp"
-#include "internals/TrailsParticleManager.hpp"
+// #include "internals/TrailsParticleManager.hpp"
 
 #include "geronimo/graphics/Geometry.hpp"
 #include "geronimo/graphics/ShaderProgram.hpp"
@@ -19,13 +19,18 @@ public:
   ParticleManager() = default;
 
 public:
+  void setCamera(const gero::graphics::ICamera* inCamera);
+
+public:
   void update(float delta);
-  void render(const gero::graphics::Camera& inCamera);
+  void render();
 
 public:
   void emitParticles(const glm::vec3& position, const glm::vec3& velocity);
 
 private:
   ExplosionParticlesManager _explosionParticlesManager;
-  TrailsParticleManager _trailsParticleManager;
+  // TrailsParticleManager _trailsParticleManager;
+
+  const gero::graphics::ICamera* _camera = nullptr;
 };

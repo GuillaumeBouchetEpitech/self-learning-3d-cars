@@ -135,7 +135,7 @@ func_handle_third_parties() {
       "GERONIMO" \
       "geronimo" \
       "GuillaumeBouchetEpitech/geronimo" \
-      "v0.0.14" \
+      "v0.0.15" \
       "not-interactive"
 
     tree -L 1 $DIR_DEPENDENCIES
@@ -224,11 +224,19 @@ func_build_main_application() {
 
   make build_mode="release" build_platform="native-pthread" all -j4
 
+  #
+  #
+  #
+
   echo "#"
   echo "# web-wasm version (webworker)"
   echo "#"
 
   make build_mode="release" build_platform="web-wasm-webworker" all -j4
+
+  #
+  #
+  #
 
   echo "#"
   echo "# web-wasm version (pthread)"
@@ -255,8 +263,12 @@ func_build_wasm_loader_webapp() {
   echo "###"
   echo ""
 
+  #
+  #
+  #
+
   cd $DIR_ROOT/web-wasm-loader
-  npm install
+  bun install
   npm run build
   npm run update-dist
   cd $DIR_ROOT

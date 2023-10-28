@@ -2,8 +2,6 @@
 
 #include "WorkerConsumer.hpp"
 
-#include "../../common.hpp"
-
 #include "application/defines.hpp"
 
 #include "geronimo/system/ErrorHandler.hpp"
@@ -21,17 +19,12 @@ D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::millis
 
 } // namespace
 
-WorkerConsumer::AgentValues::AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
-  : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {
-  transformsHistory.reserve(50); // TODO: hardcoded
-}
-
 void
 WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
   gero::messaging::MessageView receivedMsg(dataPointer, dataSize);
 
   int8_t messageType = 0;
-  receivedMsg >> messageType;
+  receivedMsg.readInt8(messageType);
 
   switch (Messages::FromProducer(messageType)) {
   case Messages::FromProducer::LoadWorker: {
@@ -42,9 +35,11 @@ WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
   case Messages::FromProducer::ResetAndProcessSimulation: {
     float elapsedTime;
     uint32_t totalSteps;
-    receivedMsg >> elapsedTime >> totalSteps;
+    receivedMsg.readFloat(elapsedTime);
+    receivedMsg.readUint32(totalSteps);
 
-    _resetPhysic();
+    _simulationProcess.reset();
+
     _addNewCars(receivedMsg);
     _processSimulation(elapsedTime, totalSteps);
     break;
@@ -53,7 +48,8 @@ WorkerConsumer::processMessage(const char* dataPointer, int dataSize) {
   case Messages::FromProducer::ProcessSimulation: {
     float elapsedTime;
     uint32_t totalSteps;
-    receivedMsg >> elapsedTime >> totalSteps;
+    receivedMsg.readFloat(elapsedTime);
+    receivedMsg.readUint32(totalSteps);
 
     _addNewCars(receivedMsg);
     _processSimulation(elapsedTime, totalSteps);
@@ -74,7 +70,7 @@ WorkerConsumer::_sendBackToProducer() {
 void
 WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg) {
 
-  _historicalTimeData.setSize(5);
+  // _historicalTimeData.setSize(5);
 
   CircuitBuilder::Knots circuitKnots;
 
@@ -89,53 +85,54 @@ WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg)
     // circuit data
 
     int32_t knotsLength = 0;
-    receivedMsg >> _startTransform.position;
-    receivedMsg >> _startTransform.quaternion;
-    receivedMsg >> knotsLength;
+    receivedMsg.readVec3(_startTransform.position);
+    receivedMsg.readVec4(_startTransform.quaternion);
+    receivedMsg.readInt32(knotsLength);
+
+
     circuitKnots.reserve(knotsLength); // <= pre-allocate
     for (int32_t ii = 0; ii < knotsLength; ++ii) {
       CircuitBuilder::Knot knot;
-      receivedMsg >> knot.left >> knot.right >> knot.size >> knot.color;
+      receivedMsg.readVec3(knot.left).readVec3(knot.right);
+      receivedMsg.readFloat(knot.size).readVec3(knot.color);
       circuitKnots.emplace_back(knot);
     }
 
     //
     // neural network data
 
-    receivedMsg >> isUsingBias;
-    receivedMsg >> layerInput;
+    receivedMsg.readBoolean(isUsingBias);
+    receivedMsg.readUint32(layerInput);
     uint32_t totalHidden = 0;
-    receivedMsg >> totalHidden;
+    receivedMsg.readUint32(totalHidden);
     layerHidden.reserve(totalHidden);
     for (uint32_t ii = 0; ii < totalHidden; ++ii) {
       uint32_t layerValue = 0;
-      receivedMsg >> layerValue;
+      receivedMsg.readUint32(layerValue);
       layerHidden.emplace_back(layerValue);
     }
-    receivedMsg >> layerOutput;
+    receivedMsg.readUint32(layerOutput);
 
   } // read initialisation packet
 
-  { // generate circuit
-
-    _circuitBuilder.load(_startTransform, circuitKnots);
-
-    _resetPhysic();
-
-  } // generate circuit
-
   { // setup neural network topology
 
-    _neuralNetworkTopology.init(layerInput, layerHidden, layerOutput, isUsingBias);
+    NeuralNetworkTopology neuralNetworkTopology;
+    neuralNetworkTopology.init(layerInput, layerHidden, layerOutput, isUsingBias);
+
+    _simulationProcess.initialize(
+      neuralNetworkTopology,
+      _startTransform,
+      circuitKnots);
+    _simulationProcess.reset();
+    _simulationProcess.getHistoricalTimeData().setSize(20);
 
   } // setup neural network topology
-
-  _allAgentValues.reserve(256); // TODO: hardcoded
 
   { // send reply
 
     _messageToSend.clear();
-    _messageToSend << int8_t(Messages::FromConsumer::WebWorkerLoaded);
+    _messageToSend.writeInt8(int8_t(Messages::FromConsumer::WebWorkerLoaded));
 
     _sendBackToProducer();
 
@@ -144,84 +141,41 @@ WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg)
 
 void
 WorkerConsumer::_addNewCars(gero::messaging::MessageView& receivedMsg) {
-  const uint32_t floatWeightsSize = _neuralNetworkTopology.getTotalWeights();
+  const uint32_t floatWeightsSize = _simulationProcess.getNeuralNetworkTopology().getTotalWeights();
   const uint32_t byteWeightsSize = floatWeightsSize * sizeof(float);
 
   auto newWeights = std::make_unique<float[]>(floatWeightsSize);
   float* newWeightsRaw = newWeights.get();
 
   uint32_t totalAgentsToAdd = 0;
-  receivedMsg >> totalAgentsToAdd;
+  receivedMsg.readUint32(totalAgentsToAdd);
 
   for (uint32_t ii = 0; ii < totalAgentsToAdd; ++ii) {
     uint32_t dataIndex = 0;
-    receivedMsg >> dataIndex;
+    receivedMsg.readUint32(dataIndex);
     receivedMsg.read(newWeightsRaw, byteWeightsSize);
 
-    auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
-    newValues->neuralNet.setConnectionsWeights(newWeightsRaw, floatWeightsSize);
-    newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion);
-
-    _allAgentValues.emplace_back(newValues);
+    _simulationProcess.addNewCar(dataIndex, newWeightsRaw, floatWeightsSize);
   }
 
-  // _historicalTimeData.reset();
+  if (totalAgentsToAdd > 0) {
+    _simulationProcess.getHistoricalTimeData().reset();
+  }
 }
 
 void
 WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
-  // update the simulation
+
+  //
+  //
 
   const auto startTime = _getTime();
 
   //
-  // run all agent(s)
   //
 
-  for (auto& currValues : _allAgentValues)
-    currValues->transformsHistory.clear();
-
-  CarData::CarTransform tmpCarTransform;
-
   for (uint32_t step = 0; step < totalSteps; ++step) {
-    _historicalTimeData.start();
-
-    constexpr uint32_t maxSubSteps = 0;
-    _physicWorld->step(elapsedTime, maxSubSteps, elapsedTime);
-
-    for (auto currValues : _allAgentValues) {
-      auto& carAgent = currValues->carAgent;
-
-      if (!carAgent.isAlive())
-        continue;
-
-      carAgent.update(elapsedTime, currValues->neuralNet);
-
-      //
-      // record (updated) spatial data
-      //
-
-      {
-        const auto body = carAgent.getBody();
-        const auto vehicle = carAgent.getVehicle();
-
-        // transformation matrix of the car
-        tmpCarTransform.chassis.position = body->getPosition();
-        tmpCarTransform.chassis.orientation = body->getOrientation();
-
-        // transformation matrix of the wheels
-        for (uint32_t jj = 0; jj < 4U; ++jj) {
-          auto& currWheel = tmpCarTransform.wheels.at(jj);
-
-          currWheel.position = vehicle->getWheelPosition(jj);
-          currWheel.orientation = vehicle->getWheelOrientation(jj);
-        }
-
-        currValues->transformsHistory.push_back(tmpCarTransform);
-      }
-    }
-
-    _historicalTimeData.stop();
+    _simulationProcess.process(elapsedTime);
   }
 
   //
@@ -238,47 +192,50 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   //
 
   _messageToSend.clear();
-  _messageToSend << int8_t(Messages::FromConsumer::SimulationResult);
-  _messageToSend << delta;
+  _messageToSend.writeInt8(int8_t(Messages::FromConsumer::SimulationResult));
+  _messageToSend.writeInt32(delta);
 
-  const bool isReadyToAddMoreCars = _historicalTimeData.getTotalDurations() < _historicalTimeData.getSize();
-  _messageToSend << isReadyToAddMoreCars;
-  _messageToSend << int32_t(_historicalTimeData.getMaxDuration());
 
-  uint32_t genomesAlive = 0;
-  for (auto currValues : _allAgentValues)
-    if (currValues->carAgent.isAlive())
-      ++genomesAlive;
+  const auto& historicalTimeData = _simulationProcess.getHistoricalTimeData();
 
-  _messageToSend << genomesAlive;
-  _messageToSend << uint32_t(_allAgentValues.size());
+  _messageToSend.writeInt32(int32_t(historicalTimeData.getTotalDurations()));
+  _messageToSend.writeInt32(int32_t(historicalTimeData.getSize()));
+  _messageToSend.writeInt32(int32_t(historicalTimeData.getAverageDuration()));
+  _messageToSend.writeInt32(int32_t(historicalTimeData.getMaxDuration()));
+
+  _messageToSend.writeUint32(uint32_t(_simulationProcess.getTotalAgentsAlive()));
+  _messageToSend.writeUint32(uint32_t(_simulationProcess.getTotalAgentValues()));
 
   std::vector<float> tmpNeuronsValues;
 
-  for (const auto currValue : _allAgentValues) {
-    _messageToSend << currValue->dataIndex;
+  for (std::size_t ii = 0; ii < _simulationProcess.getTotalAgentValues(); ++ii) {
 
-    const auto& currAgent = currValue->carAgent;
+    const auto& currValue = _simulationProcess.getAgentValuesByIndex(ii);
+    const auto& currAgent = currValue.carAgent;
+
+    _messageToSend.writeUint64(uint64_t(currValue.dataIndex));
 
     //
     // core data
 
-    _messageToSend << currValue->dataIndex;
-    _messageToSend << currAgent.isAlive() << currAgent.isDying();
-    _messageToSend << currAgent.getLife() << currAgent.getFitness();
-    _messageToSend << currAgent.getTotalUpdates() << currAgent.getGroundIndex();
+    _messageToSend.writeBoolean(currAgent.isAlive());
+    _messageToSend.writeBoolean(currAgent.isDying());
+    _messageToSend.writeFloat(currAgent.getLife());
+    _messageToSend.writeFloat(currAgent.getFitness());
+    _messageToSend.writeUint32(currAgent.getTotalUpdates());
+    _messageToSend.writeInt32(currAgent.getGroundIndex());
 
     //
     // transform history
 
-    _messageToSend << int32_t(currValue->transformsHistory.size());
-    for (const auto& transforms : currValue->transformsHistory) {
-      _messageToSend << transforms.chassis.position;
-      _messageToSend << transforms.chassis.orientation;
+    _messageToSend.writeInt32(int32_t(currValue.transformsHistory.size()));
+    for (const auto& transforms : currValue.transformsHistory) {
+      _messageToSend.writeVec3(transforms.chassis.position);
+      _messageToSend.writeQuat(transforms.chassis.orientation);
 
       for (const auto& wheel : transforms.wheels) {
-        _messageToSend << wheel.position;
-        _messageToSend << wheel.orientation;
+        _messageToSend.writeVec3(wheel.position);
+        _messageToSend.writeQuat(wheel.orientation);
       }
     }
 
@@ -296,132 +253,47 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     //
     // spatial data
 
-    const auto body = currAgent.getBody();
+    const auto chassisBody = currAgent.getBody();
     const auto vehicle = currAgent.getVehicle();
 
     // record the transformation of the car
-    _messageToSend << body->getPosition();
-    _messageToSend << body->getOrientation();
+    _messageToSend.writeVec3(chassisBody->getPosition());
+    _messageToSend.writeQuat(chassisBody->getOrientation());
 
     // record the transformation of the wheels
     for (int jj = 0; jj < 4; ++jj) {
-      _messageToSend << vehicle->getWheelPosition(jj);
-      _messageToSend << vehicle->getWheelOrientation(jj);
+      _messageToSend.writeVec3(vehicle->getWheelPosition(jj));
+      _messageToSend.writeQuat(vehicle->getWheelOrientation(jj));
     }
 
-    _messageToSend << body->getLinearVelocity();
+    _messageToSend.writeVec3(chassisBody->getLinearVelocity());
 
     //
     // sensor data
 
     const auto& eyeSensors = currAgent.getEyeSensors();
     for (const auto& sensor : eyeSensors)
-      _messageToSend << sensor.near << sensor.far << sensor.value;
+    {
+      _messageToSend.writeVec3(sensor.near).writeVec3(sensor.far);
+      _messageToSend.writeFloat(sensor.value);
+    }
 
     const auto& gSensor = currAgent.getGroundSensor();
-    _messageToSend << gSensor.near << gSensor.far << gSensor.value;
+    _messageToSend.writeVec3(gSensor.near).writeVec3(gSensor.far);
+    _messageToSend.writeFloat(gSensor.value);
 
     //
     // neural network data
 
     tmpNeuronsValues.clear();
-    currValue->neuralNet.getNeuronsValues(tmpNeuronsValues);
-    _messageToSend << int32_t(tmpNeuronsValues.size());
-    for (float currValue : tmpNeuronsValues)
-      _messageToSend << currValue;
-  }
-
-  //
-  // dead agent(s) cleanup
-  //
-
-  for (std::size_t index = 0; index < _allAgentValues.size();) {
-    if (!_allAgentValues.at(index)->carAgent.isAlive()) {
-      // fast removal (no reallocation)
-      if (index + 1 < _allAgentValues.size())
-        std::swap(_allAgentValues.at(index), _allAgentValues.back());
-      _allAgentValues.pop_back();
-    } else {
-      ++index;
+    currValue.neuralNet.getNeuronsValues(tmpNeuronsValues);
+    _messageToSend.writeInt32(int32_t(tmpNeuronsValues.size()));
+    for (float currValue : tmpNeuronsValues) {
+      _messageToSend.writeFloat(currValue);
     }
   }
 
+  _simulationProcess.cleanup();
+
   _sendBackToProducer();
-}
-
-void
-WorkerConsumer::_resetPhysic() {
-  _physicWorld = std::make_unique<gero::physics::PhysicWorld>();
-
-  { // generate circuit
-
-    int groundIndex = 0;
-
-    auto onNewGroundPatch = [&](
-                              const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                              const CircuitBuilder::Vec3Array& normals,
-                              const CircuitBuilder::Indices& indices) -> void {
-      static_cast<void>(colors);  // <= unused
-      static_cast<void>(normals); // <= unused
-
-      gero::physics::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-      shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
-      shapeDef.data.staticMesh.verticesLength = vertices.size();
-      shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
-      shapeDef.data.staticMesh.indicesLength = indices.size();
-
-      gero::physics::PhysicBodyDef bodyDef;
-      bodyDef.shape = shapeDef;
-      bodyDef.mass = 0.0f;
-      bodyDef.group = gero::asValue(Groups::ground);
-      bodyDef.mask = gero::asValue(Masks::ground);
-
-      auto body = _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
-      body->setFriction(1.0f);
-      body->setUserValue(groundIndex++);
-    };
-
-    auto onNewWallPatch = [&](
-                            const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                            const CircuitBuilder::Vec3Array& normals, const CircuitBuilder::Indices& indices) -> void {
-      static_cast<void>(colors);  // <= unused
-      static_cast<void>(normals); // <= unused
-
-      gero::physics::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-      shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
-      shapeDef.data.staticMesh.verticesLength = vertices.size();
-      shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
-      shapeDef.data.staticMesh.indicesLength = indices.size();
-
-      gero::physics::PhysicBodyDef bodyDef;
-      bodyDef.shape = shapeDef;
-      bodyDef.mass = 0.0f;
-      bodyDef.group = gero::asValue(Groups::wall);
-      bodyDef.mask = gero::asValue(Masks::wall);
-
-      _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
-    };
-
-    _circuitBuilder.generateCircuitGeometry(onNewGroundPatch, onNewWallPatch, onNewWallPatch);
-
-  } // generate circuit
-
-  { // generate floor
-
-    gero::physics::PhysicShapeDef shapeDef;
-    shapeDef.type = gero::physics::PhysicShapeDef::Type::box;
-    shapeDef.data.box.size = {1000, 1000, 0.5f};
-
-    gero::physics::PhysicBodyDef bodyDef;
-    bodyDef.shape = shapeDef;
-    bodyDef.group = gero::asValue(Groups::ground);
-    bodyDef.mask = gero::asValue(Masks::ground);
-    bodyDef.mass = 0.0f;
-
-    auto body = _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
-    body->setPosition({0.0f, 0.0f, -0.5f});
-
-  } // generate floor
 }

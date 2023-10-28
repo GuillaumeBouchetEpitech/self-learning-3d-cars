@@ -21,14 +21,14 @@ constexpr float k_faceOutX = +500.0f;
 void
 ThirdPersonCamera::initialize() {
   auto& context = Context::get();
-  const auto& vSize = context.graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(context.graphic.renderer.getHudRenderer().getCamera().getSize());
 
   _layout.size = {175, 150};
 
   _layout.position.x = vSize.x - _layout.size.x + k_faceOutX;
   _layout.position.y = 10;
 
-  _postProcess.initialize({_layout.size.x, _layout.size.y});
+  _postProcess.initialize(_layout.size.x, _layout.size.y);
 }
 
 bool
@@ -56,13 +56,14 @@ ThirdPersonCamera::fadeIn(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - _layout.size.x + k_faceInX;
 
   _layout.timer.start(delay, duration);
 
-  _layout.moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _layout.position.x, gero::easing::easeOutCubic).push(1.0f, targetPos);
+  _layout.moveEasing = gero::easing::GenericEasing<2>();
+  _layout.moveEasing.push(0.0f, _layout.position.x, gero::easing::easeOutCubic);
+  _layout.moveEasing.push(1.0f, targetPos);
 
   _layout.isVisible = true;
 }
@@ -73,13 +74,14 @@ ThirdPersonCamera::fadeOut(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - _layout.size.x + k_faceOutX;
 
   _layout.timer.start(delay, duration);
 
-  _layout.moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _layout.position.x, gero::easing::easeInCubic).push(1.0f, targetPos);
+  _layout.moveEasing = gero::easing::GenericEasing<2>();
+  _layout.moveEasing.push(0.0f, _layout.position.x, gero::easing::easeInCubic);
+  _layout.moveEasing.push(1.0f, targetPos);
 
   _layout.isVisible = false;
 }
@@ -179,11 +181,12 @@ void
 ThirdPersonCamera::render() {
 
   auto& context = Context::get();
-  auto& graphic = context.graphic;
-  auto& cameraData = graphic.cameraData;
+  auto& renderer = context.graphic.renderer;
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
+  const auto& hudCamera = renderer.getHudRenderer().getCamera();
 
   if (canActivate()) {
-    const auto& vSize = cameraData.viewportSize;
+    const auto& vSize = hudCamera.getSize();
 
     _postProcess.startRecording();
 
@@ -195,14 +198,13 @@ ThirdPersonCamera::render() {
   }
 
   {
-    const auto& matricesData = cameraData.hud.getMatricesData();
+    const auto& matricesData = hudCamera.getMatricesData();
     _postProcess.setMatricesData(matricesData);
 
     _postProcess.setGeometry(_layout.position, _layout.size, -1.0f);
 
     _postProcess.render();
 
-    auto& stackRenderers = graphic.hud.stackRenderers;
     stackRenderers.getTrianglesStack().pushQuad(
       _layout.position + _layout.size * 0.5f, _layout.size, glm::vec4(0, 0, 0, 0.75f), -1.5f);
     stackRenderers.getWireFramesStack().pushRectangle(

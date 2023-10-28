@@ -2,16 +2,25 @@
 #include "ParticleManager.hpp"
 
 void
-ParticleManager::update(float delta) {
-
-  _explosionParticlesManager.update(delta);
-  _trailsParticleManager.update(delta);
+ParticleManager::setCamera(const gero::graphics::ICamera* inCamera)
+{
+  _camera = inCamera;
 }
 
 void
-ParticleManager::render(const gero::graphics::Camera& inCamera) {
-  _explosionParticlesManager.render(inCamera);
-  _trailsParticleManager.render(inCamera);
+ParticleManager::update(float delta) {
+
+  _explosionParticlesManager.update(delta);
+  // _trailsParticleManager.update(delta);
+}
+
+void
+ParticleManager::render() {
+  if (!_camera)
+    D_THROW(std::runtime_error, "camera not setup");
+
+  _explosionParticlesManager.render(*_camera);
+  // _trailsParticleManager.render(_camera);
 }
 
 void

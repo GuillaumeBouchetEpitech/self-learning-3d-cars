@@ -4,7 +4,6 @@
 #include "application/context/Context.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/writeTime.hpp"
-#include "geronimo/graphics/advanced-concept/widgets/renderPerformanceProfilerMetrics.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 #include "geronimo/system/math/BSpline.hpp"
@@ -33,8 +32,9 @@ void
 CoreUsageRenderer::fadeIn(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, k_faceInX);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeOutCubic);
+  _moveEasing.push(1.0f, k_faceInX);
 
   _isVisible = true;
 }
@@ -43,8 +43,9 @@ void
 CoreUsageRenderer::fadeOut(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, k_faceOutX);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeInCubic);
+  _moveEasing.push(1.0f, k_faceOutX);
 
   _isVisible = false;
 }
@@ -69,9 +70,8 @@ void
 CoreUsageRenderer::renderWireFrame() {
 
   auto& context = Context::get();
-  auto& graphic = context.graphic;
-
-  auto& stackRenderers = graphic.hud.stackRenderers;
+  auto& renderer = context.graphic.renderer;
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   const glm::vec3 whiteColor(0.8f, 0.8f, 0.8f);
   const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
@@ -193,10 +193,11 @@ void
 CoreUsageRenderer::renderHudText() {
 
   auto& context = Context::get();
-  auto& graphic = context.graphic;
   auto& logic = context.logic;
-  auto& textRenderer = graphic.hud.textRenderer;
   auto& profileData = logic.cores.profileData;
+  auto& renderer = context.graphic.renderer;
+  auto& textRenderer = renderer.getHudRenderer().getTextRenderer();
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   std::vector<gero::graphics::TextRenderer::MessageRectangle> outRectangles;
   const glm::vec4 color = glm::vec4(0.8, 0.8, 0.8, 1);
@@ -234,6 +235,6 @@ CoreUsageRenderer::renderHudText() {
 
     gero::graphics::helpers::renderTextBackground(
       textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f,
-      graphic.hud.stackRenderers, textRenderer);
+      stackRenderers, textRenderer);
   }
 }

@@ -56,7 +56,9 @@ private:
   std::vector<std::shared_ptr<AgentData>> _allAgentsData;
   std::unordered_map<uint32_t, std::shared_ptr<AgentData>> _agentsDataMap;
 
-  bool _isReadyToAddMoreCars = true;
+  int32_t _currSizeDurations = 0;
+  int32_t _maxSizeDurations = 0;
+  int32_t _averageDuration = 0;
   int32_t _maxDuration = 0;
 
   gero::messaging::MessageBuffer _message;
@@ -99,6 +101,10 @@ public:
 
   uint32_t getTotalLiveAgents() const;
   uint32_t getWaitingAgents() const;
-  bool isReadyToAddMoreCars() const;
+  int32_t getCurrSizeDuration() const;
+  int32_t getMaxSizeDuration() const;
+  int32_t getAverageDuration() const;
   int32_t getMaxDuration() const;
+  void resetDurations();
+
 };

@@ -5,16 +5,14 @@
 #include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 
 void
-NewLeaderRenderer::compute() {
+NewLeaderRenderer::compute(const gero::graphics::ICamera& cameraInstance) {
   auto& context = Context::get();
-  auto& graphic = context.graphic;
   auto& logic = context.logic;
 
   if (logic.leaderCar.totalTimeAsLeader() > 1.0f)
     return;
 
   if (auto leaderData = logic.leaderCar.leaderData()) {
-    const gero::graphics::Camera& scene = graphic.cameraData.scene;
 
     if (
       // we don't advertise a dead leader
@@ -26,7 +24,7 @@ NewLeaderRenderer::compute() {
 
       const glm::vec3 carPos = leaderData->liveTransforms.chassis.position;
 
-      const bool isVisible = scene.sceneToHudCoord(carPos, _screenCoord);
+      const bool isVisible = cameraInstance.sceneToHudCoord(carPos, _screenCoord);
 
       if (
         isVisible &&
@@ -43,8 +41,8 @@ NewLeaderRenderer::renderWireFrame() {
   if (!_isVisible)
     return;
 
-  auto& graphic = Context::get().graphic;
-  auto& stackRenderers = graphic.hud.stackRenderers;
+  auto& renderer = Context::get().graphic.renderer;
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   const glm::vec3 carPos = {_screenCoord.x, _screenCoord.y, 0.1f};
   const glm::vec3 textPos = carPos + glm::vec3(0, 100, 0.1f);
@@ -57,9 +55,9 @@ NewLeaderRenderer::renderHudText() {
   if (!_isVisible)
     return;
 
-  auto& graphic = Context::get().graphic;
-  // auto& stackRenderers = graphic.hud.stackRenderers;
-  auto& textRenderer = graphic.hud.textRenderer;
+  auto& renderer = Context::get().graphic.renderer;
+  auto& textRenderer = renderer.getHudRenderer().getTextRenderer();
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   const float textScale = 16.0f;
   const glm::vec4 color = {0.8f, 0.8f, 0.8f, 1.0f};
@@ -80,6 +78,6 @@ NewLeaderRenderer::renderHudText() {
   textRenderer.pushText(textPos, message.data());
 
   gero::graphics::helpers::renderTextBackground(
-    depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, graphic.hud.stackRenderers,
+    depth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, stackRenderers,
     textRenderer);
 }

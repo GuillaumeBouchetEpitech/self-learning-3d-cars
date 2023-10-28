@@ -27,14 +27,16 @@ Scene::renderSimple() {
   Scene::updateMatrices();
 
   auto& graphic = Context::get().graphic;
+  auto& hudRenderer = graphic.renderer.getHudRenderer();
 
   if (StateManager::get()->getState() != StateManager::States::Paused) {
 
-    graphic.hud.postProcess.startRecording();
+    auto& postProcess = hudRenderer.getPostProcess();
+    postProcess.startRecording();
 
     { // scene
 
-      const auto& vSize = graphic.cameraData.viewportSize;
+      const glm::vec2 vSize = glm::vec2(hudRenderer.getCamera().getSize());
 
       GlContext::setViewport(0, 0, vSize.x, vSize.y);
 
@@ -42,15 +44,15 @@ Scene::renderSimple() {
       GlContext::clears(Buffers::color, Buffers::depth);
     }
 
-    graphic.hud.postProcess.stopRecording();
+    postProcess.stopRecording();
   }
 
   { // HUD
 
-    const auto& matricesData = graphic.cameraData.hud.getMatricesData();
-    graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.setMatricesData(matricesData);
-    graphic.hud.textRenderer.setMatricesData(matricesData);
+    const auto& matricesData = hudRenderer.getCamera().getMatricesData();
+    hudRenderer.getPostProcess().setMatricesData(matricesData);
+    hudRenderer.getStackRenderers().setMatricesData(matricesData);
+    hudRenderer.getTextRenderer().setMatricesData(matricesData);
 
     Scene::_renderHUD();
   }
@@ -65,29 +67,30 @@ Scene::renderAll() {
 
   auto& context = Context::get();
   auto& graphic = context.graphic;
-  auto& cameraData = graphic.cameraData;
+  auto& sceneRenderer = graphic.renderer.getSceneRenderer();
+  auto& hudRenderer = graphic.renderer.getHudRenderer();
 
   { // scene
 
-    const gero::graphics::Camera& camInstance = cameraData.scene;
-    const auto& vSize = cameraData.viewportSize;
+    auto& postProcess = hudRenderer.getPostProcess();
+    const gero::graphics::ICamera& camInstance = sceneRenderer.getCamera();
+    const glm::vec2 vSize = glm::vec2(camInstance.getSize());
 
-    graphic.hud.postProcess.startRecording();
+    postProcess.startRecording();
 
     Scene::renderScene(camInstance);
 
-    graphic.hud.postProcess.stopRecording();
+    postProcess.stopRecording();
 
     GlContext::setViewport(0, 0, vSize.x, vSize.y);
   }
 
   { // HUD
 
-    const auto& matricesData = cameraData.hud.getMatricesData();
-
-    graphic.hud.postProcess.setMatricesData(matricesData);
-    graphic.hud.stackRenderers.setMatricesData(matricesData);
-    graphic.hud.textRenderer.setMatricesData(matricesData);
+    const auto& matricesData = hudRenderer.getCamera().getMatricesData();
+    hudRenderer.getPostProcess().setMatricesData(matricesData);
+    hudRenderer.getStackRenderers().setMatricesData(matricesData);
+    hudRenderer.getTextRenderer().setMatricesData(matricesData);
 
     Scene::_renderHUD();
   }
@@ -114,22 +117,15 @@ Scene::updateMatrices() {
     const glm::vec3 eye = cameraData.center + cameraDir * cameraData.distance;
     const glm::vec3 upAxis = {0.0f, 0.0f, 1.0f};
 
-    cameraData.scene.setSize(cameraData.viewportSize.x, cameraData.viewportSize.y);
-    cameraData.scene.lookAt(eye, cameraData.center, upAxis);
-    cameraData.scene.computeMatrices();
-
-    cameraData.hud.setOrthographic(
-      0.0f, float(cameraData.viewportSize.x), 0.0f, float(cameraData.viewportSize.y), -10.0f, +10.0f);
-
-    cameraData.hud.lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    cameraData.hud.computeMatrices();
+    graphic.renderer.getSceneRenderer().lookAt(eye, cameraData.center, upAxis);
+    graphic.renderer.computeMatrices();
 
   } // scene
 }
 
 void
 Scene::_clear() {
-  const auto& vSize = Context::get().graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = Context::get().graphic.renderer.getHudRenderer().getCamera().getSize();
 
   GlContext::setViewport(0, 0, vSize.x, vSize.y);
 

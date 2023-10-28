@@ -19,7 +19,7 @@ constexpr float k_faceOutX = -400.0f;
 constexpr float k_textScale = 16.0f;
 constexpr float k_textHScale = k_textScale * 0.5f;
 
-constexpr float k_width = 150.0f;
+constexpr float k_width = 160.0f;
 constexpr float k_height = 75.0f;
 
 } // namespace
@@ -35,9 +35,13 @@ void
 FitnessDataRenderer::fadeIn(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, k_faceInX);
-  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeOutCubic).push(1.0f, 1.0f);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeOutCubic);
+  _moveEasing.push(1.0f, k_faceInX);
+
+  _alphaEasing = gero::easing::GenericEasing<2>();
+  _alphaEasing.push(0.0f, _alpha, gero::easing::easeOutCubic);
+  _alphaEasing.push(1.0f, 1.0f);
 
   _isVisible = true;
 }
@@ -46,9 +50,13 @@ void
 FitnessDataRenderer::fadeOut(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, k_faceOutX);
-  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeInCubic).push(1.0f, 0.0f);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeInCubic);
+  _moveEasing.push(1.0f, k_faceOutX);
+
+  _alphaEasing = gero::easing::GenericEasing<2>();
+  _alphaEasing.push(0.0f, _alpha, gero::easing::easeInCubic);
+  _alphaEasing.push(1.0f, 0.0f);
 
   _isVisible = false;
 }
@@ -74,10 +82,9 @@ void
 FitnessDataRenderer::renderWireFrame() {
 
   auto& context = Context::get();
-  auto& graphic = context.graphic;
   auto& logic = context.logic;
-
-  auto& stackRenderers = graphic.hud.stackRenderers;
+  auto& renderer = context.graphic.renderer;
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   const glm::vec3 whiteColor(1.0f);
   const glm::vec3 lightGrayColor(0.5f);
@@ -249,10 +256,11 @@ void
 FitnessDataRenderer::renderHudText() {
 
   auto& context = Context::get();
-  auto& graphic = context.graphic;
   auto& logic = context.logic;
   auto& simulation = *logic.simulation;
-  auto& textRenderer = graphic.hud.textRenderer;
+  auto& renderer = context.graphic.renderer;
+  auto& textRenderer = renderer.getHudRenderer().getTextRenderer();
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
 
   const uint32_t totalCars = logic.cores.totalGenomes;
   float localBestFitness = 0.0f;
@@ -320,6 +328,6 @@ FitnessDataRenderer::renderHudText() {
 
     gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha), glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f,
-      graphic.hud.stackRenderers, textRenderer);
+      stackRenderers, textRenderer);
   }
 }

@@ -5,8 +5,12 @@
 #include "application/context/simulation/logic/CarData.hpp"
 
 #include <list>
+#include <functional>
 
 class CarDataFrameHandler {
+public:
+  using GenomeDieCallback = std::function<void(const CarData&)>;
+
 public:
   CarDataFrameHandler() = default;
   ~CarDataFrameHandler() = default;
@@ -17,6 +21,9 @@ public:
   void pushNewFrame(const AbstractSimulation& simulation);
   void update(float deltaTime);
   void discardAll();
+
+public:
+  void setOnGenomeDieCallback(const GenomeDieCallback& callback);
 
 public:
   uint32_t getTotalStoredFrames() const;
@@ -33,4 +40,6 @@ private:
   float _interpolationValue = 0.0f;
 
   AllCarsData _allCarsData;
+
+  GenomeDieCallback _onGenomeDieCallback;
 };

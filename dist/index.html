@@ -4,6 +4,7 @@
 
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Self Learning 3d Cars (loading)</title>
 
@@ -43,8 +44,11 @@
         padding: 0px none;
 
         background-color: black;
-        width: 800px;
-        height: 600px;
+        width: 95%;
+        min-width: 200px;
+        min-height: 200px;
+        max-width: 800px;
+        max-height: 600px;
       }
 
       #title-description {
@@ -56,7 +60,7 @@
       }
 
       #sub-text-description {
-        width: 400px;
+        max-width: 400px;
         margin: 0px auto; /* horizontally centered */
         text-align: left;
       }
@@ -66,8 +70,11 @@
         border: 0px none;
         margin: 0px auto; /* horizontally centered */
         padding: 0px none;
-        width: 800px; /* <= fix Apple retina display issue(s)*/
-        height: 600px; /* <= fix Apple retina display issue(s)*/
+        width: 100%;
+        min-width: 200px;
+        min-height: 200px;
+        max-width: 800px; /* <= fix Apple retina display issue(s)*/
+        max-height: 600px; /* <= fix Apple retina display issue(s)*/
         display: none;
       }
 
@@ -129,6 +136,26 @@
       .redText {
         color: #C88;
       }
+
+      .description-separate-block {
+        text-align: center;
+        /* display: inline-block; */
+      }
+
+      .description-group-block {
+        overflow: auto;
+        text-align: center;
+      }
+      .description-group-block span {
+        /* float: center; */
+        display: inline-block;
+        border: 1px solid;
+        border-color: #888888;
+        padding: 10px 10px 10px 10px;
+        margin: 8px 8px 8px 8px;
+        text-align: center;
+      }
+
     </style>
 
     <script type="module" src="js/bundle.js"></script>
@@ -171,121 +198,194 @@
 
       <br/>
 
-      <h2>FAQs:</h2>
-      <div id="sub-text-description">
+    </div>
 
-        <h3>Camera controls?</h3>
-        <ul>
-          <li>You can use:</li>
-          <ul>
-            <li>a keyboard</li>
-            <ul>
-              <li>they arrows keys</li>
-              <li>they WASD keys (UK/US)</li>
-              <li>they ZQSD keys (FR)</li>
-            </ul>
-            <li>a computer mouse (click+drag)</li>
-            <li>a touch screen (touch+drag)</li>
-          </ul>
-        </ul>
 
-        <h3>What are the white strips on the circuit?</h3>
-        <ul>
-          <li>The checkpoints used to reward the cars.</li>
-          <li>All cars lose "health" value over time.</li>
-          <li>Any car with low "health" is discarded.</li>
-          <li>Any car being rewarded become "healthy".</li>
-          <li>This is visible as cars color will change.</li>
-          <ul>
-            <li>from white/green colored to red colored.</li>
-          </ul>
-        </ul>
 
-        <h3>What are the colored lines on the leading car?</h3>
-        <ul>
-          <li>The car's sensors, it's "eye".</li>
-          <li>The sensors:</li>
-          <ul>
-            <li>can hit the ground and the "walls".</li>
-            <li>are the only inputs the cars uses.</li>
-            <ul>
-              <li>decide to accelerate/decelerate.</li>
-              <li>decide to turn left/right.</li>
-            </ul>
-          </ul>
-        </ul>
+    <div>
+      <div class="description-group-block">
 
-        <h3>What is the white line below the leading car?</h3>
-        <ul>
-          <li>The car's "ground sensor".</li>
-          <li>It detect the checkpoints (for the rewards).</li>
-        </ul>
+        <span>
+          <h3>Camera controls?</h3>
+          <br/>
 
-        <h3>What are the white/grey lines alongside the circuit?</h3>
-        <ul>
-          <li>The "skeleton" used to generate the circuit.</li>
-          <li>The circuit is made by interpolating the "skeleton".</li>
-          <ul>
-            <li>it uses the BSpline method (degree: 3).</li>
-          </ul>
-        </ul>
+          <span>
+            <p>
+              Computer Keyboard<br/>
+              <br/>
+              they arrows keys<br/>
+              they WASD keys (UK/US)<br/>
+              they ZQSD keys (FR)
+            </p>
+          </span>
 
+          <span>
+            <p>Computer Mouse<br/><br/>click + drag</p>
+          </span>
+
+          <span>
+            <p>Touch Screen<br/><br/>touch + drag</p>
+          </span>
+
+        </span>
+
+        <span>
+          <h3>Details</h3>
+          <br/>
+
+          <span>
+            <h3>What are the white strips<br/>on the circuit?</h3>
+            <p>
+              <br/>
+              The checkpoints used to reward the cars.<br/>
+              <br/>
+              All cars lose "health" value over time.<br/>
+              <br/>
+              Any car with low "health" is discarded.<br/>
+              <br/>
+              Any car being rewarded become "healthy".<br/>
+              <br/>
+              This is visible as cars color will change.<br/>
+              from white/green colored to red colored.
+            </p>
+          </span>
+
+          <span>
+            <h3>What are the colored lines<br/>on the leading car?</h3>
+            <p>
+              <br/>
+              The car's sensors, it's "eye".<br/>
+              <br/>
+              The sensors can hit the ground and the "walls".<br/>
+              it's the only inputs the cars uses.<br/>
+              <br/>
+              it will affect the decisions:<br/>
+              to accelerate/decelerate.<br/>
+              to turn left/right.
+            </p>
+          </span>
+
+          <span>
+            <h3>What is the white line<br/>below the leading car?</h3>
+            <p>
+              <br/>
+              The car's "ground sensor".<br/>
+              It detect the checkpoints (for the rewards).
+            </p>
+          </span>
+
+          <span>
+            <h3>What are the white/grey lines<br/>alongside the circuit?</h3>
+            <p>
+              <br/>
+              The "skeleton" used to generate the circuit.<br/>
+              <br/>
+              The circuit is made by interpolating the "skeleton".<br/>
+              it uses the BSpline method (degree: 3).
+            </p>
+          </span>
+        </span>
+
+        <span>
+          <h2>Technologies</h2>
+          <br/>
+
+          <span>
+            <p>
+              this project was written in C++.<br/>
+              <br/>
+              the web version was compiled to WebAssembly.<br/>
+              the source code of the native build is reused.<br/>
+              it relies on emscripten (clang based compiler).
+            </p>
+          </span>
+
+          <span>
+            <p>it uses "Bullet Physics"<br/>(bullet3) for the physic.</p>
+          </span>
+
+          <span>
+            <p>
+              it uses a homemade<br/>
+              rendering engine.<br/>
+              <br/>
+              native build:<br/>
+              rely on OpenGL-ES3.<br/>
+              <br/>
+              WebAssembly build:<br/>
+              is translated to WebGL2.
+            </p>
+          </span>
+
+          <span>
+            <p>
+              it uses a homemade<br/>
+              machine learning library.<br/>
+              very basic fixed<br/>
+              topology genetic algorithm.
+            </p>
+          </span>
+
+          <span>
+            <p>
+              it is composed of 3 builds:
+            </p>
+
+            <span>
+              <p>
+                <u>build 1:</u><br/>
+                native build.<br/>
+                <br/>
+                multithreading for parallel computing (pthread).
+              </p>
+            </span>
+
+            <span>
+              <p>
+                <u>build 2A:</u><br/>
+                WebAssembly build (#1).<br/>
+                <br/>
+                multithreading for parallel computing (pthread).<br/>
+                only when the server and browser allows it.
+              </p>
+            </span>
+
+            <span>
+              <p>
+                <u>build 2B:</u><br/>
+                WebAssembly build (#2).<br/>
+                <br/>
+                web-workers for parallel computing.<br/>
+                as a fallback when <u>build 2A</u> is unavailable.
+              </p>
+            </span>
+
+          </span>
+
+          <span>
+            <p>it was built on a Linux OS.</p>
+          </span>
+
+        </span>
       </div>
 
-      <br/>
 
-      <h2>Technologies</h2>
-      <div id="sub-text-description">
-        <ul>
-          <li>this project was written in C++.</li>
-          <li>the web version was compiled to WebAssembly.</li>
-          <ul>
-            <li>the source code of the native build is reused.</li>
-            <li>it relies on emscripten (clang based compiler).</li>
-          </ul>
-          <li>it uses "Bullet Physics" (bullet3) for the physic.</li>
-          <li>it uses a homemade rendering engine.</li>
-          <ul>
-            <li>native build: rely on OpenGL-ES3.</li>
-            <li>WebAssembly build: is translated to WebGL2.</li>
-          </ul>
-          <li>it uses a homemade machine learning library.</li>
-          <ul>
-            <li>very basic fixed topology genetic algorithm.</li>
-          </ul>
-          <li>it is composed of 3 builds:</li>
-          <ul>
-            <li><u>build 1:</u> native build.</li>
-            <ul>
-              <li>multithreading for parallel computing (pthread).</li>
-            </ul>
-            <li><u>build 2:</u>: WebAssembly build (#1).</li>
-            <ul>
-              <li>multithreading for parallel computing (pthread).</li>
-              <ul>
-                <li>only when the server and browser allows it.</li>
-              </ul>
-            </ul>
-            <li><u>build 3:</u>: WebAssembly build (#2).</li>
-            <ul>
-              <li>webworkers for parallel computing.</li>
-              <ul>
-                <li>as a fallback when <u>build 2</u> is unavailable.</li>
-              </ul>
-            </ul>
-          </ul>
-          <li>it was built on a Linux OS.</li>
-        </ul>
+      <div class="description-separate-block">
+        <br/>
+        <h2>Note</h2>
+        <p>The 'success' of this simulation is quite random,<br/>
+          which means that sometime<br/>
+          <b>you might want to reload this page</b><br/>
+          and hope for a better result.</p>
+
+        <br/>
+        <h2 class="redText">Thank you for watching!</h2>
+        <br/>
+
       </div>
-
-      <br/>
-      <h2>Note</h2>
-      <p>The 'success' of this simulation is quite random, which means that sometime <b>you might want to reload this page</b> and hope for a better result.</p>
-
-      <br/>
-      <h2 class="redText">Thank you for watching!</h2>
-      <br/>
 
     </div>
+
+
   </body>
 </html>

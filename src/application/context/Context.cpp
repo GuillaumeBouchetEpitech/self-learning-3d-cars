@@ -18,21 +18,14 @@ Context::~Context() {}
 
 void
 Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uint32_t totalCores) {
-  {
-    graphic.cameraData.viewportSize = {width, height};
-
-    graphic.cameraData.scene.setPerspective(70.0f, 0.1f, 1500.0f);
-
-    graphic.cameraData.hud.setOrthographic(0.0f, float(width), 0.0f, float(height), -10.0f, +10.0f);
-    graphic.cameraData.hud.lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    graphic.cameraData.hud.computeMatrices();
-  }
-
-  _initializeGraphicResource();
 
   //
   //
   //
+
+  logic.metrics.performanceProfiler.setSize(150);
+
+
 
   logic.simulation = AbstractSimulation::create();
 
@@ -84,28 +77,8 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
 
   {
 
-    graphic.scene.flockingManager = AbstractFlockingManager::create();
-
-    graphic.scene.stackRenderers.initialize();
-
-    graphic.scene.modelsRenderer.initialize();
-    graphic.scene.carTailsRenderer.initialize();
     const auto& dimension = logic.circuitDimension;
-    const glm::vec3 boundariesSize = dimension.max - dimension.min;
-    graphic.scene.chessBoardFloorRenderer.initialize(dimension.center, boundariesSize);
-    graphic.scene.backGroundTorusRenderer.initialize();
-    graphic.scene.shapeStackRenderer.initialize();
-
-    graphic.hud.stackRenderers.initialize("./thirdparties/dependencies/geronimo/src");
-
-    graphic.hud.textRenderer.initialize("./thirdparties/dependencies/geronimo/src");
-
-    graphic.hud.postProcess.initialize({width, height});
-    graphic.hud.postProcess.setGeometry(glm::vec2(0, 0), glm::vec2(width, height), -2.0f);
-
-    graphic.hud.widgets.topologyRenderer.initialize();
-    graphic.hud.widgets.thirdPersonCamera.initialize();
-    graphic.hud.widgets.leaderEyeRenderer.initialize();
+    graphic.renderer.initialize(width, height, dimension.center, dimension.max - dimension.min);
   }
 }
 

@@ -16,7 +16,7 @@ constexpr float k_faceOutX = +200.0f;
 void
 TopologyRenderer::initialize() {
   auto& context = Context::get();
-  const auto& vSize = context.graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(context.graphic.renderer.getHudRenderer().getCamera().getSize());
 
   _size = {150, 125};
 
@@ -29,13 +29,14 @@ TopologyRenderer::fadeIn(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - _size.x + k_faceInX;
 
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, targetPos);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeOutCubic);
+  _moveEasing.push(1.0f, targetPos);
 
   _isVisible = true;
 }
@@ -45,13 +46,14 @@ TopologyRenderer::fadeOut(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - _size.x + k_faceOutX;
 
   _timer.start(delay, duration);
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, targetPos);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeInCubic);
+  _moveEasing.push(1.0f, targetPos);
 
   _isVisible = false;
 }
@@ -86,7 +88,7 @@ TopologyRenderer::render() {
   const glm::vec4 redColor(1.0f, 0.0f, 0.0f, 0.85f);
   const glm::vec4 blueColor(0.5f, 0.5f, 1.0f, 0.85f);
 
-  auto& stackRenderers = graphic.hud.stackRenderers;
+  auto& stackRenderers = graphic.renderer.getHudRenderer().getStackRenderers();
   stackRenderers.getTrianglesStack().pushQuad(_position + _size * 0.5f, _size, glm::vec4(0, 0, 0, 0.75f), -0.2f);
   stackRenderers.getWireFramesStack().pushRectangle(_position, _size, whiteColor, -0.1f);
 

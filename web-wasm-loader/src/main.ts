@@ -51,12 +51,10 @@ const onGlobalPageLoad = async () => {
     show(mainCanvas);
   };
   const resize = (width: number, height: number) => {
-    renderArea.style.width = `${width}px`;
-    renderArea.style.height = `${height}px`;
+    renderArea.style.maxWidth = mainCanvas.style.maxWidth = `${width}px`;
+    renderArea.style.maxHeight = mainCanvas.style.maxHeight = `${height}px`;
     mainCanvas.width = width;
     mainCanvas.height = height;
-    mainCanvas.style.width = `${width}px`;
-    mainCanvas.style.height = `${height}px`;
   };
 
   const onNextGlobalPageError = (event: ErrorEvent) => {

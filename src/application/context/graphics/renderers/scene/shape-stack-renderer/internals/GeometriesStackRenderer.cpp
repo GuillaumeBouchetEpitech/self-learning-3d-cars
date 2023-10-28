@@ -13,7 +13,8 @@ GeometriesStackRenderer::initialize() {
   ShaderProgramBuilder shaderProgramBuilder;
   GeometryBuilder geometryBuilder;
 
-  const std::string basePath = "./assets/graphics/shaders/scene/";
+  // const std::string basePath = "./assets/graphics/shaders/scene/";
+  const std::string basePath = "./src/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders/";
 
   shaderProgramBuilder.reset()
     .setVertexFilename(basePath + "geometriesStackRenderer.glsl.vert")
@@ -111,32 +112,33 @@ GeometriesStackRenderer::clearAll() {
 }
 
 void
-GeometriesStackRenderer::renderAll(const gero::graphics::Camera& inCamera) {
+GeometriesStackRenderer::renderAll(const gero::graphics::ICamera& inCamera) {
   if (!_shader)
     D_THROW(std::runtime_error, "not initialized");
 
   if (_aliasedGeometriesMap.empty())
     return;
 
-  _shader->bind();
-  _shader->setUniform("u_composedMatrix", inCamera.getMatricesData().composed);
-  // _shader->setUniform("u_ambiantCoef", 0.2f);
-  // _shader->setUniform("u_lightPos", inLightPos.x, inLightPos.y,
-  // inLightPos.z);
+  _shader->preBind([this, &inCamera](gero::graphics::IBoundShaderProgram& bound)
+  {
+    bound.setUniform("u_composedMatrix", inCamera.getMatricesData().composed);
+    // bound.setUniform("u_ambiantCoef", 0.2f);
+    // bound.setUniform("u_lightPos", inLightPos.x, inLightPos.y, inLightPos.z);
 
-  for (const auto& pair : _aliasedGeometriesMap) {
-    auto& vertices = pair.second->instanceVertices;
-    if (vertices.empty())
-      continue;
+    for (const auto& pair : _aliasedGeometriesMap) {
+      auto& vertices = pair.second->instanceVertices;
+      if (vertices.empty())
+        continue;
 
-    // D_MYLOG("step");
+      // D_MYLOG("step");
 
-    auto& geometry = pair.second->geometry;
+      auto& geometry = pair.second->geometry;
 
-    geometry.updateOrAllocateBuffer(1, vertices);
-    geometry.setInstancedCount(uint32_t(vertices.size()));
-    geometry.render();
+      geometry.updateOrAllocateBuffer(1, vertices);
+      geometry.setInstancedCount(uint32_t(vertices.size()));
+      geometry.render();
 
-    vertices.clear();
-  }
+      vertices.clear();
+    }
+  });
 }

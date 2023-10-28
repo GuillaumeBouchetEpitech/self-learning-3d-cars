@@ -23,16 +23,23 @@ WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
   { // send initialisation message to worker consumer
 
     _message.clear();
-    _message << int8_t(Messages::FromProducer::LoadWorker);
+    _message.writeInt8(int8_t(Messages::FromProducer::LoadWorker));
 
     //
     // circuit data
 
-    _message << def.startTransform.position;
-    _message << def.startTransform.quaternion;
-    _message << int(def.knots.size());
+    _message.writeVec3(def.startTransform.position);
+    _message.writeVec4(def.startTransform.quaternion);
+
+
+    _message.writeInt32(int32_t(def.knots.size()));
     for (const auto& knot : def.knots)
-      _message << knot.left << knot.right << knot.size << knot.color;
+    {
+      _message.writeVec3(knot.left);
+      _message.writeVec3(knot.right);
+      _message.writeFloat(knot.size);
+      _message.writeVec3(knot.color);
+    }
 
     //
     // neural network data
@@ -40,12 +47,15 @@ WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
     const auto& topology = def.neuralNetworkTopology;
     const auto& hiddenLayers = topology.getHiddenLayers();
 
-    _message << topology.isUsingBias();
-    _message << topology.getInputLayerSize();
-    _message << int(hiddenLayers.size());
+    _message.writeBoolean(topology.isUsingBias());
+    _message.writeUint32(topology.getInputLayerSize());
+
+    _message.writeUint32(uint32_t(hiddenLayers.size()));
     for (uint32_t layerValue : hiddenLayers)
-      _message << layerValue;
-    _message << topology.getOutputLayerSize();
+    {
+      _message.writeUint32(layerValue);
+    }
+    _message.writeUint32(topology.getOutputLayerSize());
 
     //
 
@@ -68,7 +78,7 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
   gero::messaging::MessageView receivedMsg(dataPointer, dataSize);
 
   int8_t messageType = 0;
-  receivedMsg >> messageType;
+  receivedMsg.readInt8(messageType);
 
   switch (Messages::FromConsumer(messageType)) {
   case Messages::FromConsumer::WebWorkerLoaded: {
@@ -79,29 +89,32 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
   case Messages::FromConsumer::SimulationResult: {
 
-    receivedMsg >> _coreState.delta;
+    receivedMsg.readUint32(_coreState.delta);
 
     //
 
-    receivedMsg >> _isReadyToAddMoreCars;
-    receivedMsg >> _maxDuration;
+    receivedMsg.readInt32(_currSizeDurations);
+    receivedMsg.readInt32(_maxSizeDurations);
+    receivedMsg.readInt32(_averageDuration);
+    receivedMsg.readInt32(_maxDuration);
 
     //
 
-    receivedMsg >> _coreState.genomesAlive;
+    receivedMsg.readUint32(_coreState.genomesAlive);
 
     //
 
     uint32_t totalAgents = 0;
-    receivedMsg >> totalAgents;
+    receivedMsg.readUint32(totalAgents);
 
     for (uint32_t ii = 0; ii < totalAgents; ++ii) {
+
       //
       // core data
 
       uint64_t dataIndex = 0;
 
-      receivedMsg >> dataIndex;
+      receivedMsg.readUint64(dataIndex);
 
       auto it = _agentsDataMap.find(dataIndex);
       if (it == _agentsDataMap.end())
@@ -112,9 +125,12 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
       const bool carWasAlive = currData.isAlive;
 
-      receivedMsg >> currData.isAlive >> currData.isDying;
-      receivedMsg >> currData.life >> currData.fitness;
-      receivedMsg >> currData.totalUpdates >> currData.groundIndex;
+      receivedMsg.readBoolean(currData.isAlive);
+      receivedMsg.readBoolean(currData.isDying);
+      receivedMsg.readFloat(currData.life);
+      receivedMsg.readFloat(currData.fitness);
+      receivedMsg.readUint32(currData.totalUpdates);
+      receivedMsg.readInt32(currData.groundIndex);
 
       if (carWasAlive && !currData.isAlive) {
         _currentLiveAgents -= 1;
@@ -124,18 +140,18 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
       // transform history
 
       int32_t totalHistory = 0;
-      receivedMsg >> totalHistory;
+      receivedMsg.readInt32(totalHistory);
 
       currData.latestTransformsHistory.clear();
       currData.latestTransformsHistory.reserve(totalHistory);
 
       CarData::CarTransform newData;
       for (int32_t jj = 0; jj < totalHistory; ++jj) {
-        receivedMsg >> newData.chassis.position;
-        receivedMsg >> newData.chassis.orientation;
+        receivedMsg.readVec3(newData.chassis.position);
+        receivedMsg.readQuat(newData.chassis.orientation);
         for (auto& currWheel : newData.wheels) {
-          receivedMsg >> currWheel.position;
-          receivedMsg >> currWheel.orientation;
+          receivedMsg.readVec3(currWheel.position);
+          receivedMsg.readQuat(currWheel.orientation);
         }
 
         currData.latestTransformsHistory.push_back(newData);
@@ -155,33 +171,40 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
       //
       // spatial data
 
-      receivedMsg >> currData.liveTransforms.chassis.position;
-      receivedMsg >> currData.liveTransforms.chassis.orientation;
+      receivedMsg.readVec3(currData.liveTransforms.chassis.position);
+      receivedMsg.readQuat(currData.liveTransforms.chassis.orientation);
       for (auto& wheelTransform : currData.liveTransforms.wheels) {
-        receivedMsg >> wheelTransform.position;
-        receivedMsg >> wheelTransform.orientation;
+        receivedMsg.readVec3(wheelTransform.position);
+        receivedMsg.readQuat(wheelTransform.orientation);
       }
 
-      receivedMsg >> currData.velocity;
+      receivedMsg.readVec3(currData.velocity);
 
       //
       // sensor data
 
-      for (auto& sensor : currData.eyeSensors)
-        receivedMsg >> sensor.near >> sensor.far >> sensor.value;
+      for (auto& sensor : currData.eyeSensors) {
+        receivedMsg.readVec3(sensor.near);
+        receivedMsg.readVec3(sensor.far);
+        receivedMsg.readFloat(sensor.value);
+      }
 
       auto& gSensor = currData.groundSensor;
-      receivedMsg >> gSensor.near >> gSensor.far >> gSensor.value;
+      receivedMsg.readVec3(gSensor.near);
+      receivedMsg.readVec3(gSensor.far);
+      receivedMsg.readFloat(gSensor.value);
 
       //
       // neural network data
 
       int32_t totalNeuronsValues;
-      receivedMsg >> totalNeuronsValues;
+      receivedMsg.readInt32(totalNeuronsValues);
+
       currData.neuronsValues.clear();
       currData.neuronsValues.resize(totalNeuronsValues);
-      for (int32_t jj = 0; jj < totalNeuronsValues; ++jj)
-        receivedMsg >> currData.neuronsValues.at(jj);
+      for (int32_t jj = 0; jj < totalNeuronsValues; ++jj) {
+        receivedMsg.readFloat(currData.neuronsValues.at(jj));
+      }
     }
 
     _flags[gero::asValue(Status::Updated)] = true;
@@ -213,9 +236,9 @@ WorkerProducer::resetAndProcessSimulation(
   // const NeuralNetworks& neuralNetworks
 ) {
   _message.clear();
-  _message << int8_t(Messages::FromProducer::ResetAndProcessSimulation);
-  _message << elapsedTime;
-  _message << totalSteps;
+  _message.writeInt8(int8_t(Messages::FromProducer::ResetAndProcessSimulation));
+  _message.writeFloat(elapsedTime);
+  _message.writeUint32(totalSteps);
 
   _fillMessageWithAgentToAdd();
 
@@ -225,9 +248,9 @@ WorkerProducer::resetAndProcessSimulation(
 void
 WorkerProducer::processSimulation(float elapsedTime, uint32_t totalSteps) {
   _message.clear();
-  _message << int8_t(Messages::FromProducer::ProcessSimulation);
-  _message << elapsedTime;
-  _message << totalSteps;
+  _message.writeInt8(int8_t(Messages::FromProducer::ProcessSimulation));
+  _message.writeFloat(elapsedTime);
+  _message.writeUint32(totalSteps);
 
   _fillMessageWithAgentToAdd();
 
@@ -237,10 +260,11 @@ WorkerProducer::processSimulation(float elapsedTime, uint32_t totalSteps) {
 void
 WorkerProducer::_fillMessageWithAgentToAdd() {
   const uint32_t totalAgentsToAdd = _waitingAgentsData.size();
-  _message << totalAgentsToAdd;
+
+  _message.writeUint32(totalAgentsToAdd);
 
   for (const auto currAgent : _waitingAgentsData) {
-    _message << currAgent->dataIndex;
+    _message.writeUint32(currAgent->dataIndex);
 
     const auto& weights = currAgent->connectionsWeights;
     _message.append(weights.data(), weights.size() * sizeof(float));
@@ -301,11 +325,6 @@ WorkerProducer::isUpdated() const {
   return _flags[gero::asValue(Status::Updated)];
 }
 
-// const AllCarsData&
-// WorkerProducer::getCarsData() const {
-//   return _allAgentsData;
-// }
-
 const CarData&
 WorkerProducer::getCarDataByDataIndex(uint32_t inDataIndex) const {
   auto it = _agentsDataMap.find(inDataIndex);
@@ -340,12 +359,27 @@ WorkerProducer::getWaitingAgents() const {
   return uint32_t(_waitingAgentsData.size());
 }
 
-bool
-WorkerProducer::isReadyToAddMoreCars() const {
-  return _isReadyToAddMoreCars;
+int32_t WorkerProducer::getCurrSizeDuration() const
+{
+  return _currSizeDurations;
+}
+int32_t WorkerProducer::getMaxSizeDuration() const
+{
+  return _maxSizeDurations;
+}
+int32_t WorkerProducer::getAverageDuration() const
+{
+  return _averageDuration;
+}
+int32_t WorkerProducer::getMaxDuration() const
+{
+  return _maxDuration;
 }
 
-int32_t
-WorkerProducer::getMaxDuration() const {
-  return _maxDuration;
+void WorkerProducer::resetDurations()
+{
+  _currSizeDurations = 0;
+  _maxSizeDurations = 0;
+  _averageDuration = 0;
+  _maxDuration = 0;
 }

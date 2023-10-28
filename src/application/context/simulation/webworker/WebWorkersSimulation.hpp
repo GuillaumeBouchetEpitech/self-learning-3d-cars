@@ -44,7 +44,6 @@ private:
     AbstractSimulation::SimpleCallback onWorkersReady;
     AbstractSimulation::SimpleCallback onGenerationReset;
     AbstractSimulation::SimpleCallback onGenerationStep;
-    AbstractSimulation::GenomeDieCallback onGenomeDie;
     AbstractSimulation::GenerationEndCallback onGenerationEnd;
   } _callbacks;
 
@@ -75,7 +74,6 @@ public:
   void setOnWorkersReadyCallback(AbstractSimulation::SimpleCallback callback) override;
   void setOnGenerationResetCallback(AbstractSimulation::SimpleCallback callback) override;
   void setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) override;
-  void setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) override;
   void setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) override;
 
 public:
@@ -89,5 +87,4 @@ public:
 public:
   uint32_t getGenerationNumber() const override;
   const glm::vec3& getStartPosition() const override;
-  const GeneticAlgorithm& getGeneticAlgorithm() const override;
 };

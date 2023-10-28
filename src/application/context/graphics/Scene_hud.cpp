@@ -21,27 +21,30 @@ void
 Scene::_renderHUD_ortho() {
 
   auto& graphic = Context::get().graphic;
-  auto& stackRenderers = graphic.hud.stackRenderers;
-  auto& textRenderer = graphic.hud.textRenderer;
-  const auto& vSize = graphic.cameraData.viewportSize;
+
+  auto& hudRenderer = graphic.renderer.getHudRenderer();
+  auto& stackRenderers = hudRenderer.getStackRenderers();
+  auto& textRenderer = hudRenderer.getTextRenderer();
+  auto& widgets = hudRenderer.getWidgets();
+  const glm::vec2 vSize = glm::vec2(hudRenderer.getCamera().getSize());
 
   textRenderer.clear();
 
   {
     NewLeaderRenderer newLeaderRndr;
-    newLeaderRndr.compute();
+    newLeaderRndr.compute(graphic.renderer.getSceneRenderer().getCamera());
 
     newLeaderRndr.renderHudText();
-    graphic.hud.widgets.fitnessDataRenderer.renderHudText();
-    graphic.hud.widgets.coreUsageRenderer.renderHudText();
+    widgets.fitnessDataRenderer.renderHudText();
+    widgets.coreUsageRenderer.renderHudText();
 
     newLeaderRndr.renderWireFrame();
-    graphic.hud.widgets.informationTextRenderer.render();
-    graphic.hud.widgets.coreUsageRenderer.renderWireFrame();
-    graphic.hud.widgets.fitnessDataRenderer.renderWireFrame();
-    graphic.hud.widgets.topologyRenderer.render();
-    graphic.hud.widgets.leaderEyeRenderer.render();
-    graphic.hud.widgets.screenTitles.render();
+    widgets.informationTextRenderer.render();
+    widgets.coreUsageRenderer.renderWireFrame();
+    widgets.fitnessDataRenderer.renderWireFrame();
+    widgets.topologyRenderer.render();
+    widgets.leaderEyeRenderer.render();
+    widgets.screenTitles.render();
 
   } // wireFrames
 
@@ -115,12 +118,13 @@ void
 Scene::_renderHUD() {
   auto& context = Context::get();
   auto& graphic = context.graphic;
+  auto& hudRenderer = graphic.renderer.getHudRenderer();
 
   GlContext::enable(States::depthTest);
   GlContext::disable(States::cullFace);
 
-  graphic.hud.postProcess.render();
+  hudRenderer.getPostProcess().render();
 
   Scene::_renderHUD_ortho();
-  graphic.hud.widgets.thirdPersonCamera.render();
+  hudRenderer.getWidgets().thirdPersonCamera.render();
 }

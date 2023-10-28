@@ -75,26 +75,27 @@ Context::_initializeSimulationCallbacks() {
     } // handle the core data
   });
 
-  logic.simulation->setOnGenomeDieCallback([this](unsigned int genomeIndex) -> void {
-    const auto& carData = logic.carDataFrameHandler.getAllCarsData().at(genomeIndex);
-
-    const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
-    const auto& chassis = carData.liveTransforms.chassis;
-    glm::vec3 carPos = chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
-
-    graphic.scene.particleManager.emitParticles(carPos, carData.velocity);
-  });
-
   logic.simulation->setOnGenerationEndCallback([this](bool isSmarter) -> void {
     logic.fitnessStats.update(logic.simulation->getBestGenome().getFitness());
 
     logic.carDataFrameHandler.discardAll();
 
     if (isSmarter)
-      graphic.scene.carTailsRenderer.updateLatestTrail();
+      graphic.renderer.getSceneRenderer().getCarTailsRenderer().updateLatestTrail();
 
     StateManager::get()->changeState(StateManager::States::EndGeneration);
 
     logic.leaderCar.reset();
   });
+
+  logic.carDataFrameHandler.setOnGenomeDieCallback([this](const CarData& deadCarData)
+  {
+    const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
+    const auto& chassis = deadCarData.liveTransforms.chassis;
+    const glm::vec3 carPos = chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
+
+    graphic.renderer.getSceneRenderer().getParticleManager().emitParticles(carPos, deadCarData.velocity);
+  });
+
+
 }

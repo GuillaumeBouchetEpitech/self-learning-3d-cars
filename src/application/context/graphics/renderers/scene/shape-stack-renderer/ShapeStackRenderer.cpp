@@ -41,6 +41,11 @@ ShapeStackRenderer::initialize() {
   }
 }
 
+void ShapeStackRenderer::setCamera(const gero::graphics::ICamera* inCamera)
+{
+  _camera = inCamera;
+}
+
 void
 ShapeStackRenderer::pushSphere(const GeometriesStackRenderer::GeometryInstance& instance) {
   _geometriesStackRenderer.pushAlias(2222, instance);
@@ -56,6 +61,9 @@ ShapeStackRenderer::pushBox(const GeometriesStackRenderer::GeometryInstance& ins
 }
 
 void
-ShapeStackRenderer::render(const gero::graphics::Camera& inCamera) {
-  _geometriesStackRenderer.renderAll(inCamera);
+ShapeStackRenderer::render() {
+  if (!_camera) {
+    return;
+  }
+  _geometriesStackRenderer.renderAll(*_camera);
 }

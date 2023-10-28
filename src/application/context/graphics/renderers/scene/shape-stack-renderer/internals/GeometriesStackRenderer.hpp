@@ -24,7 +24,7 @@ public:
   using InstanceVertices = std::vector<GeometryInstance>;
 
 private:
-  std::shared_ptr<gero::graphics::ShaderProgram> _shader = nullptr;
+  std::shared_ptr<gero::graphics::IUnboundShaderProgram> _shader = nullptr;
   gero::graphics::Camera::MatricesData _matricesData;
 
   gero::graphics::Geometry::Definition _geoDef;
@@ -53,5 +53,5 @@ public:
 
 public:
   void clearAll();
-  void renderAll(const gero::graphics::Camera& inCamera);
+  void renderAll(const gero::graphics::ICamera& inCamera);
 };

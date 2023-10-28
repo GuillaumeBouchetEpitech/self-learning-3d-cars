@@ -39,7 +39,7 @@ private: // attributes
   Sensors _eyeSensors;
   Sensor _groundSensor;
 
-  int _groundIndex;
+  int32_t _groundIndex;
   bool _isDying;
 
   NeuralNetworkOutput _output;
@@ -66,7 +66,7 @@ public: // setter(s)/getter(s)
   float getFitness() const;
   bool isAlive() const;
   bool isDying() const;
-  int getGroundIndex() const;
+  int32_t getGroundIndex() const;
   const NeuralNetworkOutput& getNeuralNetworkOutput() const;
   const gero::physics::BodyWeakRef getBody() const;
   const gero::physics::VehicleWeakRef getVehicle() const;

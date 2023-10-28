@@ -4,9 +4,9 @@
 #include "StateManager.hpp"
 #include "State_AbstractSimulation.hpp"
 
-#include "application/context/helpers/inputManagers/KeyboardManager.hpp"
-#include "application/context/helpers/inputManagers/MouseManager.hpp"
-#include "application/context/helpers/inputManagers/TouchManager.hpp"
+#include "geronimo/graphics/input-managers/KeyboardManager.hpp"
+#include "geronimo/graphics/input-managers/MouseManager.hpp"
+#include "geronimo/graphics/input-managers/TouchManager.hpp"
 
 #include "application/context/Context.hpp"
 #include "application/context/graphics/Scene.hpp"
@@ -73,7 +73,7 @@ State_AbstractSimulation::handleEvent(const SDL_Event& event) {
   }
 
   case SDL_FINGERDOWN: {
-    const glm::vec2 vSize = glm::vec2(context.graphic.cameraData.viewportSize);
+    const glm::vec2 vSize = glm::vec2(context.graphic.renderer.getHudRenderer().getCamera().getSize());
     const glm::vec2 currPos = glm::vec2(event.tfinger.x, event.tfinger.y) * vSize;
     touch.updateAsTouchedDown(int32_t(event.tfinger.fingerId), currPos);
     break;
@@ -83,7 +83,7 @@ State_AbstractSimulation::handleEvent(const SDL_Event& event) {
     break;
   }
   case SDL_FINGERMOTION: {
-    const glm::vec2 vSize = glm::vec2(context.graphic.cameraData.viewportSize);
+    const glm::vec2 vSize = glm::vec2(context.graphic.renderer.getHudRenderer().getCamera().getSize());
     const glm::vec2 currPos = glm::vec2(event.tfinger.x, event.tfinger.y) * vSize;
     const glm::vec2 currDelta = glm::vec2(event.tfinger.dx, event.tfinger.dy) * vSize;
     touch.updateAsTouchedMotion(int32_t(event.tfinger.fingerId), currPos, currDelta);
@@ -168,20 +168,7 @@ State_AbstractSimulation::render(const SDL_Window& window) {
 
 void
 State_AbstractSimulation::resize(int width, int height) {
-  auto& graphic = Context::get().graphic;
-
-  const glm::vec2 newSize(width, height);
-
-  graphic.cameraData.viewportSize = newSize;
-
-  graphic.hud.postProcess.resize({width, height});
-  graphic.hud.postProcess.setGeometry(glm::vec2(0, 0), newSize, -2.0f);
-
-  graphic.hud.widgets.topologyRenderer.resize();
-  graphic.hud.widgets.thirdPersonCamera.resize();
-  graphic.hud.widgets.coreUsageRenderer.resize();
-  graphic.hud.widgets.fitnessDataRenderer.resize();
-  graphic.hud.widgets.leaderEyeRenderer.resize();
+  Context::get().graphic.renderer.resize(width, height);
 }
 
 void
@@ -200,18 +187,21 @@ State_AbstractSimulation::visibility(bool visible) {
 void
 State_AbstractSimulation::_updateCommonLogic(float elapsedTime) {
   auto& graphic = Context::get().graphic;
+  auto& sceneRenderer = graphic.renderer.getSceneRenderer();
+  auto& hudRenderer = graphic.renderer.getHudRenderer();
 
-  graphic.scene.particleManager.update(elapsedTime);
-  graphic.scene.backGroundTorusRenderer.update(elapsedTime);
-  graphic.scene.flockingManager->update(elapsedTime);
+  sceneRenderer.getParticleManager().update(elapsedTime);
+  sceneRenderer.getBackGroundTorusRenderer().update(elapsedTime);
+  sceneRenderer.getFlockingManager().update(elapsedTime);
 
-  graphic.hud.widgets.screenTitles.update(elapsedTime);
-  graphic.hud.widgets.topologyRenderer.update(elapsedTime);
-  graphic.hud.widgets.thirdPersonCamera.update(elapsedTime);
-  graphic.hud.widgets.coreUsageRenderer.update(elapsedTime);
-  graphic.hud.widgets.fitnessDataRenderer.update(elapsedTime);
-  graphic.hud.widgets.informationTextRenderer.update(elapsedTime);
-  graphic.hud.widgets.leaderEyeRenderer.update(elapsedTime);
+  auto& widgets = hudRenderer.getWidgets();
+  widgets.screenTitles.update(elapsedTime);
+  widgets.topologyRenderer.update(elapsedTime);
+  widgets.thirdPersonCamera.update(elapsedTime);
+  widgets.coreUsageRenderer.update(elapsedTime);
+  widgets.fitnessDataRenderer.update(elapsedTime);
+  widgets.informationTextRenderer.update(elapsedTime);
+  widgets.leaderEyeRenderer.update(elapsedTime);
 }
 
 void
@@ -253,11 +243,12 @@ State_AbstractSimulation::_updateCameraTracking(float elapsedTime) {
   {
     constexpr float k_maxDistance = 200.0f;
     const float distanceToTarget = glm::distance(cameraNextCenter, cameraData.center);
-    const float moveLerpRatio = gero::easing::GenericEasing<2>()
-                                  .push(0.0f, 3.0f, gero::easing::easeInOutCubic)
-                                  .push(1.0f, 1.0f)
-                                  .get(distanceToTarget / k_maxDistance) *
-                                elapsedTime;
+
+    auto moveEasing = gero::easing::GenericEasing<2>();
+    moveEasing.push(0.0f, 3.0f, gero::easing::easeInOutCubic);
+    moveEasing.push(1.0f, 1.0f);
+
+    const float moveLerpRatio = moveEasing.get(distanceToTarget / k_maxDistance) * elapsedTime;
 
     cameraData.center += (cameraNextCenter - cameraData.center) * moveLerpRatio;
     cameraData.distance += (cameraNextDistance - cameraData.distance) * 1.0f * elapsedTime;

@@ -21,14 +21,14 @@ State_StartGeneration::enter() {
   } else {
     _timer.start(1.5f);
   }
-  context.graphic.hud.widgets.screenTitles.fadeIn(0.0f, 0.75f);
+  context.graphic.renderer.getHudRenderer().getWidgets().screenTitles.fadeIn(0.0f, 0.75f);
 }
 
 void
 State_StartGeneration::leave() {
-  auto& graphic = Context::get().graphic;
-  graphic.hud.widgets.screenTitles.fadeOut(0.0f, 0.5f);
-  graphic.scene.modelsRenderer.fadeIn(0.25f, 1.0f);
+  auto& renderer = Context::get().graphic.renderer;
+  renderer.getHudRenderer().getWidgets().screenTitles.fadeOut(0.0f, 0.5f);
+  renderer.getSceneRenderer().getModelsRenderer().fadeIn(0.25f, 1.0f);
 }
 
 void
@@ -38,8 +38,7 @@ State_StartGeneration::update(float elapsedTime) {
   _updateCommonLogic(elapsedTime);
   _updateCameraTracking(elapsedTime);
 
-  auto& scene = Context::get().graphic.scene;
-  scene.animatedCircuitRenderer.update(elapsedTime * 0.25f);
+  Context::get().graphic.renderer.getSceneRenderer().getAnimatedCircuitRenderer().update(elapsedTime * 0.25f);
 
   _timer.update(elapsedTime);
   if (_timer.isDone()) {

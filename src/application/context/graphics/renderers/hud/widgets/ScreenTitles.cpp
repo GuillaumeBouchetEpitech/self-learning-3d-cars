@@ -42,16 +42,21 @@ ScreenTitles::fadeIn(float delay, float duration) {
   constexpr float step2 = 0.50f;
   constexpr float step3 = 0.75f;
 
-  _backgroundEasing = gero::easing::GenericEasing<2>().push(0.00f, _backgroundAlpha).push(step1, 1.0f);
+  _backgroundEasing = gero::easing::GenericEasing<2>();
+  _backgroundEasing.push(0.00f, _backgroundAlpha);
+  _backgroundEasing.push(step1, 1.0f);
 
-  _mainTitleAlphaEasing =
-    gero::easing::GenericEasing<2>().push(step1, _mainTitleAlpha, gero::easing::easeOutCubic).push(step2, 1.0f);
+  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _mainTitleAlphaEasing.push(step1, _mainTitleAlpha, gero::easing::easeOutCubic);
+  _mainTitleAlphaEasing.push(step2, 1.0f);
 
-  _fitnessTitleAlphaEasing =
-    gero::easing::GenericEasing<2>().push(step2, _fitnessTitleAlpha, gero::easing::easeOutCubic).push(step3, 1.0f);
+  _fitnessTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _fitnessTitleAlphaEasing.push(step2, _fitnessTitleAlpha, gero::easing::easeOutCubic);
+  _fitnessTitleAlphaEasing.push(step3, 1.0f);
 
-  _commentTitleAlphaEasing =
-    gero::easing::GenericEasing<2>().push(step3, _commentTitleAlpha, gero::easing::easeOutCubic).push(1.00f, 1.0f);
+  _commentTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _commentTitleAlphaEasing.push(step3, _commentTitleAlpha, gero::easing::easeOutCubic);
+  _commentTitleAlphaEasing.push(1.00f, 1.0f);
 
   //
   //
@@ -62,11 +67,17 @@ ScreenTitles::fadeIn(float delay, float duration) {
   constexpr float k_minVal = 0.0f - k_timeAnimDivider;
   constexpr float k_maxVal = 1.0f + k_timeAnimDivider;
 
-  _mainTitleAnimEasing = gero::easing::GenericEasing<2>().push(step1, k_minVal).push(1.0f, k_maxVal);
+  _mainTitleAnimEasing = gero::easing::GenericEasing<2>();
+  _mainTitleAnimEasing.push(step1, k_minVal);
+  _mainTitleAnimEasing.push(1.0f, k_maxVal);
 
-  _fitnessTitleAnimEasing = gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
+  _fitnessTitleAnimEasing = gero::easing::GenericEasing<2>();
+  _fitnessTitleAnimEasing.push(step2, k_minVal);
+  _fitnessTitleAnimEasing.push(1.0f, k_maxVal);
 
-  _commentTitleAnimEasing = gero::easing::GenericEasing<2>().push(step2, k_minVal).push(1.0f, k_maxVal);
+  _commentTitleAnimEasing = gero::easing::GenericEasing<2>();
+  _commentTitleAnimEasing.push(step2, k_minVal);
+  _commentTitleAnimEasing.push(1.0f, k_maxVal);
 
   //
   //
@@ -81,16 +92,21 @@ ScreenTitles::fadeOut(float delay, float duration) {
   constexpr float step2 = 0.4f;
   constexpr float step3 = 0.6f;
 
-  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>().push(0.00f, _mainTitleAlpha).push(step1, 0.0f);
+  _mainTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _mainTitleAlphaEasing.push(0.00f, _mainTitleAlpha);
+  _mainTitleAlphaEasing.push(step1, 0.0f);
 
-  _fitnessTitleAlphaEasing =
-    gero::easing::GenericEasing<2>().push(step1, _fitnessTitleAlpha, gero::easing::easeInCubic).push(step2, 0.0f);
+  _fitnessTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _fitnessTitleAlphaEasing.push(step1, _fitnessTitleAlpha, gero::easing::easeInCubic);
+  _fitnessTitleAlphaEasing.push(step2, 0.0f);
 
-  _commentTitleAlphaEasing =
-    gero::easing::GenericEasing<2>().push(step2, _commentTitleAlpha, gero::easing::easeInCubic).push(step3, 0.0f);
+  _commentTitleAlphaEasing = gero::easing::GenericEasing<2>();
+  _commentTitleAlphaEasing.push(step2, _commentTitleAlpha, gero::easing::easeInCubic);
+  _commentTitleAlphaEasing.push(step3, 0.0f);
 
-  _backgroundEasing =
-    gero::easing::GenericEasing<2>().push(step3, _backgroundAlpha, gero::easing::easeInCubic).push(1.00f, 0.0f);
+  _backgroundEasing = gero::easing::GenericEasing<2>();
+  _backgroundEasing.push(step3, _backgroundAlpha, gero::easing::easeInCubic);
+  _backgroundEasing.push(1.00f, 0.0f);
 }
 
 void
@@ -114,13 +130,14 @@ ScreenTitles::update(float elapsedTime) {
 void
 ScreenTitles::render() {
   auto& context = Context::get();
-  auto& graphic = context.graphic;
-  auto& textRenderer = graphic.hud.textRenderer;
-  auto& vSize = graphic.cameraData.viewportSize;
+  auto& renderer = context.graphic.renderer;
+  auto& textRenderer = renderer.getHudRenderer().getTextRenderer();
+  auto& stackRenderers = renderer.getHudRenderer().getStackRenderers();
+  const glm::vec2 vSize = glm::vec2(renderer.getHudRenderer().getCamera().getSize());
 
   if (_backgroundAlpha > 0.0f) {
 
-    graphic.hud.stackRenderers.getTrianglesStack().pushQuad(
+    stackRenderers.getTrianglesStack().pushQuad(
       glm::vec2(vSize * 0.5f), vSize, glm::vec4(0, 0, 0, _backgroundAlpha * 0.5f), 0.4f);
   }
 

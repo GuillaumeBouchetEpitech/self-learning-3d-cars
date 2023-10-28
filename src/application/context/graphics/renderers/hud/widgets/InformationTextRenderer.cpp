@@ -6,7 +6,7 @@
 #include "application/context/graphics/renderers/hud/helpers/renderProgressBar.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/renderTextBackground.hpp"
 #include "geronimo/graphics/advanced-concept/widgets/helpers/writeTime.hpp"
-#include "geronimo/graphics/advanced-concept/widgets/renderPerformanceProfilerMetrics.hpp"
+#include "geronimo/graphics/advanced-concept/widgets/renderHistoricalTimeData.hpp"
 
 #include "geronimo/system/easing/easingFunctions.hpp"
 
@@ -16,14 +16,18 @@ void
 InformationTextRenderer::fadeIn(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeOutCubic).push(1.0f, 1.0f);
+  _alphaEasing = gero::easing::GenericEasing<2>();
+  _alphaEasing.push(0.0f, _alpha, gero::easing::easeOutCubic);
+  _alphaEasing.push(1.0f, 1.0f);
 }
 
 void
 InformationTextRenderer::fadeOut(float delay, float duration) {
   _timer.start(delay, duration);
 
-  _alphaEasing = gero::easing::GenericEasing<2>().push(0.0f, _alpha, gero::easing::easeInCubic).push(1.0f, 0.0f);
+  _alphaEasing = gero::easing::GenericEasing<2>();
+  _alphaEasing.push(0.0f, _alpha, gero::easing::easeInCubic);
+  _alphaEasing.push(1.0f, 0.0f);
 }
 
 void
@@ -38,10 +42,11 @@ void
 InformationTextRenderer::render() {
   auto& context = Context::get();
   auto& logic = context.logic;
-  auto& graphic = context.graphic;
-  auto& textRenderer = graphic.hud.textRenderer;
-  auto& vSize = graphic.cameraData.viewportSize;
-  // auto& stackRenderers = graphic.hud.stackRenderers;
+
+  auto& hudRenderer = context.graphic.renderer.getHudRenderer();
+  auto& stackRenderers = hudRenderer.getStackRenderers();
+  auto& textRenderer = hudRenderer.getTextRenderer();
+  const glm::vec2 vSize = glm::vec2(hudRenderer.getCamera().getSize());
 
   const glm::vec4 textColor = glm::vec4(0.8f, 0.8f, 0.8f, _alpha);
   const glm::vec4 textOutlineColor = glm::vec4(0.2f, 0.2f, 0.2f, _alpha);
@@ -83,13 +88,13 @@ InformationTextRenderer::render() {
 
     gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
-      graphic.hud.stackRenderers, textRenderer);
+      stackRenderers, textRenderer);
 
     textRenderer.pushText(textPos2, logic.hudText.headerType);
 
     gero::graphics::helpers::renderTextBackground(
       k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f, 6.0f,
-      graphic.hud.stackRenderers, textRenderer);
+      stackRenderers, textRenderer);
 
   } // top-center header text
 
@@ -98,16 +103,11 @@ InformationTextRenderer::render() {
     if (auto timeDataRef = performanceProfiler.tryGetTimeData("Complete Frame")) {
       const auto& timeData = timeDataRef->get();
 
-      auto& stackRenderers = graphic.hud.stackRenderers;
-
-      const glm::vec2 k_size = glm::vec2(120, 50);
+      const glm::vec2 k_size = glm::vec2(160, 50);
       const glm::vec3 k_pos = glm::vec3(5, vSize.y - 70.0f, 0.5f);
 
       gero::graphics::widgets::renderHistoricalTimeData(
-        k_pos, k_size, true, timeData, stackRenderers, graphic.hud.textRenderer);
-
-      // graphic.stackRenderers.flush();
-      // graphic.hud.textRenderer.render();
+        k_pos, k_size, true, timeData, stackRenderers, textRenderer);
     }
   }
 
@@ -140,7 +140,7 @@ InformationTextRenderer::render() {
 
       gero::graphics::helpers::renderTextBackground(
         k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha * 0.75f), glm::vec4(0.3f, 0.3f, 0.3f, _alpha * 0.75f), 3.0f,
-        6.0f, graphic.hud.stackRenderers, textRenderer);
+        6.0f, stackRenderers, textRenderer);
     }
 
     helpers::renderProgressBar(
@@ -213,7 +213,7 @@ InformationTextRenderer::render() {
 
     auto& timeDataMap = performanceProfiler.getTimeDataMap();
 
-    auto it = timeDataMap.find("Frame");
+    auto it = timeDataMap.find("Complete Frame");
     if (it != timeDataMap.end()) {
 
       auto& timeData = it->second;

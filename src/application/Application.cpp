@@ -1,9 +1,9 @@
 
 #include "Application.hpp"
 
-#include "application/context/helpers/inputManagers/KeyboardManager.hpp"
-#include "application/context/helpers/inputManagers/MouseManager.hpp"
-#include "application/context/helpers/inputManagers/TouchManager.hpp"
+#include "geronimo/graphics/input-managers/KeyboardManager.hpp"
+#include "geronimo/graphics/input-managers/MouseManager.hpp"
+#include "geronimo/graphics/input-managers/TouchManager.hpp"
 
 #include "application/context/Context.hpp"
 #include "application/context/graphics/Scene.hpp"
@@ -77,9 +77,6 @@ Application::_onRender(const SDL_Window& screen) {
   StateManager::get()->render(screen);
 
   perfProfiler.stop("Render");
-
-  perfProfiler.stop("Frame");
-  perfProfiler.start("Frame");
 }
 
 void

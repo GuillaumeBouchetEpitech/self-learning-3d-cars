@@ -17,8 +17,7 @@ State_EndGeneration::update(float elapsedTime) {
 
   _updateCommonLogic(elapsedTime);
 
-  auto& scene = Context::get().graphic.scene;
-  scene.animatedCircuitRenderer.update(elapsedTime * 0.25f);
+  Context::get().graphic.renderer.getSceneRenderer().getAnimatedCircuitRenderer().update(elapsedTime * 0.25f);
 
   _timer.update(elapsedTime);
   if (_timer.isDone()) {

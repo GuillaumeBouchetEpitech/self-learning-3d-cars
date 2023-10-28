@@ -20,7 +20,7 @@ constexpr float k_sizeX = 100.0f;
 void
 LeaderEyeRenderer::initialize() {
   auto& context = Context::get();
-  const auto& vSize = context.graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(context.graphic.renderer.getHudRenderer().getCamera().getSize());
 
   _position.x = vSize.x - k_sizeX + k_faceOutX;
   _position.y = 10;
@@ -33,11 +33,12 @@ LeaderEyeRenderer::fadeIn(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - k_sizeX + k_faceInX;
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeOutCubic).push(1.0f, targetPos);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeOutCubic);
+  _moveEasing.push(1.0f, targetPos);
 
   _isVisible = true;
 }
@@ -49,11 +50,12 @@ LeaderEyeRenderer::fadeOut(float delay, float duration) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
 
-  const auto& vSize = graphic.cameraData.viewportSize;
+  const glm::vec2 vSize = glm::vec2(graphic.renderer.getHudRenderer().getCamera().getSize());
   const float targetPos = vSize.x - k_sizeX + k_faceOutX;
 
-  _moveEasing =
-    gero::easing::GenericEasing<2>().push(0.0f, _position.x, gero::easing::easeInCubic).push(1.0f, targetPos);
+  _moveEasing = gero::easing::GenericEasing<2>();
+  _moveEasing.push(0.0f, _position.x, gero::easing::easeInCubic);
+  _moveEasing.push(1.0f, targetPos);
 
   _isVisible = false;
 }
@@ -97,7 +99,7 @@ LeaderEyeRenderer::render() {
   if (!logic.leaderCar.hasLeader())
     return;
 
-  auto& stackRenderers = context.graphic.hud.stackRenderers;
+  auto& stackRenderers = context.graphic.renderer.getHudRenderer().getStackRenderers();
 
   auto leaderData = logic.leaderCar.leaderData();
 

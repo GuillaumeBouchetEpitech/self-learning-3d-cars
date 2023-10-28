@@ -13,7 +13,7 @@ public:
   static void renderAll();
 
   static void updateMatrices();
-  static void renderScene(const gero::graphics::Camera& inCamera);
+  static void renderScene(const gero::graphics::ICamera& inCamera);
 
 private:
   static void _clear();

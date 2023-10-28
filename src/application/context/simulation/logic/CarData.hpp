@@ -37,8 +37,8 @@ public:
   bool isDying = false;
   float life = 0.0f;
   float fitness = 0.0f;
-  unsigned int totalUpdates = 0;
-  int groundIndex = -1;
+  uint32_t totalUpdates = 0;
+  int32_t groundIndex = -1;
 
   CarTransform liveTransforms;
 

@@ -160,5 +160,5 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   graphic.cameraData.center = {0, 0, 0};
   graphic.cameraData.distance = 200.0f;
 
-  graphic.scene.animatedCircuitRenderer.initialize(skeletonVertices, groundVertices, wallsVertices, maxUpperValue);
+  graphic.renderer.getSceneRenderer().getAnimatedCircuitRenderer().initialize(skeletonVertices, groundVertices, wallsVertices, maxUpperValue);
 }

@@ -92,13 +92,7 @@ WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
       continue;
 
     const auto& latestData = it->second->getCarDataByDataIndex(index);
-
     auto& oldData = _allCarsData.at(index);
-
-    if (oldData.isAlive && !latestData.isAlive) {
-      if (_callbacks.onGenomeDie)
-        _callbacks.onGenomeDie(index);
-    }
 
     oldData = latestData; // TODO: copy/realloc (-_-)
   }
@@ -158,8 +152,9 @@ WebWorkersSimulation::breed() {
 bool
 WebWorkersSimulation::isGenerationComplete() const {
 
-  if (!_carsDataIsUpToDate)
+  if (_currentAgentIndex < _def.totalGenomes || !_carsDataIsUpToDate) {
     return false;
+  }
 
   for (uint32_t ii = 0; ii < _def.totalGenomes; ++ii)
     if (getCarResult(ii).isAlive)
@@ -192,59 +187,34 @@ WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t tot
 
 void
 WebWorkersSimulation::_addNewAgents() {
-  while (_currentAgentIndex < _def.totalGenomes) {
 
-    // select consumer with fewer cars
 
-    std::size_t bestWorkerIndex = 0;
-    for (std::size_t ii = 1; ii < _workerProducers.size(); ++ii) {
-      const auto& bestState = _workerProducers.at(bestWorkerIndex);
-      const auto& currState = _workerProducers.at(ii);
+  for (std::size_t ii = 0; ii < _workerProducers.size(); ++ii) {
+    const auto& currWorker = _workerProducers.at(ii);
 
-      if (bestState->getTotalLiveAgents() < currState->getTotalLiveAgents())
-        continue;
-
-      bestWorkerIndex = ii;
+    if (
+      currWorker->getCurrSizeDuration() < currWorker->getMaxSizeDuration() ||
+      currWorker->getAverageDuration() > 4 ||
+      currWorker->getMaxDuration() > 6
+    ) {
+      continue;
     }
 
-    auto& bestWorkerData = *(_workerProducers.at(bestWorkerIndex));
-
-    if (bestWorkerData.getTotalLiveAgents() > 20) {
-      // this thread is already about to add more agents
-      if (bestWorkerData.getWaitingAgents() >= 5) {
-        // D_MYLOG("this thread is already about to add more agents");
+    int32_t carsToAddLeft = 10;
+    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes)
+    {
+      const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
+      if (currWorker->addNewAgent(_currentAgentIndex, currGenome) == false)
         break;
-      }
 
-      // not enough profiling data, not adding more cars
-      if (bestWorkerData.isReadyToAddMoreCars()) {
-        // D_MYLOG("not enough profiling data, not adding more cars");
-        break;
-      }
+      _agentsWorkerMap[_currentAgentIndex] = currWorker;
 
-      // simulation too slow, not adding more cars
-      if (bestWorkerData.getMaxDuration() >= 10) {
-        // D_MYLOG("simulation too slow, not adding more cars");
-        break;
-      }
+      //
+
+      _currentAgentIndex += 1;
     }
 
-    //
-    //
-    //
-
-    // make the car live
-
-    const auto& targetWorker = _workerProducers.at(bestWorkerIndex);
-    const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
-    if (targetWorker->addNewAgent(_currentAgentIndex, currGenome) == false)
-      break;
-
-    _agentsWorkerMap[_currentAgentIndex] = targetWorker;
-
-    //
-
-    _currentAgentIndex += 1;
+    currWorker->resetDurations();
   }
 }
 
@@ -281,11 +251,6 @@ WebWorkersSimulation::setOnGenerationResetCallback(AbstractSimulation::SimpleCal
 void
 WebWorkersSimulation::setOnGenerationStepCallback(AbstractSimulation::SimpleCallback callback) {
   _callbacks.onGenerationStep = callback;
-}
-
-void
-WebWorkersSimulation::setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) {
-  _callbacks.onGenomeDie = callback;
 }
 
 void
@@ -332,9 +297,4 @@ WebWorkersSimulation::getGenerationNumber() const {
 const glm::vec3&
 WebWorkersSimulation::getStartPosition() const {
   return _startPosition;
-}
-
-const GeneticAlgorithm&
-WebWorkersSimulation::getGeneticAlgorithm() const {
-  return _geneticAlgorithm;
 }

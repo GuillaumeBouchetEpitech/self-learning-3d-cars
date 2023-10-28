@@ -10617,21 +10617,7 @@ f 145 146 148 147
 f 90 88 150 148 146 144 142 140 138 136 134 132 130 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100 98 96 94 92
 f 147 148 150 149
 f 149 150 88 87
-f 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149
-float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
-{
-  normal = normalize(normal);
-  vec3 lightDir = normalize(lightPos - worldPos);
-
-  return max(dot(lightDir, normal), 0.0);
-}
-
-vec3 apply_quat_to_vec3(vec3 position, vec4 q)
-{
-  vec3 v = position.xyz;
-  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-}
-#version 300 es
+f 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149#version 300 es
 
 precision lowp float;
 
@@ -10722,7 +10708,13 @@ in float a_vertex_index;
 
 out vec4 v_color;
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
+float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  return max(dot(lightDir, normal), 0.0);
+}
 
 void main(void)
 {
@@ -10845,6 +10837,32 @@ void main(void)
 
 precision lowp float;
 
+uniform vec4 u_color;
+
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_outline;
+
+void main(void)
+{
+	out_color = u_color;
+  out_outline = vec4(0.0);
+}
+#version 300 es
+
+precision highp float;
+
+uniform mat4 u_composedMatrix;
+
+in vec3 a_vertex_position;
+
+void main(void)
+{
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
+}
+#version 300 es
+
+precision lowp float;
+
 uniform sampler2D u_texture;
 
 in vec2 v_texCoord;
@@ -10878,6 +10896,32 @@ void main(void)
 
 precision lowp float;
 
+uniform vec4 u_color;
+
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec4 out_outline;
+
+void main(void)
+{
+	out_color = u_color;
+  out_outline = vec4(0.0);
+}
+#version 300 es
+
+precision highp float;
+
+uniform mat4 u_composedMatrix;
+
+in vec3 a_vertex_position;
+
+void main(void)
+{
+	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
+}
+#version 300 es
+
+precision lowp float;
+
 uniform sampler2D u_texture;
 uniform vec3 u_lightPos;
 
@@ -10890,7 +10934,13 @@ in vec3 v_worldSpacePosition;
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
+float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  return max(dot(lightDir, normal), 0.0);
+}
 
 void main(void)
 {
@@ -10920,8 +10970,6 @@ out vec2 v_texCoord;
 out vec3 v_worldSpaceNormal;
 out vec3 v_worldSpacePosition;
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
-
 void main(void)
 {
 	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
@@ -10929,50 +10977,6 @@ void main(void)
 	v_texCoord = a_vertex_texCoord;
 	v_worldSpaceNormal = a_vertex_normal;
 	v_worldSpacePosition = a_vertex_position;
-}
-#version 300 es
-
-precision lowp float;
-
-flat in vec4 v_color;
-flat in float v_outlineValue;
-
-layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_outline;
-
-void main(void)
-{
-	out_color = v_color;
-	out_outline = vec4(v_outlineValue, 0.0, 0.0, v_outlineValue);
-}
-#version 300 es
-
-precision highp float;
-
-uniform mat4 u_composedMatrix;
-
-in vec3 a_vertex_position;
-
-in vec3 a_offset_position;
-in vec4 a_offset_orientation; // quaternion
-in vec3 a_offset_scale;
-in vec4 a_offset_color;
-in float a_offset_outlineValue;
-
-flat out vec4 v_color;
-flat out float v_outlineValue;
-
-#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
-
-void main(void)
-{
-	vec3 worldSpacePosition = a_offset_position;
-	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
-
-	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
-
-	v_color = a_offset_color;
-	v_outlineValue = a_offset_outlineValue;
 }
 #version 300 es
 
@@ -11025,9 +11029,19 @@ flat out vec3 v_offsetColor;
 out float v_colorMixValue;
 out float v_diffuseLightRatio;
 
-#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
+vec3 apply_quat_to_vec3(vec3 position, vec4 q)
+{
+  vec3 v = position.xyz;
+  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
 
-#include "assets/graphics/shaders/_common/apply-lighting.glsl.frag"
+float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
+{
+  normal = normalize(normal);
+  vec3 lightDir = normalize(lightPos - worldPos);
+
+  return max(dot(lightDir, normal), 0.0);
+}
 
 void main(void)
 {
@@ -11079,7 +11093,11 @@ in vec3 a_offset_color;
 
 out vec3 v_color;
 
-#include "./assets/graphics/shaders/_common/quat-rotations.glsl.vert"
+vec3 apply_quat_to_vec3(vec3 position, vec4 q)
+{
+  vec3 v = position.xyz;
+  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
 
 void main(void)
 {
@@ -11089,39 +11107,6 @@ void main(void)
 	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
 
 	v_color = a_vertex_color * a_offset_color;
-}
-#version 300 es
-
-precision lowp float;
-
-uniform sampler2D u_texture;
-
-in vec2 v_texCoord;
-
-layout(location = 0) out vec4 out_color;
-layout(location = 1) out vec4 out_outline;
-
-void main(void)
-{
-  out_color = texture(u_texture, v_texCoord);
-  out_outline = vec4(0.0);
-}
-#version 300 es
-
-precision highp float;
-
-uniform mat4 u_composedMatrix;
-
-in vec3 a_vertex_position;
-in vec2 a_vertex_texCoord;
-
-out vec2 v_texCoord;
-
-void main(void)
-{
-	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
-
-	v_texCoord = a_vertex_texCoord;
 }
 #version 300 es
 
@@ -11158,15 +11143,16 @@ void main(void)
 
 precision lowp float;
 
-uniform vec4 u_color;
+flat in vec4 v_color;
+flat in float v_outlineValue;
 
 layout(location = 0) out vec4 out_color;
 layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-	out_color = u_color;
-  out_outline = vec4(0.0);
+	out_color = v_color;
+	out_outline = vec4(v_outlineValue, 0.0, 0.0, v_outlineValue);
 }
 #version 300 es
 
@@ -11176,9 +11162,30 @@ uniform mat4 u_composedMatrix;
 
 in vec3 a_vertex_position;
 
+in vec3 a_offset_position;
+in vec4 a_offset_orientation; // quaternion
+in vec3 a_offset_scale;
+in vec4 a_offset_color;
+in float a_offset_outlineValue;
+
+flat out vec4 v_color;
+flat out float v_outlineValue;
+
+vec3 apply_quat_to_vec3(vec3 position, vec4 q)
+{
+  vec3 v = position.xyz;
+  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
+
 void main(void)
 {
-	gl_Position = u_composedMatrix * vec4(a_vertex_position, 1.0);
+	vec3 worldSpacePosition = a_offset_position;
+	worldSpacePosition += apply_quat_to_vec3(a_vertex_position * a_offset_scale, a_offset_orientation);
+
+	gl_Position = u_composedMatrix * vec4(worldSpacePosition, 1.0);
+
+	v_color = a_offset_color;
+	v_outlineValue = a_offset_outlineValue;
 }
 #version 300 es
 

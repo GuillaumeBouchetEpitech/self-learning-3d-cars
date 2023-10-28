@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include "application/context/simulation/logic/CarAgent.hpp"
-#include "application/context/simulation/logic/CarData.hpp"
-#include "application/context/simulation/logic/CircuitBuilder.hpp"
+#include "application/context/simulation/logic/SimulationProcess.hpp"
+
 #include "application/context/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
@@ -24,28 +23,11 @@
 class WorkerConsumer : public gero::NonCopyable {
 
 private:
-  struct AgentValues {
-    uint32_t dataIndex;
-    CarAgent carAgent;
-    NeuralNetwork neuralNet;
-    std::vector<CarData::CarTransform> transformsHistory;
-
-    AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology);
-  };
-
-private:
-  std::unique_ptr<gero::physics::PhysicWorld> _physicWorld;
-
-  std::vector<std::shared_ptr<AgentValues>> _allAgentValues;
-
-  NeuralNetworkTopology _neuralNetworkTopology;
-
   CircuitBuilder::StartTransform _startTransform;
-  CircuitBuilder _circuitBuilder;
 
   gero::messaging::MessageBuffer _messageToSend;
 
-  gero::metrics::HistoricalTimeData _historicalTimeData;
+  SimulationProcess _simulationProcess;
 
 public:
   WorkerConsumer() = default;
@@ -61,6 +43,4 @@ private:
   void _addNewCars(gero::messaging::MessageView& receivedMsg);
   void _processSimulation(float elapsedTime, uint32_t totalSteps);
 
-private:
-  void _resetPhysic();
 };

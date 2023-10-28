@@ -4,7 +4,8 @@
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
 
-#include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
+#include "basic-genetic-algorithm/Genome.hpp"
+#include "basic-genetic-algorithm/NeuralNetworkTopology.hpp"
 
 #include "geronimo/system/NonCopyable.hpp"
 
@@ -16,7 +17,6 @@
 class AbstractSimulation : public gero::NonCopyable {
 public:
   using SimpleCallback = std::function<void()>;
-  using GenomeDieCallback = std::function<void(uint32_t)>;
   using GenerationEndCallback = std::function<void(bool)>;
 
   struct Definition {
@@ -61,7 +61,6 @@ public:
 
   virtual void setOnGenerationResetCallback(SimpleCallback callback) = 0;
   virtual void setOnGenerationStepCallback(SimpleCallback callback) = 0;
-  virtual void setOnGenomeDieCallback(GenomeDieCallback callback) = 0;
   virtual void setOnGenerationEndCallback(GenerationEndCallback callback) = 0;
 
 public:
@@ -75,7 +74,6 @@ public:
 public:
   virtual uint32_t getGenerationNumber() const = 0;
   virtual const glm::vec3& getStartPosition() const = 0;
-  virtual const GeneticAlgorithm& getGeneticAlgorithm() const = 0;
 
 public:
   static std::unique_ptr<AbstractSimulation> create();

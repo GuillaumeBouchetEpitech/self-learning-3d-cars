@@ -14,22 +14,22 @@
 
 void
 State_Running::enter() {
-  auto& hud = Context::get().graphic.hud;
-  hud.widgets.topologyRenderer.fadeIn(0.5f, 0.5f);
-  hud.widgets.thirdPersonCamera.fadeIn(0.6f, 0.5f);
-  hud.widgets.coreUsageRenderer.fadeIn(0.7f, 0.5f);
-  hud.widgets.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
-  hud.widgets.informationTextRenderer.fadeIn(0.9f, 0.5f);
+  auto& widgets = Context::get().graphic.renderer.getHudRenderer().getWidgets();
+  widgets.topologyRenderer.fadeIn(0.5f, 0.5f);
+  widgets.thirdPersonCamera.fadeIn(0.6f, 0.5f);
+  widgets.coreUsageRenderer.fadeIn(0.7f, 0.5f);
+  widgets.fitnessDataRenderer.fadeIn(0.8f, 0.5f);
+  widgets.informationTextRenderer.fadeIn(0.9f, 0.5f);
 }
 
 void
 State_Running::leave() {
-  auto& hud = Context::get().graphic.hud;
-  hud.widgets.topologyRenderer.fadeOut(0.0f, 0.5f);
-  hud.widgets.thirdPersonCamera.fadeOut(0.1f, 0.5f);
-  hud.widgets.coreUsageRenderer.fadeOut(0.2f, 0.5f);
-  hud.widgets.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
-  hud.widgets.informationTextRenderer.fadeOut(0.3f, 0.5f);
+  auto& widgets = Context::get().graphic.renderer.getHudRenderer().getWidgets();
+  widgets.topologyRenderer.fadeOut(0.0f, 0.5f);
+  widgets.thirdPersonCamera.fadeOut(0.1f, 0.5f);
+  widgets.coreUsageRenderer.fadeOut(0.2f, 0.5f);
+  widgets.fitnessDataRenderer.fadeOut(0.3f, 0.5f);
+  widgets.informationTextRenderer.fadeOut(0.3f, 0.5f);
 }
 
 void
@@ -45,6 +45,8 @@ State_Running::update(float elapsedTime) {
 
     auto& frameHandler = logic.carDataFrameHandler;
 
+    frameHandler.update(elapsedTime);
+
     if (frameHandler.needNewFrame()) {
 
       if (simulation.isGenerationComplete() == false) {
@@ -52,12 +54,12 @@ State_Running::update(float elapsedTime) {
         const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
 
         simulation.update(fakeElapsedTime, totalSteps);
-      } else {
+      }
+      else
+      if (frameHandler.getTotalStoredFrames() <= 2) {
         simulation.breed();
       }
     }
-
-    frameHandler.update(elapsedTime);
 
   } // simulation update
 
@@ -65,13 +67,15 @@ State_Running::update(float elapsedTime) {
   // -> which happen when changing states: Running -> EndGeneration
   if (StateManager::get()->getState() == StateManager::States::Running) {
 
-    graphic.scene.modelsRenderer.update(elapsedTime);
+    auto& sceneRenderer = graphic.renderer.getSceneRenderer();
+
+    sceneRenderer.getModelsRenderer().update(elapsedTime);
 
     _updateCameraTracking(elapsedTime);
     _updateCommonLogic(elapsedTime);
 
     if (!simulation.isGenerationComplete()) {
-      graphic.scene.animatedCircuitRenderer.update(elapsedTime);
+      sceneRenderer.getAnimatedCircuitRenderer().update(elapsedTime);
     }
   }
 }

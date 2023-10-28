@@ -3,8 +3,6 @@
 
 #include "application/defines.hpp"
 
-#include "../common.hpp"
-
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/aliasing.hpp"
@@ -19,9 +17,6 @@ D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
 D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
 
 } // namespace
-
-PthreadSimulation::AgentValues::AgentValues(uint64_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
-  : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {}
 
 PthreadSimulation::~PthreadSimulation() {
   // the threads must be stopped before anything else is destroyed
@@ -70,8 +65,10 @@ PthreadSimulation::initialize(const Definition& def) {
 
   _coreStates.resize(_def.totalCores);
 
-  {
+  CircuitBuilder tmpCircuitBuilder;
+  tmpCircuitBuilder.parse(_def.filename);
 
+  {
     auto onNewPhysicGroundPatch = [&](
                                     const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
                                     const CircuitBuilder::Vec3Array& normals,
@@ -95,107 +92,31 @@ PthreadSimulation::initialize(const Definition& def) {
         _def.onNewRightWallPatch(vertices, colors, normals, indices);
     };
 
-    _circuitBuilder.parse(_def.filename);
-    _circuitBuilder.generateWireFrameSkeleton(_def.onSkeletonPatch);
-    _circuitBuilder.generateCircuitGeometry(
-      onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
-    _startTransform = _circuitBuilder.getStartTransform();
+    tmpCircuitBuilder.generateWireFrameSkeleton(_def.onSkeletonPatch);
+    tmpCircuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
   }
 
-  _resetPhysic();
 
-  _allAgentValues.reserve(_def.totalGenomes);
+
+  _startTransform = tmpCircuitBuilder.getStartTransform();
+
+  _allProcesses.reserve(_def.totalCores);
+  for (uint32_t ii = 0; ii < _def.totalCores; ++ii)
+  {
+    auto newProcess = std::make_unique<SimulationProcess>();
+    newProcess->initialize(
+      _def.neuralNetworkTopology,
+      _startTransform,
+      tmpCircuitBuilder.getKnots());
+    newProcess->reset();
+    newProcess->getHistoricalTimeData().setSize(20);
+
+    _allProcesses.push_back(std::move(newProcess));
+  }
 
   _carsData.resize(_def.totalGenomes);
 
   _addCars();
-}
-
-void
-PthreadSimulation::_resetPhysic() {
-  _allThreadsData.clear();
-  _allThreadsData.reserve(_def.totalCores);
-  for (uint32_t ii = 0; ii < _def.totalCores; ++ii) {
-    auto newData = std::make_unique<ThreadData>();
-    auto& bManager = newData->physicWorld.getPhysicBodyManager();
-
-    { // generate circuit
-
-      int32_t groundIndex = 0;
-      auto onNewPhysicGroundPatch = [&](
-                                      const CircuitBuilder::Vec3Array& vertices,
-                                      const CircuitBuilder::Vec3Array& colors, const CircuitBuilder::Vec3Array& normals,
-                                      const CircuitBuilder::Indices& indices) -> void {
-        static_cast<void>(colors);  // <= unused
-        static_cast<void>(normals); // <= unused
-
-        gero::physics::PhysicShapeDef shapeDef;
-        shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-        shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
-        shapeDef.data.staticMesh.verticesLength = vertices.size();
-        shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
-        shapeDef.data.staticMesh.indicesLength = indices.size();
-
-        gero::physics::PhysicBodyDef bodyDef;
-        bodyDef.shape = shapeDef;
-        bodyDef.mass = 0.0f;
-        bodyDef.group = gero::asValue(Groups::ground);
-        bodyDef.mask = gero::asValue(Masks::ground);
-
-        auto bodyRef = bManager.createAndAddBody(bodyDef);
-        bodyRef->setFriction(1.0f);
-        bodyRef->setUserValue(groundIndex);
-
-        ++groundIndex;
-      };
-
-      auto onNewPhysicWallPatch = [&](
-                                    const CircuitBuilder::Vec3Array& vertices, const CircuitBuilder::Vec3Array& colors,
-                                    const CircuitBuilder::Vec3Array& normals,
-                                    const CircuitBuilder::Indices& indices) -> void {
-        static_cast<void>(colors);  // <= unused
-        static_cast<void>(normals); // <= unused
-
-        gero::physics::PhysicShapeDef shapeDef;
-        shapeDef.type = gero::physics::PhysicShapeDef::Type::staticMesh;
-        shapeDef.data.staticMesh.verticesData = const_cast<glm::vec3*>(vertices.data());
-        shapeDef.data.staticMesh.verticesLength = vertices.size();
-        shapeDef.data.staticMesh.indicesData = const_cast<int32_t*>(static_cast<const int32_t*>(indices.data()));
-        shapeDef.data.staticMesh.indicesLength = indices.size();
-
-        gero::physics::PhysicBodyDef bodyDef;
-        bodyDef.shape = shapeDef;
-        bodyDef.mass = 0.0f;
-        bodyDef.group = gero::asValue(Groups::wall);
-        bodyDef.mask = gero::asValue(Masks::wall);
-
-        bManager.createAndAddBody(bodyDef);
-      };
-
-      _circuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewPhysicWallPatch, onNewPhysicWallPatch);
-
-    } // generate circuit
-
-    { // floor
-
-      gero::physics::PhysicShapeDef shapeDef;
-      shapeDef.type = gero::physics::PhysicShapeDef::Type::box;
-      shapeDef.data.box.size = {1000, 1000, 0.5f};
-
-      gero::physics::PhysicBodyDef bodyDef;
-      bodyDef.shape = shapeDef;
-      bodyDef.mass = 0.0f;
-      bodyDef.group = gero::asValue(Groups::ground);
-      bodyDef.mask = gero::asValue(Masks::ground);
-
-      auto bodyRef = bManager.createAndAddBody(bodyDef);
-      bodyRef->setPosition({0.0f, 0.0f, -0.5f});
-
-    } // floor
-
-    newData->historicalTimeData.setSize(5);
-    _allThreadsData.emplace_back(std::move(newData));
-  }
 }
 
 void
@@ -223,81 +144,54 @@ PthreadSimulation::update(float elapsedTime, uint32_t totalSteps) {
   if (isGenerationComplete())
     return;
 
-  for (auto currValues : _waitingAgentsValues)
-    _allAgentValues.push_back(currValues);
-  _waitingAgentsValues.clear();
-
   _addCars();
 
   for (std::size_t ii = 0; ii < _carsData.size(); ++ii)
     _carsData.at(ii).latestTransformsHistory.clear();
 
-  for (std::size_t threadIndex = 0; threadIndex < _allThreadsData.size(); ++threadIndex) {
+  for (std::size_t threadIndex = 0; threadIndex < _allProcesses.size(); ++threadIndex) {
     auto taskCallback = [this, threadIndex, elapsedTime, totalSteps]() -> void {
+      //
+      //
+
       auto startTime = _getTime();
 
       //
       //
 
-      auto& currData = *(_allThreadsData.at(threadIndex));
-
-      auto& currPhysicWorlds = currData.physicWorld;
+      auto& currProcess = *(_allProcesses.at(threadIndex));
 
       for (uint32_t step = 0; step < totalSteps; ++step) {
-        currData.historicalTimeData.start();
+        currProcess.process(elapsedTime);
+      }
 
-        // update physical world
+      for (std::size_t ii = 0; ii < currProcess.getTotalAgentValues(); ++ii) {
 
-        constexpr uint32_t maxSubSteps = 0;
-        currPhysicWorlds.step(elapsedTime, maxSubSteps, elapsedTime);
+        const auto& currAgent = currProcess.getAgentValuesByIndex(ii);
 
-        // update cars
-
-        for (auto currValues : _allAgentValues) {
-          auto& currAgent = currValues->carAgent;
-
-          if (!currAgent.isAlive())
-            continue;
-
-          if (!currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
-            continue;
-
-          currAgent.update(elapsedTime, currValues->neuralNet);
-
-          {
-            const auto body = currAgent.getBody();
-            const auto vehicle = currAgent.getVehicle();
-
-            CarData::CarTransform newData;
-
-            // transformation matrix of the car
-            newData.chassis.position = body->getPosition();
-            newData.chassis.orientation = body->getOrientation();
-
-            // transformation matrix of the wheels
-            for (uint32_t jj = 0; jj < 4; ++jj) {
-              auto& currWheel = newData.wheels.at(jj);
-
-              currWheel.position = vehicle->getWheelPosition(jj);
-              currWheel.orientation = vehicle->getWheelOrientation(jj);
-            }
-
-            _carsData.at(currValues->dataIndex).latestTransformsHistory.push_back(newData);
-          }
+        if (!currAgent.carAgent.isAlive()) {
+          continue;
         }
 
-        currData.historicalTimeData.stop();
+        auto& dataTransforms = _carsData.at(currAgent.dataIndex).latestTransformsHistory;
+
+        for (const auto& currTransform : currAgent.transformsHistory) {
+          dataTransforms.push_back(currTransform);
+        }
+
       }
 
       //
       //
 
-      auto& coreState = _coreStates.at(threadIndex);
-
-      coreState.genomesAlive = _getTotalLiveAgents(currData);
-
       auto endTime = _getTime();
       auto milliSeconds = _asMilliSeconds(endTime - startTime);
+
+      //
+      //
+
+      auto& coreState = _coreStates.at(threadIndex);
+      coreState.genomesAlive = currProcess.getTotalAgentsAlive();
       coreState.delta = milliSeconds.count();
     };
 
@@ -335,12 +229,12 @@ PthreadSimulation::breed() {
 
   _updateCarResult();
 
-  _resetPhysic();
+  for (auto& currProcess : _allProcesses)
+    currProcess->reset();
 
-  _waitingAgentsValues.clear();
-  _allAgentValues.clear();
+  // _waitingAgentsValues.clear();
+  // _allAgentValues.clear();
   _currentAgentIndex = 0;
-  _currentLiveAgents = 0;
 
   _addCars();
 
@@ -359,8 +253,8 @@ PthreadSimulation::isGenerationComplete() const {
   if (getWaitingGenomes() > 0)
     return false;
 
-  for (const auto& currValue : _allAgentValues)
-    if (currValue->carAgent.isAlive())
+  for (const auto& currValue : _allProcesses)
+    if (currValue->getTotalAgentsAlive() > 0)
       return false;
 
   return true;
@@ -368,142 +262,56 @@ PthreadSimulation::isGenerationComplete() const {
 
 void
 PthreadSimulation::_updateCarResult() {
-  for (const auto& currValue : _allAgentValues) {
-    const auto& currAgent = currValue->carAgent;
+  for (const auto& currProcess : _allProcesses) {
 
-    auto& carData = _carsData.at(currValue->dataIndex);
-
-    const bool carWasAlive = carData.isAlive;
-
-    currAgent.getAsCarData(currValue->neuralNet, carData);
-
-    if (carWasAlive && !carData.isAlive) {
-
-      _currentLiveAgents -= 1;
-
-      if (_callbacks.onGenomeDie)
-        _callbacks.onGenomeDie(currValue->dataIndex);
+    for (std::size_t ii = 0; ii < currProcess->getTotalAgentValues(); ++ii) {
+      const auto& currValue = currProcess->getAgentValuesByIndex(ii);
+      auto& carData = _carsData.at(currValue.dataIndex);
+      currValue.carAgent.getAsCarData(currValue.neuralNet, carData);
     }
 
-    if (!carData.isAlive) {
-      continue;
-    }
-  }
-
-  for (std::size_t index = 0; index < _allAgentValues.size();) {
-    auto& currValue = _allAgentValues.at(index);
-
-    if (currValue->carAgent.isAlive() == false) {
-      if (index + 1 < _allAgentValues.size())
-        std::swap(currValue, _allAgentValues.back());
-      _allAgentValues.pop_back();
-    } else {
-      ++index;
-    }
+    currProcess->cleanup();
   }
 }
 
 void
 PthreadSimulation::_addCars() {
 
-  // std::vector<bool> wasUpdated;
-  // wasUpdated.resize(_allThreadsData.size(), false);
 
-  while (_currentAgentIndex < _def.totalGenomes) {
+  for (auto& currProcess : _allProcesses) {
 
-    // select physic world with fewer cars
 
-    std::size_t bestWorldIndex = 0;
-    for (std::size_t ii = 1; ii < _allThreadsData.size(); ++ii) {
-      const auto& bestState = _coreStates.at(bestWorldIndex);
-      const auto& currState = _coreStates.at(ii);
+    auto& historicalTimeData = currProcess->getHistoricalTimeData();
 
-      if (bestState.genomesAlive < currState.genomesAlive)
-        continue;
-
-      bestWorldIndex = ii;
+    if (
+      historicalTimeData.getTotalDurations() < historicalTimeData.getSize() ||
+      historicalTimeData.getAverageDuration() > 8 ||
+      historicalTimeData.getMaxDuration() > 10
+    ) {
+      continue;
     }
 
-    auto& bestThreadData = *(_allThreadsData.at(bestWorldIndex));
-    auto& physicWorld = bestThreadData.physicWorld;
+    // while (currProcess->getTotalAgentsAlive() < 90 && _currentAgentIndex < _def.totalGenomes)
+    int32_t carsToAddLeft = 10;
+    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes)
+    {
+      const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
 
-    const uint32_t totalLiveVehicles = physicWorld.getPhysicVehicleManager().totalLiveVehicles();
-    if (totalLiveVehicles > 20) {
-      // this thread is already about to add more agents
-      if (_waitingAgentsValues.size() >= 5) {
-        // D_MYLOG("this thread is already about to add more agents");
-        break;
-      }
+      const auto& weights = currGenome.getConnectionsWeights();
 
-      const auto& profilerData = bestThreadData.historicalTimeData;
+      currProcess->addNewCar(_currentAgentIndex, weights.data(), weights.size());
 
-      // not enough profiling data, not adding more cars
-      if (profilerData.getTotalDurations() < profilerData.getSize()) {
-        // D_MYLOG("not enough profiling data, not adding more cars");
-        break;
-      }
-
-      // simulation too slow, not adding more cars
-      if (profilerData.getMaxDuration() >= 10) {
-        // D_MYLOG("simulation too slow, not adding more cars");
-        break;
-      }
+      _currentAgentIndex += 1;
     }
 
-    //
-    //
-    //
-
-    // make the car live
-
-    auto newValue = std::make_shared<AgentValues>(_currentAgentIndex, _def.neuralNetworkTopology);
-    newValue->carAgent.reset(&physicWorld, _startTransform.position, _startTransform.quaternion);
-    _waitingAgentsValues.push_back(newValue);
-
-    const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
-
-    newValue->neuralNet.setConnectionsWeights(currGenome.getConnectionsWeights());
-
-    //
-
-    _currentAgentIndex += 1;
-    _currentLiveAgents += 1;
-
-    // wasUpdated.at(bestWorldIndex) = true;
-
-    for (std::size_t ii = 0; ii < _allThreadsData.size(); ++ii) {
-      auto& coreState = _coreStates.at(ii);
-      coreState.genomesAlive = _getTotalLiveAgents(*_allThreadsData.at(ii));
-    }
+    historicalTimeData.reset();
   }
 
-  // for (std::size_t ii = 1; ii < _allThreadsData.size(); ++ii) {
-  //   if (wasUpdated.at(ii) == false)
-  //     continue;
-  //   wasUpdated.at(ii) = false;
-  //   // _allThreadsData.at(ii)->historicalTimeData.reset();
-  // }
-}
-
-uint32_t
-PthreadSimulation::_getTotalLiveAgents(const ThreadData& inThreadData) const {
-  uint32_t totalLiveAgents = 0;
-
-  const auto& currPhysicWorlds = inThreadData.physicWorld;
-
-  for (auto& currValues : _waitingAgentsValues) {
-    const auto& currAgent = currValues->carAgent;
-    if (currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
-      totalLiveAgents++;
+  for (std::size_t ii = 0; ii < _allProcesses.size(); ++ii) {
+    const auto& currProcess = _allProcesses.at(ii);
+    auto& coreState = _coreStates.at(ii);
+    coreState.genomesAlive = currProcess->getTotalAgentsAlive();
   }
-
-  for (auto& currValues : _allAgentValues) {
-    const auto& currAgent = currValues->carAgent;
-    if (currAgent.isAlive() && currAgent.isOwnedByPhysicWorld(&currPhysicWorlds))
-      totalLiveAgents++;
-  }
-
-  return totalLiveAgents;
 }
 
 uint32_t
@@ -537,11 +345,6 @@ PthreadSimulation::setOnGenerationStepCallback(AbstractSimulation::SimpleCallbac
 }
 
 void
-PthreadSimulation::setOnGenomeDieCallback(AbstractSimulation::GenomeDieCallback callback) {
-  _callbacks.onGenomeDie = callback;
-}
-
-void
 PthreadSimulation::setOnGenerationEndCallback(AbstractSimulation::GenerationEndCallback callback) {
   _callbacks.onGenerationEnd = callback;
 }
@@ -552,8 +355,12 @@ PthreadSimulation::getWaitingGenomes() const {
 }
 
 std::size_t
-PthreadSimulation::getLiveGenomes() const {
-  return std::size_t(_currentLiveAgents);
+PthreadSimulation::getLiveGenomes() const
+{
+  std::size_t totalLiveAgents = 0;
+  for (const auto& currProcess : _allProcesses)
+    totalLiveAgents += currProcess->getTotalAgentsAlive();
+  return totalLiveAgents;
 }
 
 std::size_t
@@ -582,9 +389,4 @@ PthreadSimulation::getGenerationNumber() const {
 const glm::vec3&
 PthreadSimulation::getStartPosition() const {
   return _startTransform.position;
-}
-
-const GeneticAlgorithm&
-PthreadSimulation::getGeneticAlgorithm() const {
-  return _geneticAlgorithm;
 }

@@ -10,7 +10,8 @@ void
 Scene::_renderLeadingCarSensors() {
   auto& context = Context::get();
   const auto& leaderCar = context.logic.leaderCar;
-  auto& stackRenderer = context.graphic.scene.stackRenderers.getWireFramesStack();
+  auto& renderer = context.graphic.renderer;
+  auto& stackRenderer = renderer.getSceneRenderer().getSceneStackRenderers().getWireFramesStack();
 
   if (auto leaderCarData = leaderCar.leaderData()) {
     // leading car alive?
@@ -55,47 +56,45 @@ Scene::_renderLeadingCarSensors() {
 }
 
 void
-Scene::renderScene(const gero::graphics::Camera& inCamera) {
+Scene::renderScene(const gero::graphics::ICamera& inCamera) {
   auto& context = Context::get();
   auto& graphic = context.graphic;
-  auto& scene = graphic.scene;
+  // auto& scene = graphic.scene;
+
+  auto& sceneRenderer = graphic.renderer.getSceneRenderer();
+
+  sceneRenderer.setCamera(inCamera);
+
 
   {
-    const auto& matricesData = inCamera.getMatricesData();
-
-    scene.stackRenderers.setMatricesData(matricesData);
-    scene.carTailsRenderer.setMatricesData(matricesData);
-  }
-
-  {
-    scene.backGroundTorusRenderer.render(inCamera);
+    sceneRenderer.getBackGroundTorusRenderer().render();
     GlContext::clears(Buffers::depth);
 
-    scene.chessBoardFloorRenderer.render(inCamera);
+    sceneRenderer.getChessBoardFloorRenderer().render();
 
-    scene.animatedCircuitRenderer.renderWireFrame(inCamera);
+    sceneRenderer.getAnimatedCircuitRenderer().renderWireFrame();
 
     Scene::_renderLeadingCarSensors();
 
-    scene.stackRenderers.flush();
+    sceneRenderer.getSceneStackRenderers().flush();
 
-    scene.particleManager.render(inCamera);
+    sceneRenderer.getParticleManager().render();
 
-    scene.stackRenderers.flush();
+    sceneRenderer.getSceneStackRenderers().flush();
 
-    scene.modelsRenderer.render(inCamera);
-    scene.carTailsRenderer.render();
-    scene.flockingManager->render();
+    sceneRenderer.getModelsRenderer().render();
+    sceneRenderer.getCarTailsRenderer().render();
+    sceneRenderer.getFlockingManager().render();
 
-    scene.stackRenderers.flush();
+    sceneRenderer.getSceneStackRenderers().flush();
 
-    scene.shapeStackRenderer.render(inCamera);
+    sceneRenderer.getShapeStackRenderer().render();
 
-    scene.animatedCircuitRenderer.renderGround(inCamera);
+    sceneRenderer.getAnimatedCircuitRenderer().renderGround();
 
     GlContext::disable(States::depthTest);
 
-    scene.animatedCircuitRenderer.renderWalls(inCamera);
+    sceneRenderer.getAnimatedCircuitRenderer().renderWalls();
 
     GlContext::enable(States::depthTest);
   }

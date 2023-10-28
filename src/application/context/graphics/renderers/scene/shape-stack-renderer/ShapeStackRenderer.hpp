@@ -16,13 +16,17 @@ public:
   void initialize();
 
 public:
+  void setCamera(const gero::graphics::ICamera* inCamera);
+
+public:
   void pushSphere(const GeometriesStackRenderer::GeometryInstance& instance);
   void pushSuperiorSphere(const GeometriesStackRenderer::GeometryInstance& instance);
   void pushBox(const GeometriesStackRenderer::GeometryInstance& instance);
 
 public:
-  void render(const gero::graphics::Camera& inCamera);
+  void render();
 
 private:
   GeometriesStackRenderer _geometriesStackRenderer;
+  const gero::graphics::ICamera* _camera = nullptr;
 };

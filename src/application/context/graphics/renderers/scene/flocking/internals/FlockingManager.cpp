@@ -97,7 +97,7 @@ FlockingManager::render() {
     return;
 
   auto& context = Context::get();
-  auto& shapeStackRenderer = context.graphic.scene.shapeStackRenderer;
+  auto& shapeStackRenderer = context.graphic.renderer.getSceneRenderer().getShapeStackRenderer();
 
   const glm::vec4 k_color = glm::vec4(0.8f, 0.8f, 0.8f, 0.4f);
 

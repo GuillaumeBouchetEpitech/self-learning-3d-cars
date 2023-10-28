@@ -30,34 +30,57 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
   }
 }%%
 
-  flowchart TD
+  flowchart BT
 
     subgraph simulation [Run The Simulation]
 
-      run1[set the genomes and their vehicles]
-      run2[try all the genomes]
-      run3[rate all the genomes]
+      direction LR
+
+      run1[set the<br>genomes and<br>their vehicles]
+      run2[try all<br>the genomes]
+      run3[rate all<br>the genomes]
+
+      run1 --> run2 --> run3
 
     end
 
     subgraph evolution [Evolve The Simulation]
 
-      evo1[Natural Selection]
-      evo2[Elitism -> 10%]
-      evo3[Reproduction and Mutation -> 80%]
-      evo4[Diversity -> anything left]
+      direction LR
+
+      evo1["
+      Natural Selection
+
+      Select the
+      best genomes
+      "]
+      evo2["
+      Elitism -> 10%
+
+      cross breed
+      the best genomes
+      mutate the newly
+      bred genomes
+      "]
+      evo3["
+      Reproduction and
+      Mutation -> 80%
+
+      fill the
+      generation with
+      random genomes
+      "]
+      evo4["
+      Diversity
+
+      anything left"]
+
+      evo1 --> evo2 --> evo3 --> evo4
 
     end
 
-    Start --> simulation
-    simulation --> evolution
-    evolution --> Stop
-
-    run1 --> run2 --> run3
-
-    evo1 -- Select the best genomes --> evo2
-    evo2 -- cross breed best genomes\nmutate the newly bred genomes --> evo3
-    evo3 -- fill the generation\nwith random genomes --> evo4
+    simulation -- evolve --> evolution
+    evolution -. repeat .-> simulation
 
 
 ```
@@ -199,14 +222,14 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
 # Dependencies
 
-## Dependency: Emscripten 3.1.26 (for web-wasm build)
+## Dependency: Emscripten 3.1.44 (for web-wasm build)
 ```bash
 git clone https://github.com/emscripten-core/emsdk.git
 
 cd emsdk
 
-./emsdk install 3.1.26
-./emsdk activate --embedded 3.1.26
+./emsdk install 3.1.44
+./emsdk activate --embedded 3.1.44
 
 . ./emsdk_env.sh
 
@@ -219,7 +242,7 @@ libsdl2-dev
 libglesv2
 ```
 
-## Dependency: Geronimo 0.0.14
+## Dependency: Geronimo 0.0.15
 
 [Github Link](https://github.com/GuillaumeBouchetEpitech/geronimo)
 
