@@ -67,5 +67,4 @@ private:
   std::size_t _maxPrimitiveCount = 0;
 
   const gero::graphics::ICamera* _camera = nullptr;
-
 };

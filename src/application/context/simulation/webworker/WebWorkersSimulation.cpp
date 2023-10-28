@@ -188,21 +188,17 @@ WebWorkersSimulation::_resetAndProcessSimulation(float elapsedTime, uint32_t tot
 void
 WebWorkersSimulation::_addNewAgents() {
 
-
   for (std::size_t ii = 0; ii < _workerProducers.size(); ++ii) {
     const auto& currWorker = _workerProducers.at(ii);
 
     if (
-      currWorker->getCurrSizeDuration() < currWorker->getMaxSizeDuration() ||
-      currWorker->getAverageDuration() > 4 ||
-      currWorker->getMaxDuration() > 6
-    ) {
+      currWorker->getCurrSizeDuration() < currWorker->getMaxSizeDuration() || currWorker->getAverageDuration() > 4 ||
+      currWorker->getMaxDuration() > 6) {
       continue;
     }
 
     int32_t carsToAddLeft = 10;
-    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes)
-    {
+    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes) {
       const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
       if (currWorker->addNewAgent(_currentAgentIndex, currGenome) == false)
         break;

@@ -1,8 +1,8 @@
 
 #include "GraphicHudRenderer.hpp"
 
-void GraphicHudRenderer::initialize(uint32_t width, uint32_t height)
-{
+void
+GraphicHudRenderer::initialize(uint32_t width, uint32_t height) {
   _camera.setOrthographic(0.0f, float(width), 0.0f, float(height), -10.0f, +10.0f);
   _camera.setSize(width, height);
 
@@ -22,8 +22,8 @@ void GraphicHudRenderer::initialize(uint32_t width, uint32_t height)
   _widgets.leaderEyeRenderer.initialize();
 }
 
-void GraphicHudRenderer::resize(uint32_t width, uint32_t height)
-{
+void
+GraphicHudRenderer::resize(uint32_t width, uint32_t height) {
   _camera.setOrthographic(0.0f, float(width), 0.0f, float(height), -10.0f, +10.0f);
   _camera.setSize(width, height);
 
@@ -37,30 +37,30 @@ void GraphicHudRenderer::resize(uint32_t width, uint32_t height)
   _widgets.leaderEyeRenderer.resize();
 }
 
-void GraphicHudRenderer::computeMatrices()
-{
+void
+GraphicHudRenderer::computeMatrices() {
   _camera.computeMatrices();
 }
 
-gero::graphics::ICamera& GraphicHudRenderer::getCamera()
-{
+gero::graphics::ICamera&
+GraphicHudRenderer::getCamera() {
   return _camera;
 }
-gero::graphics::IStackRenderers& GraphicHudRenderer::getStackRenderers()
-{
+gero::graphics::IStackRenderers&
+GraphicHudRenderer::getStackRenderers() {
   return _stackRenderers;
 }
-gero::graphics::ITextRenderer& GraphicHudRenderer::getTextRenderer()
-{
+gero::graphics::ITextRenderer&
+GraphicHudRenderer::getTextRenderer() {
   return _textRenderer;
 }
 
-PostProcess& GraphicHudRenderer::getPostProcess()
-{
+PostProcess&
+GraphicHudRenderer::getPostProcess() {
   return _postProcess;
 }
 
-GraphicHudRenderer::Widgets& GraphicHudRenderer::getWidgets()
-{
+GraphicHudRenderer::Widgets&
+GraphicHudRenderer::getWidgets() {
   return _widgets;
 }

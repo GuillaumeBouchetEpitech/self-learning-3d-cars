@@ -41,8 +41,8 @@ ShapeStackRenderer::initialize() {
   }
 }
 
-void ShapeStackRenderer::setCamera(const gero::graphics::ICamera* inCamera)
-{
+void
+ShapeStackRenderer::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 

@@ -25,8 +25,6 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
 
   logic.metrics.performanceProfiler.setSize(150);
 
-
-
   logic.simulation = AbstractSimulation::create();
 
   constexpr float k_logicFrameDuration = 1.0f / 60.0f;

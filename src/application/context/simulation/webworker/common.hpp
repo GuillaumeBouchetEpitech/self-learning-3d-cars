@@ -9,9 +9,5 @@ enum class FromProducer : int32_t {
   Unknown,
 };
 
-enum class FromConsumer : int32_t {
-  WebWorkerLoaded = 0,
-  SimulationResult,
-  Unknown
-};
+enum class FromConsumer : int32_t { WebWorkerLoaded = 0, SimulationResult, Unknown };
 }; // namespace Messages

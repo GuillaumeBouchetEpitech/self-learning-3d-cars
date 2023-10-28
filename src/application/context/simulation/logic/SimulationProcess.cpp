@@ -1,7 +1,6 @@
 
 #include "SimulationProcess.hpp"
 
-
 #include "common.hpp"
 
 // #include "geronimo/system/ErrorHandler.hpp"
@@ -16,13 +15,8 @@ D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::millis
 
 } // namespace
 
-SimulationProcess::AgentValues::AgentValues(
-  uint32_t inDataIndex,
-  const NeuralNetworkTopology& inNeuralNetworkTopology
-)
-  : dataIndex(inDataIndex)
-  , neuralNet(inNeuralNetworkTopology)
-{
+SimulationProcess::AgentValues::AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
+  : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {
   transformsHistory.reserve(50); // TODO: hardcoded
 }
 
@@ -30,11 +24,10 @@ SimulationProcess::AgentValues::AgentValues(
 //
 //
 
-void SimulationProcess::initialize(
-  const NeuralNetworkTopology& inNeuralNetworkTopology,
-  const CircuitBuilder::StartTransform& inStartTransform,
-  const CircuitBuilder::Knots& inCircuitKnots
-) {
+void
+SimulationProcess::initialize(
+  const NeuralNetworkTopology& inNeuralNetworkTopology, const CircuitBuilder::StartTransform& inStartTransform,
+  const CircuitBuilder::Knots& inCircuitKnots) {
   _neuralNetworkTopology = inNeuralNetworkTopology;
 
   _startTransform = inStartTransform;
@@ -45,8 +38,8 @@ void SimulationProcess::initialize(
   _allAgentValues.reserve(256); // TODO: hardcoded
 }
 
-void SimulationProcess::reset()
-{
+void
+SimulationProcess::reset() {
   _allAgentValues.clear();
 
   _physicWorld = std::make_unique<gero::physics::PhysicWorld>();
@@ -124,8 +117,8 @@ void SimulationProcess::reset()
   } // generate floor
 }
 
-void SimulationProcess::process(float elapsedTime)
-{
+void
+SimulationProcess::process(float elapsedTime) {
   CarData::CarTransform tmpCarTransform;
 
   _historicalTimeData.start();
@@ -168,8 +161,8 @@ void SimulationProcess::process(float elapsedTime)
   _historicalTimeData.stop();
 }
 
-void SimulationProcess::addNewCar(uint32_t dataIndex, const float* inWeightsData, std::size_t inWeightsLength)
-{
+void
+SimulationProcess::addNewCar(uint32_t dataIndex, const float* inWeightsData, std::size_t inWeightsLength) {
   auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
   newValues->neuralNet.setConnectionsWeights(inWeightsData, inWeightsLength);
   newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion);
@@ -177,28 +170,15 @@ void SimulationProcess::addNewCar(uint32_t dataIndex, const float* inWeightsData
   _allAgentValues.emplace_back(newValues);
 }
 
-
-
-
-
-
-
-
-
-
-
-void SimulationProcess::cleanup()
-{
-  for (std::size_t index = 0; index < _allAgentValues.size();)
-  {
+void
+SimulationProcess::cleanup() {
+  for (std::size_t index = 0; index < _allAgentValues.size();) {
     auto& currAgent = _allAgentValues.at(index);
 
-    if (!currAgent->carAgent.isAlive())
-    {
+    if (!currAgent->carAgent.isAlive()) {
       // fast removal (no reallocation)
 
-      if (index + 1 < _allAgentValues.size())
-      {
+      if (index + 1 < _allAgentValues.size()) {
         std::swap(currAgent, _allAgentValues.back());
       }
 
@@ -212,30 +192,22 @@ void SimulationProcess::cleanup()
   }
 }
 
-
-
-
-
-
-
-
-
-const NeuralNetworkTopology& SimulationProcess::getNeuralNetworkTopology() const
-{
+const NeuralNetworkTopology&
+SimulationProcess::getNeuralNetworkTopology() const {
   return _neuralNetworkTopology;
 }
 
-const SimulationProcess::AgentValues& SimulationProcess::getAgentValuesByIndex(std::size_t index) const
-{
+const SimulationProcess::AgentValues&
+SimulationProcess::getAgentValuesByIndex(std::size_t index) const {
   return *_allAgentValues.at(index);
 }
-std::size_t SimulationProcess::getTotalAgentValues() const
-{
+std::size_t
+SimulationProcess::getTotalAgentValues() const {
   return _allAgentValues.size();
 }
 
-std::size_t SimulationProcess::getTotalAgentsAlive() const
-{
+std::size_t
+SimulationProcess::getTotalAgentsAlive() const {
   std::size_t totalAlive = 0;
   for (auto currValues : _allAgentValues)
     if (currValues->carAgent.isAlive())
@@ -243,21 +215,11 @@ std::size_t SimulationProcess::getTotalAgentsAlive() const
   return totalAlive;
 }
 
-
-gero::metrics::HistoricalTimeData& SimulationProcess::getHistoricalTimeData()
-{
+gero::metrics::HistoricalTimeData&
+SimulationProcess::getHistoricalTimeData() {
   return _historicalTimeData;
 }
-const gero::metrics::HistoricalTimeData& SimulationProcess::getHistoricalTimeData() const
-{
+const gero::metrics::HistoricalTimeData&
+SimulationProcess::getHistoricalTimeData() const {
   return _historicalTimeData;
 }
-
-
-
-
-
-
-
-
-

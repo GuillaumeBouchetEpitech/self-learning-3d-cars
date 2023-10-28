@@ -89,7 +89,6 @@ WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg)
     receivedMsg.readVec4(_startTransform.quaternion);
     receivedMsg.readInt32(knotsLength);
 
-
     circuitKnots.reserve(knotsLength); // <= pre-allocate
     for (int32_t ii = 0; ii < knotsLength; ++ii) {
       CircuitBuilder::Knot knot;
@@ -120,10 +119,7 @@ WorkerConsumer::_initializeSimulation(gero::messaging::MessageView& receivedMsg)
     NeuralNetworkTopology neuralNetworkTopology;
     neuralNetworkTopology.init(layerInput, layerHidden, layerOutput, isUsingBias);
 
-    _simulationProcess.initialize(
-      neuralNetworkTopology,
-      _startTransform,
-      circuitKnots);
+    _simulationProcess.initialize(neuralNetworkTopology, _startTransform, circuitKnots);
     _simulationProcess.reset();
     _simulationProcess.getHistoricalTimeData().setSize(20);
 
@@ -194,7 +190,6 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
   _messageToSend.clear();
   _messageToSend.writeInt8(int8_t(Messages::FromConsumer::SimulationResult));
   _messageToSend.writeInt32(delta);
-
 
   const auto& historicalTimeData = _simulationProcess.getHistoricalTimeData();
 
@@ -272,8 +267,7 @@ WorkerConsumer::_processSimulation(float elapsedTime, uint32_t totalSteps) {
     // sensor data
 
     const auto& eyeSensors = currAgent.getEyeSensors();
-    for (const auto& sensor : eyeSensors)
-    {
+    for (const auto& sensor : eyeSensors) {
       _messageToSend.writeVec3(sensor.near).writeVec3(sensor.far);
       _messageToSend.writeFloat(sensor.value);
     }

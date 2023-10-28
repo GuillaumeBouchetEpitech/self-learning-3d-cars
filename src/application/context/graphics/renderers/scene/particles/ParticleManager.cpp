@@ -2,8 +2,7 @@
 #include "ParticleManager.hpp"
 
 void
-ParticleManager::setCamera(const gero::graphics::ICamera* inCamera)
-{
+ParticleManager::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 

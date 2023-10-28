@@ -14,7 +14,8 @@ GeometriesStackRenderer::initialize() {
   GeometryBuilder geometryBuilder;
 
   // const std::string basePath = "./assets/graphics/shaders/scene/";
-  const std::string basePath = "./src/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders/";
+  const std::string basePath =
+    "./src/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders/";
 
   shaderProgramBuilder.reset()
     .setVertexFilename(basePath + "geometriesStackRenderer.glsl.vert")
@@ -119,8 +120,7 @@ GeometriesStackRenderer::renderAll(const gero::graphics::ICamera& inCamera) {
   if (_aliasedGeometriesMap.empty())
     return;
 
-  _shader->preBind([this, &inCamera](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shader->preBind([this, &inCamera](gero::graphics::IBoundShaderProgram& bound) {
     bound.setUniform("u_composedMatrix", inCamera.getMatricesData().composed);
     // bound.setUniform("u_ambiantCoef", 0.2f);
     // bound.setUniform("u_lightPos", inLightPos.x, inLightPos.y, inLightPos.z);

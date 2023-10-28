@@ -88,14 +88,11 @@ Context::_initializeSimulationCallbacks() {
     logic.leaderCar.reset();
   });
 
-  logic.carDataFrameHandler.setOnGenomeDieCallback([this](const CarData& deadCarData)
-  {
+  logic.carDataFrameHandler.setOnGenomeDieCallback([this](const CarData& deadCarData) {
     const glm::vec3 extraHeight(0.0f, 0.0f, 1.0f);
     const auto& chassis = deadCarData.liveTransforms.chassis;
     const glm::vec3 carPos = chassis.position + glm::mat3_cast(chassis.orientation) * extraHeight;
 
     graphic.renderer.getSceneRenderer().getParticleManager().emitParticles(carPos, deadCarData.velocity);
   });
-
-
 }

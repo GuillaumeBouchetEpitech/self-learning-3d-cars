@@ -175,8 +175,8 @@ ModelsRenderer::initialize() {
   }
 }
 
-void ModelsRenderer::setCamera(const gero::graphics::ICamera* inCamera)
-{
+void
+ModelsRenderer::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 
@@ -295,4 +295,3 @@ ModelsRenderer::render() {
     });
   }
 }
-

@@ -56,5 +56,4 @@ private:
   float _outlineColoralpha = 0.0f;
 
   const gero::graphics::ICamera* _camera = nullptr;
-
 };

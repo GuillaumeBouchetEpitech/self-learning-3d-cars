@@ -71,8 +71,7 @@ PostProcess::stopRecording() {
 void
 PostProcess::render() {
 
-  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     bound.setUniform("u_composedMatrix", _matricesData.composed);
     bound.setUniform("u_invResolution", 1.0f / float(_frameSize.x), 1.0f / float(_frameSize.y));
 

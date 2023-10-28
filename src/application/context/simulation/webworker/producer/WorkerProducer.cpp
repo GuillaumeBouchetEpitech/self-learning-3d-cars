@@ -31,10 +31,8 @@ WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
     _message.writeVec3(def.startTransform.position);
     _message.writeVec4(def.startTransform.quaternion);
 
-
     _message.writeInt32(int32_t(def.knots.size()));
-    for (const auto& knot : def.knots)
-    {
+    for (const auto& knot : def.knots) {
       _message.writeVec3(knot.left);
       _message.writeVec3(knot.right);
       _message.writeFloat(knot.size);
@@ -51,8 +49,7 @@ WorkerProducer::WorkerProducer(const Definition& def) : _def(def) {
     _message.writeUint32(topology.getInputLayerSize());
 
     _message.writeUint32(uint32_t(hiddenLayers.size()));
-    for (uint32_t layerValue : hiddenLayers)
-    {
+    for (uint32_t layerValue : hiddenLayers) {
       _message.writeUint32(layerValue);
     }
     _message.writeUint32(topology.getOutputLayerSize());
@@ -359,25 +356,25 @@ WorkerProducer::getWaitingAgents() const {
   return uint32_t(_waitingAgentsData.size());
 }
 
-int32_t WorkerProducer::getCurrSizeDuration() const
-{
+int32_t
+WorkerProducer::getCurrSizeDuration() const {
   return _currSizeDurations;
 }
-int32_t WorkerProducer::getMaxSizeDuration() const
-{
+int32_t
+WorkerProducer::getMaxSizeDuration() const {
   return _maxSizeDurations;
 }
-int32_t WorkerProducer::getAverageDuration() const
-{
+int32_t
+WorkerProducer::getAverageDuration() const {
   return _averageDuration;
 }
-int32_t WorkerProducer::getMaxDuration() const
-{
+int32_t
+WorkerProducer::getMaxDuration() const {
   return _maxDuration;
 }
 
-void WorkerProducer::resetDurations()
-{
+void
+WorkerProducer::resetDurations() {
   _currSizeDurations = 0;
   _maxSizeDurations = 0;
   _averageDuration = 0;

@@ -327,7 +327,7 @@ FitnessDataRenderer::renderHudText() {
       gero::graphics::TextRenderer::State(textColor, carLeftColor));
 
     gero::graphics::helpers::renderTextBackground(
-      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha), glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f,
-      stackRenderers, textRenderer);
+      k_textDepth, glm::vec4(0.0f, 0.0f, 0.0f, _alpha), glm::vec4(0.3f, 0.3f, 0.3f, _alpha), 3.0f, 6.0f, stackRenderers,
+      textRenderer);
   }
 }

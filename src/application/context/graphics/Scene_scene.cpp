@@ -65,7 +65,6 @@ Scene::renderScene(const gero::graphics::ICamera& inCamera) {
 
   sceneRenderer.setCamera(inCamera);
 
-
   {
     sceneRenderer.getBackGroundTorusRenderer().render();
     GlContext::clears(Buffers::depth);

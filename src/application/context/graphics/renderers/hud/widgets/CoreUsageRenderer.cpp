@@ -234,7 +234,7 @@ CoreUsageRenderer::renderHudText() {
     textRenderer.pushText(textPos, str);
 
     gero::graphics::helpers::renderTextBackground(
-      textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f,
-      stackRenderers, textRenderer);
+      textDepth, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), 3.0f, 6.0f, stackRenderers,
+      textRenderer);
   }
 }

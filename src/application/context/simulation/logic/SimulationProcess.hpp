@@ -1,7 +1,6 @@
 
 #pragma once
 
-
 #include "application/context/simulation/logic/CarAgent.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 #include "application/context/simulation/logic/CircuitBuilder.hpp"
@@ -22,9 +21,7 @@
 // #include <unordered_map>
 #include <vector>
 
-
-class SimulationProcess : public gero::NonCopyable
-{
+class SimulationProcess : public gero::NonCopyable {
 public:
   struct AgentValues {
     uint32_t dataIndex;
@@ -41,10 +38,8 @@ public:
 
 public:
   void initialize(
-    const NeuralNetworkTopology& inNeuralNetworkTopology,
-    const CircuitBuilder::StartTransform& inStartTransform,
-    const CircuitBuilder::Knots& inCircuitKnots
-  );
+    const NeuralNetworkTopology& inNeuralNetworkTopology, const CircuitBuilder::StartTransform& inStartTransform,
+    const CircuitBuilder::Knots& inCircuitKnots);
 
 public:
   void reset();
@@ -75,7 +70,4 @@ private:
   CircuitBuilder _circuitBuilder;
 
   gero::metrics::HistoricalTimeData _historicalTimeData;
-
 };
-
-

@@ -93,21 +93,16 @@ PthreadSimulation::initialize(const Definition& def) {
     };
 
     tmpCircuitBuilder.generateWireFrameSkeleton(_def.onSkeletonPatch);
-    tmpCircuitBuilder.generateCircuitGeometry(onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
+    tmpCircuitBuilder.generateCircuitGeometry(
+      onNewPhysicGroundPatch, onNewLeftPhysicWallPatch, onNewRightPhysicWallPatch);
   }
-
-
 
   _startTransform = tmpCircuitBuilder.getStartTransform();
 
   _allProcesses.reserve(_def.totalCores);
-  for (uint32_t ii = 0; ii < _def.totalCores; ++ii)
-  {
+  for (uint32_t ii = 0; ii < _def.totalCores; ++ii) {
     auto newProcess = std::make_unique<SimulationProcess>();
-    newProcess->initialize(
-      _def.neuralNetworkTopology,
-      _startTransform,
-      tmpCircuitBuilder.getKnots());
+    newProcess->initialize(_def.neuralNetworkTopology, _startTransform, tmpCircuitBuilder.getKnots());
     newProcess->reset();
     newProcess->getHistoricalTimeData().setSize(20);
 
@@ -178,7 +173,6 @@ PthreadSimulation::update(float elapsedTime, uint32_t totalSteps) {
         for (const auto& currTransform : currAgent.transformsHistory) {
           dataTransforms.push_back(currTransform);
         }
-
       }
 
       //
@@ -277,24 +271,19 @@ PthreadSimulation::_updateCarResult() {
 void
 PthreadSimulation::_addCars() {
 
-
   for (auto& currProcess : _allProcesses) {
-
 
     auto& historicalTimeData = currProcess->getHistoricalTimeData();
 
     if (
       historicalTimeData.getTotalDurations() < historicalTimeData.getSize() ||
-      historicalTimeData.getAverageDuration() > 8 ||
-      historicalTimeData.getMaxDuration() > 10
-    ) {
+      historicalTimeData.getAverageDuration() > 8 || historicalTimeData.getMaxDuration() > 10) {
       continue;
     }
 
     // while (currProcess->getTotalAgentsAlive() < 90 && _currentAgentIndex < _def.totalGenomes)
     int32_t carsToAddLeft = 10;
-    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes)
-    {
+    while (carsToAddLeft-- > 0 && _currentAgentIndex < _def.totalGenomes) {
       const auto& currGenome = _geneticAlgorithm.getGenome(_currentAgentIndex);
 
       const auto& weights = currGenome.getConnectionsWeights();
@@ -355,8 +344,7 @@ PthreadSimulation::getWaitingGenomes() const {
 }
 
 std::size_t
-PthreadSimulation::getLiveGenomes() const
-{
+PthreadSimulation::getLiveGenomes() const {
   std::size_t totalLiveAgents = 0;
   for (const auto& currProcess : _allProcesses)
     totalLiveAgents += currProcess->getTotalAgentsAlive();

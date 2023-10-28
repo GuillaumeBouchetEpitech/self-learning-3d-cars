@@ -4,7 +4,6 @@
 #include "application/context/Context.hpp"
 #include "application/context/graphics/graphicsAliases.hpp"
 
-
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
 #include "geronimo/graphics/ShaderProgramBuilder.hpp"
@@ -77,8 +76,7 @@ CarTailsRenderer::render() {
   if (!_shader)
     D_THROW(std::runtime_error, "shader not setup");
 
-  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     bound.setUniform("u_composedMatrix", _matricesData.composed);
     bound.setUniform("u_color", 0.8f, 0.8f, 0.8f, 1.0f);
 
@@ -122,5 +120,4 @@ CarTailsRenderer::render() {
 
     } // leader trail
   });
-
 }

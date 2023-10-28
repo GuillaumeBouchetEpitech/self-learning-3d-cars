@@ -76,7 +76,6 @@ AnimatedCircuitRenderer::initialize(
     _geometries.skeleton.initialize(*_shaderWireFrame, geometryBuilder.getDefinition());
     _geometries.skeleton.allocateBuffer(0, skeletonVertices);
     _geometries.skeleton.setPrimitiveCount(skeletonVertices.size());
-
   }
 
   { // compute circuit ground geometries
@@ -134,8 +133,7 @@ AnimatedCircuitRenderer::initialize(
 }
 
 void
-AnimatedCircuitRenderer::setCamera(const gero::graphics::ICamera* inCamera)
-{
+AnimatedCircuitRenderer::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 
@@ -237,8 +235,7 @@ AnimatedCircuitRenderer::renderWireFrame() {
   if (!_camera)
     D_THROW(std::runtime_error, "camera not setup");
 
-  _shaderWireFrame->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shaderWireFrame->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     const auto& matricesData = _camera->getMatricesData();
 
     bound.setUniform("u_composedMatrix", matricesData.composed);
@@ -257,8 +254,7 @@ AnimatedCircuitRenderer::renderWalls() {
 
   GlContext::disable(GlContext::States::depthTest);
 
-  _shaderCircuit->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shaderCircuit->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     const auto& matricesData = _camera->getMatricesData();
 
     bound.setUniform("u_composedMatrix", matricesData.composed);
@@ -279,8 +275,7 @@ AnimatedCircuitRenderer::renderGround() {
   if (!_camera)
     D_THROW(std::runtime_error, "camera not setup");
 
-  _shaderCircuitLit->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shaderCircuitLit->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     const auto& matricesData = _camera->getMatricesData();
 
     bound.setUniform("u_composedMatrix", matricesData.composed);

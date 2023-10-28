@@ -54,9 +54,7 @@ State_Running::update(float elapsedTime) {
         const unsigned int totalSteps = (logic.isAccelerated ? 50 : 1);
 
         simulation.update(fakeElapsedTime, totalSteps);
-      }
-      else
-      if (frameHandler.getTotalStoredFrames() <= 2) {
+      } else if (frameHandler.getTotalStoredFrames() <= 2) {
         simulation.breed();
       }
     }

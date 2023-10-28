@@ -145,8 +145,7 @@ BackGroundTorusRenderer::initialize() {
 }
 
 void
-BackGroundTorusRenderer::setCamera(const gero::graphics::ICamera* inCamera)
-{
+BackGroundTorusRenderer::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 
@@ -165,9 +164,7 @@ BackGroundTorusRenderer::render() {
   if (!_camera)
     D_THROW(std::runtime_error, "camera not setup");
 
-
-  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     const glm::vec2 vSize = glm::vec2(Context::get().graphic.renderer.getHudRenderer().getCamera().getSize());
 
     gero::graphics::Camera tmpCamera;

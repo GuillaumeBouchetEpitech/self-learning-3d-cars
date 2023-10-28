@@ -4,8 +4,8 @@
 #include "application/context/simulation/AbstractSimulation.hpp"
 #include "application/context/simulation/logic/CarData.hpp"
 
-#include <list>
 #include <functional>
+#include <list>
 
 class CarDataFrameHandler {
 public:

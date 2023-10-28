@@ -106,8 +106,7 @@ InformationTextRenderer::render() {
       const glm::vec2 k_size = glm::vec2(160, 50);
       const glm::vec3 k_pos = glm::vec3(5, vSize.y - 70.0f, 0.5f);
 
-      gero::graphics::widgets::renderHistoricalTimeData(
-        k_pos, k_size, true, timeData, stackRenderers, textRenderer);
+      gero::graphics::widgets::renderHistoricalTimeData(k_pos, k_size, true, timeData, stackRenderers, textRenderer);
     }
   }
 

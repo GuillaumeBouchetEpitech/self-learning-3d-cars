@@ -4,12 +4,10 @@
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/math/clamp.hpp"
 
-namespace
-{
-  constexpr std::size_t k_totalFrames = 10;
+namespace {
+constexpr std::size_t k_totalFrames = 10;
 
 } // namespace
-
 
 void
 CarDataFrameHandler::initialize(uint32_t totalGenomes, float logicFrameDuration) {
@@ -100,7 +98,6 @@ CarDataFrameHandler::update(float deltaTime) {
         _onGenomeDieCallback(genomeA);
       }
     }
-
   }
 
   // if (_usedFrames.size() <= 2) {
@@ -142,11 +139,9 @@ CarDataFrameHandler::discardAll() {
 }
 
 void
-CarDataFrameHandler::setOnGenomeDieCallback(const GenomeDieCallback& callback)
-{
+CarDataFrameHandler::setOnGenomeDieCallback(const GenomeDieCallback& callback) {
   _onGenomeDieCallback = callback;
 }
-
 
 uint32_t
 CarDataFrameHandler::getTotalStoredFrames() const {

@@ -14,9 +14,7 @@
 #include "geronimo/graphics/advanced-concept/stackRenderers/StackRenderers.hpp"
 #include "geronimo/graphics/advanced-concept/textRenderer/TextRenderer.hpp"
 
-
-class IGraphicHudRenderer
-{
+class IGraphicHudRenderer {
 public:
   struct Widgets {
     TopologyRenderer topologyRenderer;
@@ -36,8 +34,7 @@ public:
   virtual Widgets& getWidgets() = 0;
 };
 
-class GraphicHudRenderer : public IGraphicHudRenderer
-{
+class GraphicHudRenderer : public IGraphicHudRenderer {
 public:
   using Widgets = IGraphicHudRenderer::Widgets;
 
@@ -65,5 +62,4 @@ private:
   PostProcess _postProcess;
 
   Widgets _widgets;
-
 };

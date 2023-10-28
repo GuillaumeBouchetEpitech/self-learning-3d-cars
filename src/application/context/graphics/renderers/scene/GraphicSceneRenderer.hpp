@@ -5,16 +5,15 @@
 #include "background-torus/BackGroundTorusRenderer.hpp"
 #include "car-tails/CarTailsRenderer.hpp"
 #include "chessboard-floor/ChessBoardFloorRenderer.hpp"
-#include "models-car/ModelsRenderer.hpp"
-#include "scene-stack-renderers/SceneStackRenderers.hpp"
 #include "flocking/AbstractFlockingManager.hpp"
+#include "models-car/ModelsRenderer.hpp"
 #include "particles/ParticleManager.hpp"
+#include "scene-stack-renderers/SceneStackRenderers.hpp"
 #include "shape-stack-renderer/ShapeStackRenderer.hpp"
 
 #include "geronimo/graphics/camera/Camera.hpp"
 
-class IGraphicSceneRenderer
-{
+class IGraphicSceneRenderer {
 public:
   virtual void lookAt(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up) = 0;
   virtual void setCamera(const gero::graphics::ICamera& inCamera) = 0;
@@ -30,11 +29,9 @@ public:
   virtual AbstractFlockingManager& getFlockingManager() = 0;
   virtual CarTailsRenderer& getCarTailsRenderer() = 0;
   virtual ShapeStackRenderer& getShapeStackRenderer() = 0;
-
 };
 
-class GraphicSceneRenderer : public IGraphicSceneRenderer
-{
+class GraphicSceneRenderer : public IGraphicSceneRenderer {
 public:
   GraphicSceneRenderer() = default;
   ~GraphicSceneRenderer() = default;
@@ -73,5 +70,4 @@ private:
   std::unique_ptr<AbstractFlockingManager> _flockingManager;
   CarTailsRenderer _carTailsRenderer;
   ShapeStackRenderer _shapeStackRenderer;
-
 };

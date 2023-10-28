@@ -106,5 +106,4 @@ public:
   int32_t getAverageDuration() const;
   int32_t getMaxDuration() const;
   void resetDurations();
-
 };

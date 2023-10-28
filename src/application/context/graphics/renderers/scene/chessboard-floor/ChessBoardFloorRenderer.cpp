@@ -113,8 +113,7 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
 }
 
 void
-ChessBoardFloorRenderer::setCamera(const gero::graphics::ICamera* inCamera)
-{
+ChessBoardFloorRenderer::setCamera(const gero::graphics::ICamera* inCamera) {
   _camera = inCamera;
 }
 
@@ -131,8 +130,7 @@ ChessBoardFloorRenderer::render() {
   // transparency friendly
   GlContext::disable(States::depthTest);
 
-  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound)
-  {
+  _shader->preBind([this](gero::graphics::IBoundShaderProgram& bound) {
     // const glm::vec3 lightPos = inCamera.getEye();
 
     // D_MYLOG("lightPos " << lightPos);
