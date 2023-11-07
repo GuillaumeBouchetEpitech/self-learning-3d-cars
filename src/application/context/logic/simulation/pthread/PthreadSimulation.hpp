@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
 
-#include "application/context/simulation/logic/SimulationProcess.hpp"
+#include "application/context/logic/simulation/logic/SimulationProcess.hpp"
 
 #include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"

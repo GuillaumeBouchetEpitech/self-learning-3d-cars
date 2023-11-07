@@ -1,16 +1,16 @@
 
-#include "FitnessStats.hpp"
+#include "FitnessStatsHandler.hpp"
 
 #include "geronimo/system/TraceLogger.hpp"
 
-FitnessStats::FitnessStats() {
+FitnessStatsHandler::FitnessStatsHandler() {
   _index = 0;
   for (float& fitness : _allFitnesses)
     fitness = 0.0f;
 }
 
 void
-FitnessStats::update(float latestFitness) {
+FitnessStatsHandler::update(float latestFitness) {
   const float lastFitness = get(-1);
 
 #if 1
@@ -27,16 +27,16 @@ FitnessStats::update(float latestFitness) {
 }
 
 float
-FitnessStats::get(int index) const {
+FitnessStatsHandler::get(int index) const {
   return _allFitnesses[int(_index) + index];
 }
 
 std::size_t
-FitnessStats::size() const {
+FitnessStatsHandler::size() const {
   return _allFitnesses.size();
 }
 
 float
-FitnessStats::max() const {
+FitnessStatsHandler::max() const {
   return _maxFitness;
 }

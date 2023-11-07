@@ -2,16 +2,17 @@
 #pragma once
 
 #include "geronimo/system/containers/static_array.hpp"
+#include "geronimo/system/NonCopyable.hpp"
 
-class FitnessStats {
+class FitnessStatsHandler : gero::NonCopyable {
 private:
   std::size_t _index = 0;
   gero::static_array<float, 10> _allFitnesses;
   float _maxFitness = 0.0f;
 
 public:
-  FitnessStats();
-  ~FitnessStats() = default;
+  FitnessStatsHandler();
+  ~FitnessStatsHandler() = default;
 
 public:
   void update(float latestFitness);

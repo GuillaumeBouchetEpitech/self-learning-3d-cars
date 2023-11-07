@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstractSimulation.hpp"
-#include "application/context/simulation/logic/CarData.hpp"
-#include "application/context/simulation/logic/CircuitBuilder.hpp"
-#include "application/context/simulation/webworker/common.hpp"
-#include "application/context/simulation/webworker/producer/WorkerProducer.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/logic/CircuitBuilder.hpp"
+#include "application/context/logic/simulation/webworker/common.hpp"
+#include "application/context/logic/simulation/webworker/producer/WorkerProducer.hpp"
 
 #include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
 

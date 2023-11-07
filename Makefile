@@ -124,7 +124,7 @@ SRC+=	\
 		$(DIR_SRC)/application/*.cpp \
 		$(DIR_SRC)/application/states/*.cpp \
 		$(DIR_SRC)/application/context/*.cpp \
-		$(DIR_SRC)/application/context/helpers/*.cpp \
+		\
 		$(DIR_SRC)/application/context/graphics/*.cpp \
 		$(DIR_SRC)/application/context/graphics/camera/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/*.cpp \
@@ -148,29 +148,31 @@ SRC+=	\
 		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/*.cpp \
 		$(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/*.cpp \
 		\
-		$(DIR_SRC)/application/context/simulation/*.cpp \
-		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/context/logic/*.cpp \
+		$(DIR_SRC)/application/context/logic/handlers/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/logic/*.cpp \
 		)
 
 ifneq ($(build_platform),web-wasm-webworker)
 
 SRC+=	\
 	$(wildcard \
-		$(DIR_SRC)/application/context/simulation/pthread/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/pthread/*.cpp \
 		)
 
 else
 
 SRC+=	\
 	$(wildcard \
-		$(DIR_SRC)/application/context/simulation/webworker/*.cpp \
-		$(DIR_SRC)/application/context/simulation/webworker/producer/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/webworker/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/webworker/producer/*.cpp \
 		)
 
 SRC_WEB_WASM_WORKER+=	\
 	$(wildcard \
-		$(DIR_SRC)/application/context/simulation/logic/*.cpp \
-		$(DIR_SRC)/application/context/simulation/webworker/consumer/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/logic/*.cpp \
+		$(DIR_SRC)/application/context/logic/simulation/webworker/consumer/*.cpp \
 		)
 
 endif

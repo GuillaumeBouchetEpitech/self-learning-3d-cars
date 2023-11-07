@@ -1,14 +1,15 @@
 
 #pragma once
 
-#include "application/context/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
 
+#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 
 #include <optional>
 
 // TODO: refactor -> use callbacks
-class LeaderCar {
+class LeaderCarHandler : gero::NonCopyable {
 private:
   float _countdownUntilNewLeader = 0;
   int _carIndex = -1;
@@ -16,8 +17,8 @@ private:
   glm::vec3 _carPosition = {0, 0, 0};
 
 public:
-  LeaderCar() = default;
-  ~LeaderCar() = default;
+  LeaderCarHandler() = default;
+  ~LeaderCarHandler() = default;
 
 public:
   void update(float elapsedTime);

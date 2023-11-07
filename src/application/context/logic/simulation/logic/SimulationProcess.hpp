@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "application/context/simulation/logic/CarAgent.hpp"
-#include "application/context/simulation/logic/CarData.hpp"
-#include "application/context/simulation/logic/CircuitBuilder.hpp"
-// #include "application/context/simulation/webworker/common.hpp"
+#include "application/context/logic/simulation/logic/CarAgent.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/logic/CircuitBuilder.hpp"
+// #include "application/context/logic/simulation/webworker/common.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 

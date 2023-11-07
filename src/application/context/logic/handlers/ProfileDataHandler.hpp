@@ -1,11 +1,13 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
+
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <vector>
 
-class ProfileData {
+class ProfileDataHandler : gero::NonCopyable {
 private:
   using StatesData = std::vector<AbstractSimulation::CoreState>;
   using StatesHistory = std::vector<StatesData>;
@@ -17,7 +19,7 @@ private:
   StatesHistory _statesHistory;
 
 public:
-  ProfileData() = default;
+  ProfileDataHandler() = default;
 
 public:
   void initialize(uint32_t totalCores, uint32_t maxStateHistory);

@@ -75,11 +75,10 @@ CarDataFrameHandler::update(float deltaTime) {
       _interpolationValue = 0.0f;
     }
 
-    if (_usedFrames.size() <= 2) {
-      return;
-    }
-
-    if (_onGenomeDieCallback) {
+    if (
+      _usedFrames.size() >= 2 &&
+      _onGenomeDieCallback
+    ) {
       auto it = _usedFrames.begin();
       auto& frameA = *it;
       auto& frameB = *(++it);
@@ -97,6 +96,10 @@ CarDataFrameHandler::update(float deltaTime) {
 
         _onGenomeDieCallback(genomeA);
       }
+    }
+
+    if (_usedFrames.size() <= 2) {
+      return;
     }
   }
 

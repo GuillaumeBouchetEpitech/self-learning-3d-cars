@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
 
 #include <array>
@@ -9,7 +10,7 @@
 
 class AbstractSimulation;
 
-class CarWheelsTrails {
+class CarWheelsTrailsHandler : public gero::NonCopyable {
 public:
   using WheelTrail = std::vector<glm::vec3>;
 
@@ -23,12 +24,8 @@ private:
   std::vector<WheelsTrail> _allWheelsTrails;
 
 public:
-  CarWheelsTrails() = default;
-  CarWheelsTrails(const CarWheelsTrails& other) = delete;
-  CarWheelsTrails(CarWheelsTrails&& other) = delete;
-  CarWheelsTrails& operator=(const CarWheelsTrails& other) = delete;
-  CarWheelsTrails& operator=(CarWheelsTrails&& other) = delete;
-  ~CarWheelsTrails() = default;
+  CarWheelsTrailsHandler() = default;
+  ~CarWheelsTrailsHandler() = default;
 
 public:
   void reset(const AbstractSimulation& simulation);

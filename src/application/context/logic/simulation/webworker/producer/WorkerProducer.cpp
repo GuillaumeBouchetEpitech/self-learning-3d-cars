@@ -1,7 +1,7 @@
 
 #include "WorkerProducer.hpp"
 
-#include "application/context/simulation/webworker/preprocessing.hpp"
+#include "application/context/logic/simulation/webworker/preprocessing.hpp"
 
 #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"

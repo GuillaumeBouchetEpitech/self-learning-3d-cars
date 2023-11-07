@@ -1,8 +1,8 @@
 
-#include "ProfileData.hpp"
+#include "ProfileDataHandler.hpp"
 
 void
-ProfileData::initialize(uint32_t totalCores, uint32_t maxStateHistory) {
+ProfileDataHandler::initialize(uint32_t totalCores, uint32_t maxStateHistory) {
   _maxStateHistory = maxStateHistory;
   _totalCores = totalCores;
 
@@ -13,17 +13,17 @@ ProfileData::initialize(uint32_t totalCores, uint32_t maxStateHistory) {
 }
 
 void
-ProfileData::clearLatest() {
+ProfileDataHandler::clearLatest() {
   _latestStatesData.clear();
 }
 
 void
-ProfileData::addToLatest(const AbstractSimulation::CoreState& latest) {
+ProfileDataHandler::addToLatest(const AbstractSimulation::CoreState& latest) {
   _latestStatesData.push_back(latest);
 }
 
 void
-ProfileData::pushLatest() {
+ProfileDataHandler::pushLatest() {
   for (uint32_t ii = 0; ii < _latestStatesData.size(); ++ii)
     _statesHistory.at(ii).at(_currHistoryIndex) = _latestStatesData.at(ii);
 
@@ -32,22 +32,22 @@ ProfileData::pushLatest() {
 }
 
 uint32_t
-ProfileData::getMaxStateHistory() const {
+ProfileDataHandler::getMaxStateHistory() const {
   return _maxStateHistory;
 }
 
 uint32_t
-ProfileData::getTotalCores() const {
+ProfileDataHandler::getTotalCores() const {
   return _totalCores;
 }
 
 const AbstractSimulation::CoreState&
-ProfileData::getCoreData(uint32_t index) const {
+ProfileDataHandler::getCoreData(uint32_t index) const {
   return _latestStatesData.at(index);
 }
 
 const AbstractSimulation::CoreState&
-ProfileData::getCoreHistoryData(uint32_t coreIndex, uint32_t dataIndex) const {
+ProfileDataHandler::getCoreHistoryData(uint32_t coreIndex, uint32_t dataIndex) const {
 
   const uint32_t actualIndex = (dataIndex + _currHistoryIndex) % _maxStateHistory;
 
@@ -55,7 +55,7 @@ ProfileData::getCoreHistoryData(uint32_t coreIndex, uint32_t dataIndex) const {
 }
 
 uint32_t
-ProfileData::getLatestTotalDelta() const {
+ProfileDataHandler::getLatestTotalDelta() const {
   uint32_t totalDelta = 0;
   for (std::size_t ii = 0; ii < _latestStatesData.size(); ++ii)
     totalDelta += _latestStatesData.at(ii).delta;
@@ -64,7 +64,7 @@ ProfileData::getLatestTotalDelta() const {
 }
 
 uint32_t
-ProfileData::getAllTimeMaxDelta() const {
+ProfileDataHandler::getAllTimeMaxDelta() const {
   uint32_t maxDelta = 0;
 
   for (uint32_t coreIndex = 0; coreIndex < _totalCores; ++coreIndex)

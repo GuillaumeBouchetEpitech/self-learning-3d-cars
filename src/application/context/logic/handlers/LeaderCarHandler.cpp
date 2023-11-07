@@ -1,11 +1,11 @@
 
-#include "LeaderCar.hpp"
+#include "LeaderCarHandler.hpp"
 
 #include "application/context/Context.hpp"
 #include "application/states/StateManager.hpp"
 
 void
-LeaderCar::update(float elapsedTime) {
+LeaderCarHandler::update(float elapsedTime) {
 
   const StateManager::States currentState = StateManager::get()->getState();
   const bool validSate = (currentState == StateManager::States::Running);
@@ -71,7 +71,7 @@ LeaderCar::update(float elapsedTime) {
 }
 
 void
-LeaderCar::reset() {
+LeaderCarHandler::reset() {
   _carIndex = -1;
   _countdownUntilNewLeader = 0.0f;
   _totalTimeAsLeader = 0.0f;
@@ -79,17 +79,17 @@ LeaderCar::reset() {
 }
 
 bool
-LeaderCar::hasLeader() const {
+LeaderCarHandler::hasLeader() const {
   return _carIndex >= 0;
 }
 
 int
-LeaderCar::leaderIndex() const {
+LeaderCarHandler::leaderIndex() const {
   return _carIndex;
 }
 
 std::optional<CarData>
-LeaderCar::leaderData() const {
+LeaderCarHandler::leaderData() const {
   if (_carIndex < 0)
     return {};
 
@@ -97,7 +97,7 @@ LeaderCar::leaderData() const {
 }
 
 std::optional<glm::vec3>
-LeaderCar::leaderPosition() const {
+LeaderCarHandler::leaderPosition() const {
   if (_carIndex < 0)
     return {};
 
@@ -105,6 +105,6 @@ LeaderCar::leaderPosition() const {
 }
 
 float
-LeaderCar::totalTimeAsLeader() const {
+LeaderCarHandler::totalTimeAsLeader() const {
   return _totalTimeAsLeader;
 }

@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "application/context/simulation/logic/CarData.hpp"
-#include "application/context/simulation/logic/CircuitBuilder.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/logic/CircuitBuilder.hpp"
 
 #include "basic-genetic-algorithm/Genome.hpp"
 #include "basic-genetic-algorithm/NeuralNetworkTopology.hpp"

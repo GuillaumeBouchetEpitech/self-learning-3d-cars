@@ -110,7 +110,7 @@ CarTailsRenderer::render() {
           const int currSize = std::min(totalSize, maxSize) - startIndex;
 
           const float* dataPointer = &currWheel.at(totalSize - currSize - startIndex).x;
-          const int dataSize = currSize * sizeof(CarWheelsTrails::WheelTrail::value_type);
+          const int dataSize = currSize * sizeof(CarWheelsTrailsHandler::WheelTrail::value_type);
 
           _geometries.leaderCarTrail.updateOrAllocateBuffer(0, dataSize, dataPointer);
           _geometries.leaderCarTrail.setPrimitiveCount(currSize);

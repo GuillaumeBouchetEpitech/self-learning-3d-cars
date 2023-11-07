@@ -27,23 +27,6 @@ public: // external structures
     float speed = 0.0f;
   };
 
-private: // attributes
-  gero::physics::PhysicWorld* _physicWorld = nullptr;
-  gero::physics::VehicleWeakRef _physicVehicle;
-  gero::physics::BodyWeakRef _physicBody;
-
-  float _fitness;
-  float _health;
-  uint32_t _totalUpdateNumber;
-
-  Sensors _eyeSensors;
-  Sensor _groundSensor;
-
-  int32_t _groundIndex;
-  bool _isDying;
-
-  NeuralNetworkOutput _output;
-
 public: // ctor/dtor
   CarAgent() = default;
 
@@ -72,6 +55,24 @@ public: // setter(s)/getter(s)
   const gero::physics::VehicleWeakRef getVehicle() const;
   float getLife() const;
   uint32_t getTotalUpdates() const;
+
+private: // attributes
+  gero::physics::PhysicWorld* _physicWorld = nullptr;
+  gero::physics::VehicleWeakRef _physicVehicle;
+  gero::physics::BodyWeakRef _physicBody;
+
+  float _fitness;
+  float _health;
+  uint32_t _totalUpdateNumber;
+
+  Sensors _eyeSensors;
+  Sensor _groundSensor;
+
+  int32_t _groundIndex;
+  bool _isDying;
+
+  NeuralNetworkOutput _output;
+
 };
 
 using CarAgents = std::vector<CarAgent>;

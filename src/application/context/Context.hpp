@@ -1,16 +1,16 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstractSimulation.hpp"
-#include "application/context/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
 
 #include "application/states/StateManager.hpp"
 
-#include "helpers/CarDataFrameHandler.hpp"
-#include "helpers/CarWheelsTrails.hpp"
-#include "helpers/FitnessStats.hpp"
-#include "helpers/LeaderCar.hpp"
-#include "helpers/ProfileData.hpp"
+#include "logic/handlers/CarDataFrameHandler.hpp"
+#include "logic/handlers/CarWheelsTrailsHandler.hpp"
+#include "logic/handlers/FitnessStatsHandler.hpp"
+#include "logic/handlers/LeaderCarHandler.hpp"
+#include "logic/handlers/ProfileDataHandler.hpp"
 
 #include "graphics/renderers/GraphicsRenderer.hpp"
 
@@ -89,7 +89,7 @@ public:
     CarDataFrameHandler carDataFrameHandler;
 
     struct Cores {
-      ProfileData profileData;
+      ProfileDataHandler profileData;
 
       uint32_t totalGenomes = 0;
       uint32_t totalCores = 0;
@@ -98,9 +98,9 @@ public:
     bool isAccelerated = false;
     float timeSinceLastFrame = 0.0f;
 
-    LeaderCar leaderCar;
+    LeaderCarHandler leaderCar;
 
-    CarWheelsTrails carWheelsTrails;
+    CarWheelsTrailsHandler carWheelsTrails;
 
     struct CircuitDimension {
       glm::vec3 min;
@@ -113,6 +113,6 @@ public:
       std::string headerType;
     } hudText;
 
-    FitnessStats fitnessStats;
+    FitnessStatsHandler fitnessStats;
   } logic;
 };

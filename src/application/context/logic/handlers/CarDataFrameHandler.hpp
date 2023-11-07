@@ -1,13 +1,15 @@
 
 #pragma once
 
-#include "application/context/simulation/AbstractSimulation.hpp"
-#include "application/context/simulation/logic/CarData.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/logic/CarData.hpp"
+
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <functional>
 #include <list>
 
-class CarDataFrameHandler {
+class CarDataFrameHandler : public gero::NonCopyable {
 public:
   using GenomeDieCallback = std::function<void(const CarData&)>;
 

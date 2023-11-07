@@ -1,12 +1,12 @@
 
-#include "CarWheelsTrails.hpp"
+#include "CarWheelsTrailsHandler.hpp"
 
-#include "application/context/simulation/AbstractSimulation.hpp"
+#include "application/context/logic/simulation/AbstractSimulation.hpp"
 
 #include "geronimo/system/ErrorHandler.hpp"
 
 void
-CarWheelsTrails::reset(const AbstractSimulation& simulation) {
+CarWheelsTrailsHandler::reset(const AbstractSimulation& simulation) {
   _genomeIndexMap.clear();
 
   const uint32_t totalCars = simulation.getTotalCars();
@@ -29,22 +29,22 @@ CarWheelsTrails::reset(const AbstractSimulation& simulation) {
 }
 
 void
-CarWheelsTrails::push(uint32_t carIndex, uint32_t wheelIndex, const glm::vec3& value) {
+CarWheelsTrailsHandler::push(uint32_t carIndex, uint32_t wheelIndex, const glm::vec3& value) {
   _allWheelsTrails.at(carIndex).wheels.at(wheelIndex).emplace_back(value);
 }
 
 bool
-CarWheelsTrails::isEmpty() const {
+CarWheelsTrailsHandler::isEmpty() const {
   return _allWheelsTrails.empty();
 }
 
-const CarWheelsTrails::WheelsTrail&
-CarWheelsTrails::getTrailByIndex(uint32_t index) const {
+const CarWheelsTrailsHandler::WheelsTrail&
+CarWheelsTrailsHandler::getTrailByIndex(uint32_t index) const {
   return _allWheelsTrails.at(index);
 }
 
-const CarWheelsTrails::WheelsTrail&
-CarWheelsTrails::getTrailById(uint64_t inId) const {
+const CarWheelsTrailsHandler::WheelsTrail&
+CarWheelsTrailsHandler::getTrailById(uint64_t inId) const {
   auto it = _genomeIndexMap.find(inId);
   if (it == _genomeIndexMap.end())
     D_THROW(std::runtime_error, "trail not found, id: " << inId);
