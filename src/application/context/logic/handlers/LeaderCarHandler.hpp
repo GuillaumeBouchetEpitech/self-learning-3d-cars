@@ -3,8 +3,8 @@
 
 #include "application/context/logic/simulation/logic/CarData.hpp"
 
-#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <optional>
 

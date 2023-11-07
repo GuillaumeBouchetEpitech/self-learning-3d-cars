@@ -75,10 +75,7 @@ CarDataFrameHandler::update(float deltaTime) {
       _interpolationValue = 0.0f;
     }
 
-    if (
-      _usedFrames.size() >= 2 &&
-      _onGenomeDieCallback
-    ) {
+    if (_usedFrames.size() >= 2 && _onGenomeDieCallback) {
       auto it = _usedFrames.begin();
       auto& frameA = *it;
       auto& frameB = *(++it);

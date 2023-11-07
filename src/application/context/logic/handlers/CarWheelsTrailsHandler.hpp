@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <array>
 #include <unordered_map>

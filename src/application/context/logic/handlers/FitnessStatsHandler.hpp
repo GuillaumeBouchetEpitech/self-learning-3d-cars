@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "geronimo/system/containers/static_array.hpp"
 #include "geronimo/system/NonCopyable.hpp"
+#include "geronimo/system/containers/static_array.hpp"
 
 class FitnessStatsHandler : gero::NonCopyable {
 private:

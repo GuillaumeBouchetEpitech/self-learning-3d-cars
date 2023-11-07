@@ -72,7 +72,6 @@ private: // attributes
   bool _isDying;
 
   NeuralNetworkOutput _output;
-
 };
 
 using CarAgents = std::vector<CarAgent>;

@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/helpers/GLMath.hpp"
+#include "geronimo/system/NonCopyable.hpp"
 
 #include <functional>
 #include <string>
@@ -52,5 +52,4 @@ public:
 private:
   StartTransform _startTransform;
   Knots _knots;
-
 };
