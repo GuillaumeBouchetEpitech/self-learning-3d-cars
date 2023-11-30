@@ -3,7 +3,6 @@
 
 #include "common.hpp"
 
-// #include "geronimo/system/ErrorHandler.hpp"
 #include "geronimo/system/TraceLogger.hpp"
 #include "geronimo/system/aliasing.hpp"
 #include "geronimo/system/asValue.hpp"

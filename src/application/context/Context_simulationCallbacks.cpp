@@ -80,8 +80,9 @@ Context::_initializeSimulationCallbacks() {
 
     logic.carDataFrameHandler.discardAll();
 
-    if (isSmarter)
+    if (isSmarter) {
       graphic.renderer.getSceneRenderer().getCarTailsRenderer().updateLatestTrail();
+    }
 
     StateManager::get()->changeState(StateManager::States::EndGeneration);
 

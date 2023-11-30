@@ -11,11 +11,10 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   AnimatedCircuitRenderer::AnimatedVertices groundVertices;
   AnimatedCircuitRenderer::AnimatedVertices wallsVertices;
 
-  // pre-allocattions
-  constexpr std::size_t k_preallocSize = 1024;
-  skeletonVertices.reserve(k_preallocSize);
-  groundVertices.reserve(k_preallocSize * 4);
-  wallsVertices.reserve(k_preallocSize * 8);
+  constexpr std::size_t k_preallocedSize = 1024;
+  skeletonVertices.reserve(k_preallocedSize);
+  groundVertices.reserve(k_preallocedSize * 4);
+  wallsVertices.reserve(k_preallocedSize * 8);
 
   const glm::vec3 leftGreyColor = {1.0f, 1.0f, 1.0f};
   const glm::vec3 rightGreyColor = {1.0f, 1.0f, 1.0f};

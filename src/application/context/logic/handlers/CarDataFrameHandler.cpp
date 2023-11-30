@@ -134,8 +134,13 @@ CarDataFrameHandler::discardAll() {
     _unusedFrames.push_back(std::move(frame));
   _usedFrames.clear();
 
-  for (unsigned int ii = 0; ii < _allCarsData.size(); ++ii)
+  for (unsigned int ii = 0; ii < _allCarsData.size(); ++ii) {
+    const bool wasAlive = _allCarsData.at(ii).isAlive;
     _allCarsData.at(ii).isAlive = false;
+    if (wasAlive && _onGenomeDieCallback) {
+      _onGenomeDieCallback(_allCarsData.at(ii));
+    }
+  }
 }
 
 void
