@@ -15,7 +15,7 @@ void main(void)
   vec4 pixelColor = texture(u_colorTexture, v_texCoord);
   vec4 pixelOutline = texture(u_outlineTexture, v_texCoord);
 
-  if (pixelOutline.x == 0.0)
+  if (pixelOutline.w == 0.0)
   {
     float depth = 0.0;
 
@@ -26,7 +26,7 @@ void main(void)
       depth += texture(u_outlineTexture, v_texCoord + offset).x;
     }
 
-    const vec4 outlineColor = vec4(0.8, 0.8, 0.8, 1.0);
+    const vec4 outlineColor = vec4(1.0, 1.0, 1.0, 1.0);
 
     if (depth > 1.0)
       out_color = outlineColor;

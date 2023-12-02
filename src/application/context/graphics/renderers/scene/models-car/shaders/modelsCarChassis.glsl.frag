@@ -17,10 +17,16 @@ layout(location = 1) out vec4 out_outline;
 
 void main(void)
 {
-	vec3 blendColor = v_colorMixValue < -0.05 ? k_yellowColor : v_colorMixValue > +0.05 ? v_offsetColor.rgb : k_redColor;
+	vec3 blendColor =
+    v_colorMixValue < -0.05
+      ? k_yellowColor
+      : v_colorMixValue > +0.05
+        ? v_offsetColor.rgb
+        : k_redColor;
+
 	vec4 currColor = vec4(v_modelColor.rgb * blendColor, u_alphaValue);
 
   out_color = vec4(currColor.rgb * v_diffuseLightRatio, u_alphaValue);
 
-  out_outline = vec4(1.0, 0.0, 0.0, 1.0);
+  out_outline = vec4(1.0, 1.0, 1.0, 1.0);
 }

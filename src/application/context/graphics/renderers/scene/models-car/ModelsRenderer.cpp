@@ -213,9 +213,8 @@ ModelsRenderer::render() {
 
   const auto& logic = Context::get().logic;
 
-  const uint32_t totalCars = logic.carDataFrameHandler.getAllCarsData().size();
-
-  // D_MYLOG("totalCars " << totalCars);
+  const auto& allCarsData = logic.carDataFrameHandler.getAllCarsData();
+  const uint32_t totalCars = allCarsData.size();
 
   if (totalCars == 0)
     return;
@@ -235,7 +234,7 @@ ModelsRenderer::render() {
   const glm::vec3 k_leaderColor = glm::vec3(0, 1, 0);
 
   for (uint32_t ii = 0; ii < totalCars; ++ii) {
-    const auto& carData = logic.carDataFrameHandler.getAllCarsData().at(ii);
+    const auto& carData = allCarsData.at(ii);
 
     if (!carData.isAlive)
       continue;
@@ -253,7 +252,21 @@ ModelsRenderer::render() {
     // color
 
     const bool isLeader = (logic.leaderCar.leaderIndex() == int(ii));
-    const glm::vec3& color = isLeader ? k_leaderColor : k_defaultColor;
+    glm::vec3 color = isLeader ? k_leaderColor : k_defaultColor;
+
+    float currLifeValue = carData.life;
+
+    if (
+      // ignore the origin checkpoint
+      carData.fitness > 0.5f &&
+      // apply the effect after a checkpoint
+      carData.life >= 0.95f
+    ) {
+      // force black color
+      color = glm::vec3(0,0,0);
+      // very high value to ensure it's all black
+      currLifeValue = 20.0f;
+    }
 
     //
     //
@@ -263,11 +276,11 @@ ModelsRenderer::render() {
     //
     // transforms
 
-    _modelsCarChassisMatrices.emplace_back(chassis.position, chassis.orientation, k_scale, color, carData.life);
+    _modelsCarChassisMatrices.emplace_back(chassis.position, chassis.orientation, k_scale, color, currLifeValue);
 
     for (const auto& wheelTransform : carData.liveTransforms.wheels) {
       _modelsCarWheelsMatrices.emplace_back(
-        wheelTransform.position, wheelTransform.orientation, k_scale, color, carData.life);
+        wheelTransform.position, wheelTransform.orientation, k_scale, color, currLifeValue);
     }
   }
 
