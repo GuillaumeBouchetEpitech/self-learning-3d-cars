@@ -260,10 +260,9 @@ ModelsRenderer::render() {
       // ignore the origin checkpoint
       carData.fitness > 0.5f &&
       // apply the effect after a checkpoint
-      carData.life >= 0.95f
-    ) {
+      carData.life >= 0.95f) {
       // force black color
-      color = glm::vec3(0,0,0);
+      color = glm::vec3(0, 0, 0);
       // very high value to ensure it's all black
       currLifeValue = 20.0f;
     }
