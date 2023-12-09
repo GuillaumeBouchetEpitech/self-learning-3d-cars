@@ -30,9 +30,6 @@ StateManager::StateManager() {
 
 #if defined D_WEB_WEBWORKER_BUILD
   _states.at(gero::asValue(States::WorkersLoading)) = std::make_unique<State_WebWorkersLoading>();
-#endif
-
-#if defined D_WEB_WEBWORKER_BUILD
   _currentState = States::WorkersLoading;
 #else
   _currentState = States::StartGeneration;

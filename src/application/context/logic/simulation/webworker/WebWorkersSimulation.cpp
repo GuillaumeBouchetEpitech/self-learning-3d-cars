@@ -9,18 +9,21 @@
 
 void
 WebWorkersSimulation::initialize(const Definition& def) {
-  if (def.totalGenomes == 0)
+  if (def.totalGenomes == 0) {
     D_THROW(
       std::invalid_argument, "received invalid number of total genomes"
                                << ", input=" << def.totalGenomes);
+  }
 
-  if (def.totalCores == 0)
+  if (def.totalCores == 0) {
     D_THROW(
       std::invalid_argument, "received invalid number of cores"
                                << ", input=" << def.totalCores);
+  }
 
-  if (!def.neuralNetworkTopology.isValid())
+  if (!def.neuralNetworkTopology.isValid()) {
     D_THROW(std::invalid_argument, "received invalid neural network topology");
+  }
 
   _def = def;
 
@@ -56,6 +59,8 @@ WebWorkersSimulation::initialize(const Definition& def) {
   workerDef.knots = circuit.getKnots(); // TODO: copy/reallocation
   workerDef.neuralNetworkTopology = def.neuralNetworkTopology;
 
+  D_MYLOG("web worker(s) -> loading (x" << _def.totalCores << ")");
+
   _workerProducers.reserve(def.totalCores);
   for (uint32_t coreIndex = 0; coreIndex < def.totalCores; ++coreIndex)
     _workerProducers.emplace_back(std::make_shared<WorkerProducer>(workerDef));
@@ -78,8 +83,11 @@ WebWorkersSimulation::update(float elapsedTime, uint32_t totalSteps) {
     // ask to reset if any worker(s) are not yet updated
     // => it should only happen the first time
 
-    if (_callbacks.onWorkersReady)
+    D_MYLOG("web worker(s) -> loaded (x" << _def.totalCores << ")");
+
+    if (_callbacks.onWorkersReady) {
       _callbacks.onWorkersReady();
+    }
 
     _resetAndProcessSimulation(elapsedTime, totalSteps);
     return;

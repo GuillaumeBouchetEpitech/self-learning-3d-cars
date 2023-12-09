@@ -31,6 +31,11 @@ using gero::graphics::SDLWindowWrapper;
 Application::Application(const Definition& def)
   : SDLWindowWrapper("Self Learning 3d Cars", def.width, def.height, k_frameRate, OpenGlEsVersion::v3, k_canResize) {
 
+  D_MYLOG("definition.width:        " << def.width);
+  D_MYLOG("definition.height:       " << def.height);
+  D_MYLOG("definition.totalGenomes: " << def.totalGenomes);
+  D_MYLOG("definition.totalCores:   " << def.totalCores);
+
   KeyboardManager::create();
   MouseManager::create();
   TouchManager::create();

@@ -29,7 +29,7 @@ State_WebWorkersLoading::handleEvent(const SDL_Event& event) {
 void
 State_WebWorkersLoading::update(float elapsedTime) {
   if (_awaiting == true) {
-    // only update to load the webworkers
+    // only update to load the web workers
     Context::get().logic.simulation->update(0.0f, 1);
   } else {
     // to ensure the message is visible (<= why the user waited)

@@ -21,14 +21,18 @@ namespace {
 
 void
 _validateInputs(uint32_t inWidth, uint32_t inHeight, uint32_t inTotalGenomes, uint32_t inTotalCores) {
-  if (inWidth < 800)
+  if (inWidth < 800) {
     D_THROW(std::runtime_error, "argument 0 (width) cannot be < 800");
-  if (inHeight < 600)
+  }
+  if (inHeight < 600) {
     D_THROW(std::runtime_error, "argument 1 (height) cannot be < 600");
-  if (inTotalGenomes < 100)
+  }
+  if (inTotalGenomes < 100) {
     D_THROW(std::runtime_error, "argument 2 (total genomes) cannot be < 100");
-  if (inTotalCores < 1)
+  }
+  if (inTotalCores < 1) {
     D_THROW(std::runtime_error, "argument 3 (total cores) cannot be < 1");
+  }
 }
 
 } // namespace

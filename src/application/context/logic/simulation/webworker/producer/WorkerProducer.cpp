@@ -79,7 +79,6 @@ WorkerProducer::_processMessage(const char* dataPointer, int dataSize) {
 
   switch (Messages::FromConsumer(messageType)) {
   case Messages::FromConsumer::WebWorkerLoaded: {
-    D_MYLOG("web worker loaded");
     _flags[gero::asValue(Status::WebWorkerLoaded)] = true;
     break;
   }

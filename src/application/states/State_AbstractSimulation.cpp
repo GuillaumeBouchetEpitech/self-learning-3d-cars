@@ -49,8 +49,9 @@ State_AbstractSimulation::handleEvent(const SDL_Event& event) {
 
   case SDL_MOUSEBUTTONDOWN: {
     mouse.updateAsPressed(event.button.button);
-    if (mouse.setLock(true))
+    if (mouse.setLock(true)) {
       mouse.resetDelta();
+    }
     break;
   }
   case SDL_MOUSEBUTTONUP: {
