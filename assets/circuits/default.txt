@@ -11,13 +11,22 @@ AGENTS_START_TRANSFORM    position="10.0,10.0,5.3"     quaternion="0.0,0.0,1.0,-
 # departure straight
 
     # starting rewards
-    NEXT_KNOTS_STATES   size="2" color="0.25,0.25,0.75"
+    NEXT_KNOTS_STATES   size="1" color="0.25,0.25,0.75"
 
     PUSH_KNOTS  left=" 5,15, 5"   right=" 5, 5, 5"
-    PUSH_KNOTS  left="90, 0, 0"   right="90, 0, 0"
 
     # increase distance to next reward(s)
     NEXT_KNOTS_STATES   size="6"
+
+    PUSH_KNOTS  left="15, 0, 0"   right="15, 0, 0"
+
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="10"
+
+    PUSH_KNOTS  left="90, 0, 0"   right="90, 0, 0"
+
+    # increase distance to next reward(s)
+    NEXT_KNOTS_STATES   size="12"
 
 # departure straight
 #

@@ -16,7 +16,7 @@ namespace constants {
 constexpr float steeringMaxValue = gero::math::opi;
 // constexpr float speedMaxValue = 10.0f;
 constexpr float speedMaxValue = 30.0f;
-constexpr float healthMaxValue = 3.2f;
+constexpr float healthMaxValue = 1.5f;
 
 constexpr float eyeMaxRange = 50.0f;
 constexpr float eyeHeight = 1.0f;

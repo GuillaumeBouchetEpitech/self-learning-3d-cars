@@ -375,7 +375,7 @@ CircuitBuilder::generateCircuitGeometry(
     const auto& tmpKnot = smoothedKnotsData.at(index);
     //
 
-    patchesPerKnot = 6U + std::size_t(tmpKnot.size) * 2U;
+    patchesPerKnot = std::size_t(tmpKnot.size);
 
     int indicesIndex = 0;
 
@@ -403,8 +403,9 @@ CircuitBuilder::generateCircuitGeometry(
       const glm::vec3 currNormal = gero::math::computeNormal(prevLeft, prevRight, currRight);
 
       // for the first time
-      if (stepIndex == startIndex)
+      if (stepIndex == startIndex) {
         prevNormal = currNormal;
+      }
 
       const glm::vec3 prevNormalLeft(prevNormal.x, prevNormal.z, prevNormal.y);
       const glm::vec3 currNormalLeft(currNormal.x, currNormal.z, currNormal.y);
