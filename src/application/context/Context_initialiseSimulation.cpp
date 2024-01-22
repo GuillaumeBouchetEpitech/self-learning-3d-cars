@@ -16,8 +16,8 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
   groundVertices.reserve(k_preallocedSize * 4);
   wallsVertices.reserve(k_preallocedSize * 8);
 
-  const glm::vec3 leftGreyColor = {1.0f, 1.0f, 1.0f};
-  const glm::vec3 rightGreyColor = {1.0f, 1.0f, 1.0f};
+  const glm::vec3 leftGreyColor = {0.6f, 0.6f, 0.6f};
+  const glm::vec3 rightGreyColor = {0.6f, 0.6f, 0.6f};
   const glm::vec3 whiteColor = {1.0f, 1.0f, 1.0f};
 
   const float maxFloat = std::numeric_limits<float>::max();

@@ -8,7 +8,6 @@
 #include "basic-genetic-algorithm/GeneticAlgorithm.hpp"
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
-#include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/metrics/HistoricalTimeData.hpp"
 #include "geronimo/system/multithreading/Producer.hpp"
 

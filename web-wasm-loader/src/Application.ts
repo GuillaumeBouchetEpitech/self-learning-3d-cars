@@ -21,10 +21,13 @@ export class Application {
 
   private _isInitialized: boolean = false;
   private _isAborted: boolean = false;
+  private _wasmApplicationStartFunc: (width: number, height: number, totalGenomes: number, totalCores: number) => void;
   private _wasmApplicationUpdateFunc: (deltaTime: number) => void;
   private _wasmApplicationRenderFunc: () => void;
   private _onProgress: (precent: number) => void;
   private _onError: (text: string) => void;
+
+  private _module: any;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -118,106 +121,173 @@ export class Application {
     //
     // multithreading support
 
+    await this._setupWasmApplication(
+      multithreadingSupported,
+      totalGenomes,
+      totalCores,
+      inLogger
+    );
+  }
+
+  private async _fetchWasmScript(
+    wasmFolder: string,
+    inLogger: Logger,
+  ): Promise<void> {
+
+    inLogger.log("[JS][wasm] fetching");
+    const fetchStartTime = Date.now();
+
+    // this will globally expose the function selfDriving3dCars()
+    await scriptLoadingUtility(`./${wasmFolder}/index.js`);
+
+    const fetchStopTime = Date.now();
+    const fetchElapsedTime = ((fetchStopTime - fetchStartTime) / 1000).toFixed(3);
+    inLogger.log(`[JS][wasm] fetched ${fetchElapsedTime}sec`);
+  }
+
+  private async _loadWasmApplication(
+    wasmFolder: string,
+    inLogger: Logger,
+  ): Promise<void> {
+
+    inLogger.log("[JS] loading");
+    const loadStartTime = Date.now();
+
+    const downloadingDataRegExp = /Downloading data\.\.\. \(([0-9]*)\/([0-9]*)\)/;
+    let lastProgressLevel = 0;
+
+    const moduleArgs = {
+      locateFile: (url: string) => `${wasmFolder}/${url}`,
+      print: (text: string) => { inLogger.log(`[C++][out] ${text}`); },
+      printErr: (text: string) => { inLogger.error(`[C++][err] ${text}`); },
+      setStatus: (text: string) => {
+
+        if (!text) {
+          return;
+        }
+
+        // is the current message a "Downloading data..." one?
+        const capture = downloadingDataRegExp.exec(text);
+        if (!capture) {
+          // no -> just a regular status message
+          inLogger.log(`[JS][wasm][status] ${text}`);
+          return;
+        }
+
+        const current = parseFloat(capture[1]);
+        const total = parseFloat(capture[2]);
+        const percent = Math.floor((current / total) * 100);
+
+        if (lastProgressLevel === percent) {
+          return;
+        }
+
+        lastProgressLevel = percent;
+        this._onProgress(percent);
+      },
+      onRuntimeInitialized: () => {
+        inLogger.log("[JS][wasm] runtime initialized");
+      },
+      canvas: this._canvas,
+      preinitializedWebGLContext: this._webglCtx,
+      noInitialRun: true,
+      noExitRuntime: true,
+    };
+
+    // @ts-ignore
+    this._module = await selfDriving3dCars(moduleArgs);
+
+    const loadStopTime = Date.now();
+    const loadElapsedTime = ((loadStopTime - loadStartTime) / 1000).toFixed(3);
+    inLogger.log(`[JS] loaded ${loadElapsedTime}sec`);
+
+  }
+
+  private _initializeWasmApplication(inLogger: Logger): void {
+
+    inLogger.log("[JS][wasm] initializing");
+    const initStartTime = Date.now();
+
+    const wasmFunctions = {
+      startApplication: this._module.cwrap('startApplication', undefined, ['number', 'number', 'number', 'number']),
+      updateApplication: this._module.cwrap('updateApplication', undefined, ['number']),
+      renderApplication: this._module.cwrap('renderApplication', undefined, []),
+    };
+
+    this._wasmApplicationStartFunc = wasmFunctions.startApplication;
+    this._wasmApplicationUpdateFunc = wasmFunctions.updateApplication;
+    this._wasmApplicationRenderFunc = wasmFunctions.renderApplication;
+
+    this._isInitialized = true;
+
+    const initStopTime = Date.now();
+    const initElapsedTime = ((initStopTime - initStartTime) / 1000).toFixed(3);
+    inLogger.log(`[JS][wasm] initialized ${initElapsedTime}sec`);
+
+  }
+
+  private async _setupWasmApplication(
+    multithreadingSupported: boolean,
+    totalGenomes: number,
+    totalCores: number,
+    inLogger: Logger,
+  ): Promise<void> {
+
     const wasmFolder = `wasm/${multithreadingSupported ? "pthread" : "webworker"}`;
 
-    return new Promise((resolve, reject) => {
+    //
+    //
+    //
 
-      //
-      //
-      // setup the wasm module
+    await this._fetchWasmScript(wasmFolder, inLogger);
+    await this._loadWasmApplication(wasmFolder, inLogger);
+    this._initializeWasmApplication(inLogger);
 
-      const Module = {
-        downloadingDataRegExp: /Downloading data\.\.\. \(([0-9]*)\/([0-9]*)\)/,
-        lastProgressLevel: 0,
-        locateFile: (url: string) => { return `${wasmFolder}/${url}`; },
-        print: (text: string) => { inLogger.log(`[C++][out] ${text}`); },
-        printErr: (text: string) => { inLogger.error(`[C++][err] ${text}`); },
-        setStatus: (text: string) => {
+    //
+    //
+    //
 
-          if (!text)
-            return;
+    inLogger.log("[JS][wasm] running");
 
-          // is the current message a "Downloading data..." one?
-          const capture = Module.downloadingDataRegExp.exec(text);
-          if (capture) {
-
-            const current = parseFloat(capture[1]);
-            const total = parseFloat(capture[2]);
-            const percent = Math.floor((current / total) * 100);
-
-            if (Module.lastProgressLevel !== percent) {
-              Module.lastProgressLevel = percent;
-              this._onProgress(percent);
-            }
-          }
-          else {
-            inLogger.log(`[JS][wasm][status] ${text}`);
-          }
-        },
-        onRuntimeInitialized: () => {
-
-          inLogger.log("[JS][wasm] loaded");
-          inLogger.log("[JS][wasm] initialising");
-
-          const wasmFunctions = {
-            startApplication: (window as any).Module.cwrap('startApplication', undefined, ['number', 'number', 'number', 'number']),
-            updateApplication: (window as any).Module.cwrap('updateApplication', undefined, ['number']),
-            renderApplication: (window as any).Module.cwrap('renderApplication', undefined, []),
-          };
-
-          this._wasmApplicationUpdateFunc = wasmFunctions.updateApplication;
-          this._wasmApplicationRenderFunc = wasmFunctions.renderApplication;
-
-          wasmFunctions.startApplication(this._width, this._height, totalGenomes, totalCores);
-
-          this._isInitialized = true;
-
-          inLogger.log("[JS][wasm] initialized");
-
-          resolve();
-        },
-        canvas: this._canvas,
-        preinitializedWebGLContext: this._webglCtx,
-        noInitialRun: true,
-        noExitRuntime: true,
-      };
-
-      // this is needed by the wasm side
-      (window as any).Module = Module;
-
-      inLogger.log("[JS][wasm] loading");
-      scriptLoadingUtility(`./${wasmFolder}/index.js`).catch(reject);
-    });
+    this._wasmApplicationStartFunc(this._width, this._height, totalGenomes, totalCores);
   }
 
-  update(deltaTime: number) {
-    if (!this._isInitialized || this._isAborted)
+  update(deltaTime: number): void {
+    if (!this._isInitialized || this._isAborted) {
       return;
+    }
 
-    if (this._wasmApplicationUpdateFunc)
+    if (this._wasmApplicationUpdateFunc) {
       this._wasmApplicationUpdateFunc(deltaTime);
+    }
   }
 
-  render() {
-    if (!this._isInitialized || this._isAborted)
+  render(): void {
+    if (!this._isInitialized || this._isAborted) {
       return;
+    }
 
-    if (this._wasmApplicationRenderFunc)
+    if (this._wasmApplicationRenderFunc) {
       this._wasmApplicationRenderFunc();
+    }
   }
 
   abort(): void {
 
-    if (!this._isInitialized || this._isAborted)
+    if (!this._isInitialized || this._isAborted) {
       return;
+    }
 
     this._isAborted = true;
-    const currModule = (window as any).Module;
-    if (currModule) {
-      currModule.setStatus = (text: string) => {
-        if (text)
-          console.error(`[JS][wasm][aborted] ${text}`);
-      };
+
+    if (!this._module) {
+      return;
     }
+
+    this._module.setStatus = (text: string) => {
+      if (text) {
+        console.error(`[JS][wasm][aborted] ${text}`);
+      }
+    };
   }
 };

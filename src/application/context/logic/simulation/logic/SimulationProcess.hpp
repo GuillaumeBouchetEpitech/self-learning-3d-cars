@@ -8,7 +8,7 @@
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
-#include "geronimo/physics/PhysicWorld.hpp"
+#include "geronimo/physics/AbstractPhysicWorld.hpp"
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/metrics/HistoricalTimeData.hpp"
 
@@ -54,7 +54,7 @@ public:
   const gero::metrics::HistoricalTimeData& getHistoricalTimeData() const;
 
 private:
-  std::unique_ptr<gero::physics::PhysicWorld> _physicWorld;
+  std::unique_ptr<gero::physics::AbstractPhysicWorld> _physicWorld;
 
   std::vector<std::shared_ptr<AgentValues>> _allAgentValues;
 

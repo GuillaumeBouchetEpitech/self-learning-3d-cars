@@ -358,7 +358,7 @@ CarAgent::_collideGroundSensor() {
 }
 
 void
-CarAgent::reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion) {
+CarAgent::reset(gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion) {
   _fitness = 0;
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;
@@ -431,7 +431,7 @@ CarAgent::getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) con
 }
 
 bool
-CarAgent::isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const {
+CarAgent::isOwnedByPhysicWorld(const gero::physics::AbstractPhysicWorld* inPhysicWorld) const {
   return _physicWorld == inPhysicWorld;
 }
 

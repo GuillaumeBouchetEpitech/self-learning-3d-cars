@@ -41,7 +41,7 @@ void
 SimulationProcess::reset() {
   _allAgentValues.clear();
 
-  _physicWorld = std::make_unique<gero::physics::PhysicWorld>();
+  _physicWorld = gero::physics::AbstractPhysicWorld::create();
 
   { // generate circuit
 

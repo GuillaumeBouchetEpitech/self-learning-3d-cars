@@ -279,6 +279,8 @@ LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scen
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/models-car/shaders
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/scene-stack-renderers/shaders
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders
+LDFLAGS += -s EXPORT_NAME="selfDriving3dCars"
+LDFLAGS += -s MODULARIZE=1
 
 # pthread build: the application need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.
@@ -304,6 +306,8 @@ LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scen
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/models-car/shaders
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/scene-stack-renderers/shaders
 LDFLAGS += --preload-file $(DIR_SRC)/application/context/graphics/renderers/scene/shape-stack-renderer/internals/shaders
+LDFLAGS += -s EXPORT_NAME="selfDriving3dCars"
+LDFLAGS += -s MODULARIZE=1
 
 # webworker build: main script need more memory
 LDFLAGS += -s TOTAL_MEMORY=256Mb # 16Kb, 256Mb, etc.

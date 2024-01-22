@@ -3,7 +3,7 @@
 
 #include "CarData.hpp"
 
-#include "geronimo/physics/PhysicWorld.hpp"
+#include "geronimo/physics/AbstractPhysicWorld.hpp"
 #include "geronimo/physics/vehicle/AbstractPhysicVehicle.hpp"
 
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
@@ -32,7 +32,7 @@ public: // ctor/dtor
 
 public: // method(s)
   void update(float elapsedTime, NeuralNetwork& nn);
-  void reset(gero::physics::PhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion);
+  void reset(gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion);
 
   void getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const;
 
@@ -43,7 +43,7 @@ private: // method(s)
   bool _collideGroundSensor();
 
 public: // setter(s)/getter(s)
-  bool isOwnedByPhysicWorld(const gero::physics::PhysicWorld* inPhysicWorld) const;
+  bool isOwnedByPhysicWorld(const gero::physics::AbstractPhysicWorld* inPhysicWorld) const;
   const Sensors& getEyeSensors() const;
   const Sensor& getGroundSensor() const;
   float getFitness() const;
@@ -57,7 +57,7 @@ public: // setter(s)/getter(s)
   uint32_t getTotalUpdates() const;
 
 private: // attributes
-  gero::physics::PhysicWorld* _physicWorld = nullptr;
+  gero::physics::AbstractPhysicWorld* _physicWorld = nullptr;
   gero::physics::VehicleWeakRef _physicVehicle;
   gero::physics::BodyWeakRef _physicBody;
 

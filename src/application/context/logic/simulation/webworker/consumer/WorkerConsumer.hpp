@@ -8,7 +8,6 @@
 #include "basic-genetic-algorithm/NeuralNetwork.hpp"
 
 #include "geronimo/helpers/GLMath.hpp"
-#include "geronimo/physics/PhysicWorld.hpp"
 #include "geronimo/system/NonCopyable.hpp"
 #include "geronimo/system/messaging/MessageBuffer.hpp"
 #include "geronimo/system/messaging/MessageView.hpp"
