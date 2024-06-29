@@ -36,11 +36,21 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
 
       direction LR
 
-      run1[set the<br>genomes and<br>their vehicles]
-      run2[try all<br>the genomes]
-      run3[rate all<br>the genomes]
+      run1["
+        set the agents
 
-      run1 --> run2 --> run3
+        genomes
+        artificial neural networks
+        car agents logic
+        physic vehicles
+      "]
+      run2["
+        run the simulation
+        until all genomes
+        are done and rated
+      "]
+
+      run1 --> run2
 
     end
 
@@ -49,31 +59,31 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
       direction LR
 
       evo1["
-      Natural Selection
-
-      Select the
-      best genomes
+        Evolving
+        (Natural Selection)
       "]
       evo2["
-      Elitism -> 10%
+        Elitism -> 10%
 
-      cross breed
-      the best genomes
-      mutate the newly
-      bred genomes
+        Select and keep some
+        of the best genomes
       "]
       evo3["
-      Reproduction and
-      Mutation -> 80%
+        Reproduction and
+        Mutation -> 80%
 
-      fill the
-      generation with
-      random genomes
+        cross breed
+        the best genomes
+        mutate the newly
+        bred genomes
       "]
       evo4["
-      Diversity
+        Diversity -> anything left
 
-      anything left"]
+        fill the
+        generation with
+        random genomes
+      "]
 
       evo1 --> evo2 --> evo3 --> evo4
 
@@ -111,6 +121,51 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
     GENETIC-ALGORITHM ||--|{ NEURAL-NETWORK : manage
     GENOME ||--|| NEURAL-NETWORK : use
     CAR ||--|| NEURAL-NETWORK : use
+
+```
+
+### WebAssembly Webworker version
+
+```mermaid
+
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#242424',
+      'primaryTextColor': '#DDD',
+      'primaryBorderColor': '#000',
+      'lineColor': '#A0A0A0',
+      'secondaryColor': '#454545',
+      'tertiaryColor': '#353535'
+    }
+  }
+}%%
+
+  flowchart TB
+
+
+    main["
+      MAIN WASM
+
+      setup worker
+
+      request new simulation frames to the workers
+
+      render an interpolated simulation frame
+    "]
+
+    worker["
+      WORKER WASM
+
+      reset simulation
+
+      process simulation and generate a frame
+
+      add X new car agent(s) to the simulation
+    "]
+
+    main <--> worker
 
 ```
 

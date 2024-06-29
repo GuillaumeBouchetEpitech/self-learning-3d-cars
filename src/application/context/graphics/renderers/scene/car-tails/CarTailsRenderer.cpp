@@ -2,7 +2,6 @@
 #include "CarTailsRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/graphicsAliases.hpp"
 
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"

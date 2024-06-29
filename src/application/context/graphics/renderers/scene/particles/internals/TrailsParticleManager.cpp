@@ -2,10 +2,7 @@
 #include "TrailsParticleManager.hpp"
 
 #include "application/context/Context.hpp"
-// #include "application/context/graphics/graphicsAliases.hpp"
 
-// #include "geronimo/graphics/make-geometries/MakeGeometries.hpp"
-// #include "geronimo/system/asValue.hpp"
 #include "geronimo/system/rng/RandomNumberGenerator.hpp"
 
 //

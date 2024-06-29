@@ -45,10 +45,10 @@ class Logger {
     this._divElement.innerHTML = this._lines
       .map(line => {
 
-        if (/^(\[JS\]).*$/.test(line)) {
+        if (line.indexOf("[JS]") === 0) {
           return `<span style="color: rgb(200,200,150);">${line}</span>`;
         }
-        if (/^(\[C\+\+\]).*$/.test(line)) {
+        if (line.indexOf("[C++]") === 0) {
           return `<span style="color: rgb(150,150,200);">${line}</span>`;
         }
         return line;

@@ -163,11 +163,11 @@ func_handle_third_parties() {
     #
     #
 
-    cd $DIR_ROOT/thirdparties/dependencies/geronimo
+    cd $DIR_DEPENDENCIES/geronimo
 
     sh sh_everything.sh
 
-    export DIR_LIB_GERONIMO=$DIR_ROOT/thirdparties/dependencies/geronimo
+    export DIR_LIB_GERONIMO=$DIR_DEPENDENCIES/geronimo
 
     cd $DIR_ROOT
 
@@ -179,7 +179,7 @@ func_handle_third_parties() {
     echo "# native version"
     echo "#"
 
-    cd $DIR_ROOT/thirdparties/dependencies/basic-genetic-algorithm
+    cd $DIR_DEPENDENCIES/basic-genetic-algorithm
 
     make build_mode="release" build_platform="native" all -j4
 
@@ -267,10 +267,65 @@ func_build_wasm_loader_webapp() {
   #
   #
 
-  cd $DIR_ROOT/web-wasm-loader
-  bun install
-  npm run build
-  npm run update-dist
+  cd $DIR_ROOT
+
+  if [ -f "./dist/index.js" ]
+  then
+
+    echo " ===> 'dist' folder content up to date"
+    echo " =====> skipping further checks"
+
+  else
+
+    echo " ===> 'dist' folder content is missing"
+    echo " =====> checking"
+
+    #
+    #
+    #
+
+    cd $DIR_ROOT/web-wasm-loader
+
+    if [ -f "./js/bundle.js" ]
+    then
+      echo " =====> up to date bundle.js"
+      echo " =======> skip bundling"
+    else
+      echo " =====> outdated bundle.js"
+      echo " =======> bundling"
+
+      #
+      #
+      #
+
+      if [ -d "./node_modules" ]
+      then
+        echo " =====> up to date dependencies"
+        echo " =======> skip install"
+      else
+        echo " =====> missing dependencies"
+        echo " =======> installing"
+
+        npm install
+      fi
+
+      #
+      #
+      #
+
+      npm run release
+    fi
+
+    #
+    #
+    #
+
+    echo " ===> updating the 'dist' folder"
+
+    npm run update-dist
+
+  fi
+
   cd $DIR_ROOT
 
 }

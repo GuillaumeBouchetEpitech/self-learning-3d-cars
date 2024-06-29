@@ -2,7 +2,6 @@
 #include "ChessBoardFloorRenderer.hpp"
 
 #include "application/context/Context.hpp"
-#include "application/context/graphics/graphicsAliases.hpp"
 
 #include "geronimo/graphics/GeometryBuilder.hpp"
 #include "geronimo/graphics/GlContext.hpp"
@@ -65,7 +64,7 @@ ChessBoardFloorRenderer::initialize(const glm::vec3& center, const glm::vec3& si
     for (int32_t yy = 0; yy < size.y; ++yy)
       for (int32_t xx = 0; xx < size.x; ++xx) {
         if ((xx < size.x * 0.5f && yy < size.y * 0.5f) || (xx > size.x * 0.5f && yy > size.y * 0.5f)) {
-          setPixel(xx, yy, 64, 200);
+          setPixel(xx, yy, 64, 150);
         } else {
           setPixel(xx, yy, 128, 255);
         }

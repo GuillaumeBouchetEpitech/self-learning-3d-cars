@@ -206,7 +206,7 @@ DEPENDENCIES_CXXFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --cflags)
 DEPENDENCIES_LDFLAGS += $(shell pkg-config $(DEPENDENCIES_LIST) --libs)
 
 CXXFLAGS += $(BUILD_FLAG)
-CXXFLAGS += -std=c++17
+CXXFLAGS += -std=c++20
 CXXFLAGS += -Wall -W -Wextra -Wunused
 CXXFLAGS += -I$(DIR_SRC)
 CXXFLAGS += -I$(DIR_LIB_BASIC_GENETIC_ALGORITHM)/src
@@ -215,7 +215,7 @@ CXXFLAGS += -I$(DIR_LIB_GERONIMO)/thirdparties
 
 ifeq ($(build_platform),native-pthread)
 
-CXX=clang++
+CXX=g++
 AR=ar
 
 CXXFLAGS += $(DEPENDENCIES_CXXFLAGS)
