@@ -16,10 +16,10 @@ layout(location = 1) out vec4 out_outline;
 
 float getDiffuseLightingRatio(vec3 lightPos, vec3 normal, vec3 worldPos)
 {
-  normal = normalize(normal);
+  // normal = normalize(normal);
   vec3 lightDir = normalize(lightPos - worldPos);
 
-  return max(dot(lightDir, normal), 0.0);
+  return max(dot(lightDir, normal), 0.2);
 }
 
 void main(void)
@@ -32,7 +32,7 @@ void main(void)
     v_worldSpacePosition
   );
 
-  out_color = vec4(texColor.rgb * (k_ambiantCoef + diffuseLightRatio), texColor.a);
+  out_color = vec4(texColor.rgb * (k_ambiantCoef + diffuseLightRatio * 0.8), texColor.a);
 
   out_outline = vec4(0.0);
 }

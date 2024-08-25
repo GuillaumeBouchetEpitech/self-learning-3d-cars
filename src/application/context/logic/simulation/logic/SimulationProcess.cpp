@@ -68,7 +68,7 @@ SimulationProcess::reset() {
       bodyDef.mask = gero::asValue(Masks::ground);
 
       auto body = _physicWorld->getPhysicBodyManager().createAndAddBody(bodyDef);
-      body->setFriction(1.0f);
+      body->setFriction(0.0f);
       body->setUserValue(groundIndex++);
     };
 
@@ -128,8 +128,9 @@ SimulationProcess::process(float elapsedTime) {
   for (auto currValues : _allAgentValues) {
     auto& carAgent = currValues->carAgent;
 
-    if (!carAgent.isAlive())
+    if (!carAgent.isAlive()) {
       continue;
+    }
 
     carAgent.update(elapsedTime, currValues->neuralNet);
 
@@ -164,7 +165,7 @@ void
 SimulationProcess::addNewCar(uint32_t dataIndex, const float* inWeightsData, std::size_t inWeightsLength) {
   auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
   newValues->neuralNet.setConnectionsWeights(inWeightsData, inWeightsLength);
-  newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion);
+  newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion, _startTransform.linearVelocity);
 
   _allAgentValues.emplace_back(newValues);
 }

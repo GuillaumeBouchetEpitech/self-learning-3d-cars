@@ -32,7 +32,7 @@ public: // ctor/dtor
 
 public: // method(s)
   void update(float elapsedTime, NeuralNetwork& nn);
-  void reset(gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion);
+  void reset(gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion, const glm::vec3& linearVelocity);
 
   void getAsCarData(const NeuralNetwork& inNeuralNet, CarData& inCarData) const;
 

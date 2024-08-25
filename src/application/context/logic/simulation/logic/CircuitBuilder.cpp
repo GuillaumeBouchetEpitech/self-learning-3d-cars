@@ -47,10 +47,12 @@ private:
 public:
   CircuitParser(CircuitBuilder::StartTransform& startTransform, CircuitBuilder::Knots& rawKnots)
     : _startTransform(startTransform), _rawKnots(rawKnots) {
+
     {
       // AGENTS_START_TRANSFORM
       //   position="{float},{float},{float}"
       //   quaternion="{float},{float},{float},{float}"
+      //   linear-vel="{float},{float},{float}"
 
       _commandsMap[std::string(cmd_name_agent_start_transform)] = [this](std::istringstream& isstr) {
         _regexpParser.setErrorHint(cmd_name_agent_start_transform);
@@ -59,6 +61,8 @@ public:
             _startTransform.position = _regexpParser.get3F(value, -10000.0f, +10000.0f);
           } else if (key == "quaternion") {
             _startTransform.quaternion = _regexpParser.get4F(value, -10000.0f, +10000.0f);
+          } else if (key == "linear-vel") {
+            _startTransform.linearVelocity = _regexpParser.get3F(value, -10000.0f, +10000.0f);
           }
         });
       };

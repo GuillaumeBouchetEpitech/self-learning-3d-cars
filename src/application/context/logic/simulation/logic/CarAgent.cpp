@@ -154,7 +154,7 @@ CarAgent::_createVehicle() {
 
   _physicBody = physicBodyManager.createAndAddBody(bodyDef);
   _physicBody->setPosition({30, 30, 5});
-  _physicBody->setFriction(1.0f);
+  _physicBody->setFriction(0.0f);
   _physicBody->disableSleep();
 
   //
@@ -200,7 +200,7 @@ CarAgent::_createVehicle() {
   // roll, 1.0 = physical behaviour. If m_frictionSlip is too high, you'll need
   // to reduce this to stop the vehicle rolling over. You should also try
   // lowering the vehicle's centre of mass
-  constexpr float rollInfluence = 0.5f;
+  constexpr float rollInfluence = 0.4f;
 
   gero::physics::PhysicVehicleDef vehicleDef;
   vehicleDef.body = _physicBody;
@@ -359,7 +359,7 @@ CarAgent::_collideGroundSensor() {
 
 void
 CarAgent::reset(
-  gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion) {
+  gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion, const glm::vec3& linearVelocity) {
   _fitness = 0;
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;
@@ -380,6 +380,7 @@ CarAgent::reset(
   _updateSensors();
 
   _physicVehicle->reset();
+  _physicVehicle->getPhysicBody()->applyCentralImpulse(linearVelocity);
 }
 
 void
