@@ -148,7 +148,7 @@ CarAgent::_createVehicle() {
     bodyDef.shape.data.compound.childShapes.push_back(childShape);
   }
 
-  bodyDef.mass = 5.0f;
+  bodyDef.mass = 3.0f;
   bodyDef.group = gero::asValue(Groups::vehicle);
   bodyDef.mask = gero::asValue(Groups::ground);
 
@@ -200,7 +200,7 @@ CarAgent::_createVehicle() {
   // roll, 1.0 = physical behaviour. If m_frictionSlip is too high, you'll need
   // to reduce this to stop the vehicle rolling over. You should also try
   // lowering the vehicle's centre of mass
-  constexpr float rollInfluence = 0.4f;
+  constexpr float rollInfluence = 0.2f;
 
   gero::physics::PhysicVehicleDef vehicleDef;
   vehicleDef.body = _physicBody;

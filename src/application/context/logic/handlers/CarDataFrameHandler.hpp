@@ -44,4 +44,6 @@ private:
   AllCarsData _allCarsData;
 
   GenomeDieCallback _onGenomeDieCallback;
+
+  uint32_t _totalRendered = 0;
 };

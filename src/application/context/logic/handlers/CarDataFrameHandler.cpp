@@ -58,12 +58,20 @@ CarDataFrameHandler::pushNewFrame(const AbstractSimulation& simulation) {
 void
 CarDataFrameHandler::update(float deltaTime) {
 
+  // we only proceed if we have 3 frames or more
   if (_usedFrames.size() <= 2) {
     return;
   }
 
   _interpolationValue += deltaTime;
-  if (_interpolationValue > _logicFrameDuration) {
+  if (
+    // ensure at least one rendering frame was displayed
+    _totalRendered > 0 &&
+    // need new frame
+    _interpolationValue > _logicFrameDuration
+  ) {
+
+    _totalRendered = 0;
 
     // add latest frame
     _unusedFrames.push_back(std::move(_usedFrames.front()));
@@ -100,9 +108,10 @@ CarDataFrameHandler::update(float deltaTime) {
     }
   }
 
-  // if (_usedFrames.size() <= 2) {
-  //   return;
-  // }
+  ++_totalRendered;
+
+  // at this point of the logic we should always have at least 2 frames
+  // -> now we just need to interpolate between those 2 frames
 
   const float rawCoef = _interpolationValue / _logicFrameDuration;
   const float coef = gero::math::clamp(rawCoef, 0.0f, 1.0f);

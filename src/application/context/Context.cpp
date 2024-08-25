@@ -27,7 +27,7 @@ Context::_initialize(uint32_t width, uint32_t height, uint32_t totalGenomes, uin
 
   logic.simulation = AbstractSimulation::create();
 
-  constexpr float k_logicFrameDuration = 1.0f / 60.0f;
+  constexpr float k_logicFrameDuration = 1.0f / 55.0f;
   logic.carDataFrameHandler.initialize(totalGenomes, k_logicFrameDuration);
 
   _initializeSimulationCallbacks();

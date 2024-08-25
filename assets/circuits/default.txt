@@ -3,7 +3,7 @@
 
 # above the first straight of the crcuit
 # cars are facing Y+ axis, rotate car toward X+ axis
-AGENTS_START_TRANSFORM    position="10.0,10.0,5.3"     quaternion="0.0,0.0,1.0,-1.0"
+AGENTS_START_TRANSFORM    position="10.0,10.0,5.3"     quaternion="0.0,0.0,1.0,-1.0"   linear-vel="0.0,0.0,0.0"
 
 
 #
@@ -48,11 +48,11 @@ NEXT_KNOTS_STATES   size="10"
 
     NEXT_KNOTS_STATES   color="0.25,0.75,0.25"
 
-    PUSH_KNOTS  left="50,50,6"     right="60,60,6"
-    PUSH_KNOTS  left="-50,50,6"    right="-60,60,6"
+    PUSH_KNOTS  left="40,40,6"     right="50,50,6"
+    PUSH_KNOTS  left="-40,40,6"    right="-50,50,6"
 
-    PUSH_KNOTS  left="-50,-50,6"   right="-60,-60,6"
-    PUSH_KNOTS  left="50,-50,6"    right="60,-60,6"
+    PUSH_KNOTS  left="-40,-40,6"   right="-50,-50,6"
+    PUSH_KNOTS  left="40,-40,6"    right="50,-50,6"
 
 # /horizontal loop (left)
 #
@@ -62,9 +62,9 @@ NEXT_KNOTS_STATES   size="10"
 NEXT_KNOTS_STATES   color="0.15,0.15,0.15"
 
 # twist the road (left to right)
-PUSH_KNOTS       left="40,0,7"     right="40,0,0"
-PUSH_KNOTS       left="80,0,0"     right="80,0,0"
-PUSH_KNOTS       left="40,0,7"     right="40,0,0"
+PUSH_KNOTS       left="30,0,7"     right="30,0,0"
+PUSH_KNOTS       left="60,0,0"     right="60,0,0"
+PUSH_KNOTS       left="30,0,7"     right="30,0,0"
 
 
 #
@@ -73,11 +73,11 @@ PUSH_KNOTS       left="40,0,7"     right="40,0,0"
 
     NEXT_KNOTS_STATES   color="0.75,0.25,0.75"
 
-    PUSH_KNOTS  left="60,-60,6"    right="50,-50,6"
-    PUSH_KNOTS  left="-60,-60,6"   right="-50,-50,6"
+    PUSH_KNOTS  left="50,-50,6"    right="40,-40,6"
+    PUSH_KNOTS  left="-50,-50,6"   right="-40,-40,6"
 
-    PUSH_KNOTS  left="-60,60,6"    right="-50,50,6"
-    PUSH_KNOTS  left="60,60,6"     right="50,50,6"
+    PUSH_KNOTS  left="-50,50,6"    right="-40,40,6"
+    PUSH_KNOTS  left="50,50,6"     right="40,40,6"
 
 # /horizontal loop (right)
 #
