@@ -359,7 +359,8 @@ CarAgent::_collideGroundSensor() {
 
 void
 CarAgent::reset(
-  gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion, const glm::vec3& linearVelocity) {
+  gero::physics::AbstractPhysicWorld* inPhysicWorld, const glm::vec3& position, const glm::vec4& quaternion,
+  const glm::vec3& linearVelocity) {
   _fitness = 0;
   _totalUpdateNumber = 0;
   _health = constants::healthMaxValue;

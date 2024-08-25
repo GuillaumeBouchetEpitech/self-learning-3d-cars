@@ -165,7 +165,8 @@ void
 SimulationProcess::addNewCar(uint32_t dataIndex, const float* inWeightsData, std::size_t inWeightsLength) {
   auto newValues = std::make_shared<AgentValues>(dataIndex, _neuralNetworkTopology);
   newValues->neuralNet.setConnectionsWeights(inWeightsData, inWeightsLength);
-  newValues->carAgent.reset(_physicWorld.get(), _startTransform.position, _startTransform.quaternion, _startTransform.linearVelocity);
+  newValues->carAgent.reset(
+    _physicWorld.get(), _startTransform.position, _startTransform.quaternion, _startTransform.linearVelocity);
 
   _allAgentValues.emplace_back(newValues);
 }

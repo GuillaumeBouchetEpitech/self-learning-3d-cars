@@ -16,7 +16,7 @@ public:
   struct StartTransform {
     glm::vec3 position;
     glm::vec4 quaternion;
-    glm::vec3 linearVelocity{0.0f,0.0f,0.0f};
+    glm::vec3 linearVelocity{0.0f, 0.0f, 0.0f};
   };
 
   struct Knot {

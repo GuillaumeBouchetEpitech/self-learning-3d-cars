@@ -68,8 +68,7 @@ CarDataFrameHandler::update(float deltaTime) {
     // ensure at least one rendering frame was displayed
     _totalRendered > 0 &&
     // need new frame
-    _interpolationValue > _logicFrameDuration
-  ) {
+    _interpolationValue > _logicFrameDuration) {
 
     _totalRendered = 0;
 

@@ -54,12 +54,12 @@ PthreadSimulation::initialize(const Definition& def) {
 
   _geneticAlgorithm.initialize(genAlgoDef);
 
-// #if defined D_WEB_BUILD
-//   // blocking on the main thread of the browser is not advised...
+  // #if defined D_WEB_BUILD
+  //   // blocking on the main thread of the browser is not advised...
   constexpr bool k_avoidBlocking = true;
-// #else
-//   constexpr bool k_avoidBlocking = false;
-// #endif
+  // #else
+  //   constexpr bool k_avoidBlocking = false;
+  // #endif
 
   _multithreadProducer.initialize(_def.totalCores, k_avoidBlocking);
 
