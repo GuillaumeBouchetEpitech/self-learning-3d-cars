@@ -3,7 +3,7 @@
 
 # above the first straight of the crcuit
 # cars are facing Y+ axis, rotate car toward X+ axis
-AGENTS_START_TRANSFORM    position="10.0,10.0,5.3"     quaternion="0.0,0.0,1.0,-1.0"   linear-vel="0.0,0.0,0.0"
+AGENTS_START_TRANSFORM    position="10.0,10.0,5.5"     quaternion="0.0,0.0,1.0,-1.0"   linear-vel="0.0,0.0,0.0"
 
 
 #

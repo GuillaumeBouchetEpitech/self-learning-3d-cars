@@ -231,10 +231,10 @@ State_AbstractSimulation::_updateCameraTracking(float elapsedTime) {
 
     if (auto leaderPos = leaderCar.leaderPosition()) {
       cameraNextCenter = *leaderPos;
-      cameraNextDistance = 40.0f;
+      cameraNextDistance = 60.0f;
     } else {
       cameraNextCenter = simulation.getStartPosition();
-      cameraNextDistance = 60.0f;
+      cameraNextDistance = 80.0f;
     }
   }
 

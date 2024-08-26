@@ -15,7 +15,8 @@ namespace constants {
 
 constexpr float steeringMaxValue = gero::math::opi;
 // constexpr float speedMaxValue = 10.0f;
-constexpr float speedMaxValue = 30.0f;
+// constexpr float speedMaxValue = 30.0f;
+constexpr float speedMaxValue = 25.0f;
 constexpr float healthMaxValue = 1.5f;
 
 constexpr float eyeMaxRange = 50.0f;
@@ -167,10 +168,10 @@ CarAgent::_createVehicle() {
   constexpr float wheelSide = wheelWidth * 0.3f;
 
   // The maximum length of the suspension (metres)
-  constexpr float suspensionRestLength = 0.3f;
+  constexpr float suspensionRestLength = 0.5f;
 
   // The maximum distance the suspension can be compressed (centimetres)
-  constexpr float maxSuspensionTravelCm = 20.0f; // <= 0.2 metres
+  constexpr float maxSuspensionTravelCm = 40.0f; // <= 0.4 metres
 
   // The coefficient of friction between the tyre and the ground.
   // Should be about 0.8 for realistic cars, but can increased for better
@@ -200,7 +201,7 @@ CarAgent::_createVehicle() {
   // roll, 1.0 = physical behaviour. If m_frictionSlip is too high, you'll need
   // to reduce this to stop the vehicle rolling over. You should also try
   // lowering the vehicle's centre of mass
-  constexpr float rollInfluence = 0.2f;
+  constexpr float rollInfluence = 0.0f;
 
   gero::physics::PhysicVehicleDef vehicleDef;
   vehicleDef.body = _physicBody;
