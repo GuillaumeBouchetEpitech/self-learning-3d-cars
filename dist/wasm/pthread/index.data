@@ -249,9 +249,9 @@ NEXT_KNOTS_STATES   size="10"
 NEXT_KNOTS_STATES   color="0.15,0.15,0.15"
 
 # twist the road (left to right)
-PUSH_KNOTS       left="30,0,7"     right="30,0,0"
-PUSH_KNOTS       left="60,0,0"     right="60,0,0"
-PUSH_KNOTS       left="30,0,7"     right="30,0,0"
+PUSH_KNOTS       left="60,0,13"     right="60,0,6"
+PUSH_KNOTS       left="60,0,12"     right="60,0,12"
+PUSH_KNOTS       left="60,0,13"     right="60,0,6"
 
 
 #
