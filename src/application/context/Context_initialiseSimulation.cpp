@@ -131,7 +131,7 @@ Context::_initializeSimulation(uint32_t totalGenomes, uint32_t totalCores) {
     }
   };
 
-  logic.annTopology.init({16, 7, 5, 2}, /*useBiasNeuron =*/true);
+  logic.annTopology.init({16, 5, 2}, /*useBiasNeuron =*/true);
 
   logic.cores.totalGenomes = totalGenomes;
   logic.cores.totalCores = totalCores;
