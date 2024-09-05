@@ -282,7 +282,7 @@ PUSH_KNOTS  left="30,0,-7"     right="30,0,0"
 NEXT_KNOTS_STATES   color="0.25,0.25,0.75"
 
 # straight
-PUSH_KNOTS   left="90,0,0"     right="90,0,0"
+PUSH_KNOTS   left="90,0,10"     right="90,0,10"
 
 
 
@@ -303,7 +303,7 @@ PUSH_KNOTS   left="90,0,0"     right="90,0,0"
 	PUSH_KNOTS  left="0,40,-5"    right="20,40,0"
 
 	PUSH_KNOTS  left="35,30,-3"     right="20,20,5"
-	PUSH_KNOTS  left="45,0,-2"      right="40,0,0"
+	PUSH_KNOTS  left="45,0,3"      right="40,0,5"
 
 # /twisted looping
 #
@@ -316,7 +316,7 @@ NEXT_KNOTS_STATES   size="10"
 NEXT_KNOTS_STATES   color="0.25,0.25,0.75"
 
 # straight
-PUSH_KNOTS left="30,0,0"     right="30,0,0"
+PUSH_KNOTS left="30,0,5"     right="30,0,5"
 
 
 
@@ -326,7 +326,7 @@ PUSH_KNOTS left="30,0,0"     right="30,0,0"
 
     NEXT_KNOTS_STATES   color="0.75,0.25,0.25"
 
-    PUSH_KNOTS    left=" 60,  0,  0"     right=" 60,  0,  0"
+    PUSH_KNOTS    left=" 60,  0, 10"     right=" 60,  0, 10"
     PUSH_KNOTS    left=" 60,-20, 60"     right=" 60,-20, 60"
     PUSH_KNOTS    left="-60,-20, 60"     right="-60,-20, 60"
     PUSH_KNOTS    left="-60,-20,-60"     right="-60,-20,-60"
@@ -359,14 +359,13 @@ PUSH_KNOTS    left="30,0,0"     right="30,0,0"
     PUSH_KNOTS    left=" 85, +10,  85"     right=" 85, +10,  85"
     PUSH_KNOTS    left="-85, +10,  85"     right="-85, +10,  85"
     PUSH_KNOTS    left="-85, +10, -85"     right="-85, +10, -85"
-    PUSH_KNOTS    left="  0,   0, -75"     right="  0,   0, -75"
-    PUSH_KNOTS    left="  0,   0, -75"     right="  0,   0, -75"
+    PUSH_KNOTS    left=" 10,   0,-200"     right=" 10,   0,-200"
     PUSH_KNOTS    left=" 85, +10, -85"     right=" 85, +10, -85"
     PUSH_KNOTS    left=" 85,   0,   0"     right=" 85,   0,   0"
     PUSH_KNOTS    left=" 85,   0,   0"     right=" 85,   0,   0"
 
     # small straight runway
-    PUSH_KNOTS    left="10,0,0"     right="10,0,0"
+    PUSH_KNOTS    left="20,0,0"     right="20,0,0"
 
 # final looping
 #
