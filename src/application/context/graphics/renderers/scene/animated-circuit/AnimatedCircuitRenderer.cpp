@@ -186,9 +186,15 @@ AnimatedCircuitRenderer::update(float elapsedTime) {
 
       const float tmpCoef = localEasing.get(_targetValue - _lowerValue);
 
-      // rise slowly
-      _lowerValue += 3.0f * elapsedTime * tmpCoef;
-      _lowerValue = std::min(_lowerValue, _targetValue);
+      if (_lowerValue < _targetValue + 3.0f) {
+        // rise quickly
+        _lowerValue += 6.0f * elapsedTime * tmpCoef;
+        _lowerValue = std::min(_lowerValue, _targetValue);
+      } else {
+        // rise slowly
+        _lowerValue += 3.0f * elapsedTime * tmpCoef;
+        _lowerValue = std::min(_lowerValue, _targetValue);
+      }
     }
 
     // upper value, farthest from the cars

@@ -163,13 +163,13 @@ func_handle_third_parties() {
     #
     #
 
-    cd $DIR_DEPENDENCIES/geronimo
+    cd "$DIR_DEPENDENCIES/geronimo" || exit 1
 
     sh sh_everything.sh
 
     export DIR_LIB_GERONIMO=$DIR_DEPENDENCIES/geronimo
 
-    cd $DIR_ROOT
+    cd "$DIR_ROOT" || exit 1
 
     #
     #
@@ -179,7 +179,7 @@ func_handle_third_parties() {
     echo "# native version"
     echo "#"
 
-    cd $DIR_DEPENDENCIES/basic-genetic-algorithm
+    cd "$DIR_DEPENDENCIES/basic-genetic-algorithm" || exit 1
 
     make build_mode="release" build_platform="native" all -j4
 
@@ -192,7 +192,7 @@ func_handle_third_parties() {
 
     make build_mode="release" build_platform="web-wasm" all -j4
 
-    cd $DIR_ROOT
+    cd "$DIR_ROOT" || exit 1
 
   }
 
@@ -267,7 +267,7 @@ func_build_wasm_loader_webapp() {
   #
   #
 
-  cd $DIR_ROOT
+  cd "$DIR_ROOT" || exit 1
 
   if [ -f "./dist/index.js" ]
   then
@@ -284,7 +284,7 @@ func_build_wasm_loader_webapp() {
     #
     #
 
-    cd $DIR_ROOT/web-wasm-loader
+    cd "$DIR_ROOT/web-wasm-loader" || exit 1
 
     if [ -f "./js/bundle.js" ]
     then
@@ -326,7 +326,7 @@ func_build_wasm_loader_webapp() {
 
   fi
 
-  cd $DIR_ROOT
+  cd "$DIR_ROOT" || exit 1
 
 }
 

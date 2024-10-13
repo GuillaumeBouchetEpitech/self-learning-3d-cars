@@ -19,7 +19,7 @@ esac
 #
 # INIT
 
-mkdir -p $DIR_DEPENDENCIES
+mkdir -p "$DIR_DEPENDENCIES"
 
 echo ""
 echo "###"
@@ -96,10 +96,10 @@ yes)
   echo "###"
   echo ""
 
-  cd $DIR_DEPENDENCIES
+  cd "$DIR_DEPENDENCIES" || exit 1
 
   # reset
-  rm -rf $CURR_DEST_DIR
+  rm -rf "$CURR_DEST_DIR"
 
   # clone (but we only ask for one commit, which is very light)
   git clone --quiet --depth 1 --branch $CURR_GIT_TAG https://github.com/$CURR_GIT_URL $CURR_DEST_DIR
