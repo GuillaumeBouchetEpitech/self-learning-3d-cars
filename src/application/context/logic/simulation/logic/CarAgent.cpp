@@ -39,8 +39,9 @@ constexpr float groundHeight = 1.0f;
 
 void
 CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
-  if (_health <= 0.0f)
+  if (_health <= 0.0f) {
     return;
+  }
 
   _updateSensors();
   _collideEyeSensors();
@@ -110,8 +111,10 @@ CarAgent::update(float elapsedTime, NeuralNetwork& neuralNetwork) {
 
   const float engineForce = engineEasing.get(_output.speed);
 
-  _physicVehicle->applyEngineForce(2, engineForce);
-  _physicVehicle->applyEngineForce(3, engineForce);
+  // _physicVehicle->applyEngineForce(2, engineForce);
+  // _physicVehicle->applyEngineForce(3, engineForce);
+  _physicVehicle->applyEngineForce(0, engineForce);
+  _physicVehicle->applyEngineForce(1, engineForce);
 
   ++_totalUpdateNumber;
 }
