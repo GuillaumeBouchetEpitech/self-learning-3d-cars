@@ -142,30 +142,30 @@ http://guillaumebouchetepitech.github.io/self-learning-3d-cars/dist/index.html
   }
 }%%
 
-  flowchart TB
+  flowchart LR
 
 
     main["
       MAIN WASM
-
+      _
       setup worker
-
+      _
       request new simulation frames to the workers
-
+      _
       render an interpolated simulation frame
     "]
 
     worker["
       WORKER WASM
-
+      _
       reset simulation
-
+      _
       process simulation and generate a frame
-
+      _
       add X new car agent(s) to the simulation
     "]
 
-    main <--> worker
+    main <==> worker
 
 ```
 
