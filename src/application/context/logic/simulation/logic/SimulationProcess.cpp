@@ -7,13 +7,6 @@
 #include "geronimo/system/aliasing.hpp"
 #include "geronimo/system/asValue.hpp"
 
-namespace {
-
-D_ALIAS_FUNCTION(_getTime, std::chrono::high_resolution_clock::now);
-D_ALIAS_FUNCTION(_asMilliSeconds, std::chrono::duration_cast<std::chrono::milliseconds>);
-
-} // namespace
-
 SimulationProcess::AgentValues::AgentValues(uint32_t inDataIndex, const NeuralNetworkTopology& inNeuralNetworkTopology)
   : dataIndex(inDataIndex), neuralNet(inNeuralNetworkTopology) {
   transformsHistory.reserve(50); // TODO: hardcoded
